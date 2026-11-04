@@ -1,6 +1,6 @@
 # Native DX12 Linux
 
-Project signature: Andrew Kapica — GoblinFlash.
+Project created by Andrew Kapica — GoblinFlash.
 
 Experimental native Linux components for a bounded subset of Direct3D 12.
 The documented build platform is Ubuntu 26.04 on x86-64. This source tree contains
