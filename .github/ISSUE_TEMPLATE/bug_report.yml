@@ -1,0 +1,82 @@
+name: Bug report
+description: Report a reproducible defect in an existing Native DX12 Linux component.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Native DX12 Linux. This project implements an experimental subset of Direct3D 12; full D3D12, DXGI, Windows ABI, and game compatibility are not currently claimed. For questions or unsupported feature requests, use Discussions.
+
+        **Do not post credentials, tokens, private IP addresses, or sensitive logs.** For security-sensitive reports, contact the maintainer privately rather than disclosing exploit details in a public issue.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      options:
+        - NVIDIA native lane (NAK / RM / UVM)
+        - AMD native lane
+        - Intel native lane
+        - Shared DXIL / NIR / frontend
+        - Build or tooling
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Source revision
+      description: Commit SHA or exact source package/version used.
+      placeholder: "e.g. full commit SHA"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Linux distribution, kernel, GPU model, GPU PCI ID if known, driver, Mesa/NAK version, and relevant build tools.
+      placeholder: |
+        OS / kernel:
+        GPU / PCI ID:
+        Driver / compiler:
+        Toolchain:
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include exact commands or minimal input and configuration. Remove secrets before posting.
+      placeholder: |
+        1. Build with ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe what should happen and why (e.g. documented contract or output invariant).
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include failures, wrong output, or crash details. Distinguish compiler success from actual GPU execution.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs and supporting evidence
+      description: Attach redacted logs, output hashes, screenshots, or a minimal reproducer, if available.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I checked for a duplicate issue and removed sensitive information from this report.
+          required: true

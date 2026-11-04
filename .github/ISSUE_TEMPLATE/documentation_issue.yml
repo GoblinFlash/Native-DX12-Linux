@@ -1,0 +1,37 @@
+name: Documentation issue
+description: Report inaccurate, confusing, incomplete, or outdated documentation.
+title: "[Docs] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for improving the documentation. Please distinguish experimental functionality from verified GPU behavior and unsupported features. General questions belong in Discussions.
+  - type: input
+    id: location
+    attributes:
+      label: Document and location
+      description: Link to the page or provide the repository-relative path and section heading.
+      placeholder: "README.md — section title"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or unclear?
+      description: Quote only the minimum relevant passage and explain the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+      description: Explain the expected wording, missing context, or appropriate scope limitation.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: Optional official references, code links, test records, or screenshots. Do not include private paths or credentials.
+    validations:
+      required: false

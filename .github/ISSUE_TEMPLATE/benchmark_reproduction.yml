@@ -1,0 +1,94 @@
+name: Benchmark reproduction / discrepancy
+description: Report a reproducible performance or correctness difference for a documented benchmark.
+title: "[Benchmark] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Benchmark comparisons need matching workloads, output checks, and measurement methods. One result on one GPU does not establish general speedup. Share raw evidence where possible, and do not upload credentials or private host details.
+  - type: dropdown
+    id: hardware_lane
+    attributes:
+      label: GPU vendor / lane
+      options:
+        - NVIDIA
+        - AMD
+        - Intel
+        - Other / unsure
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware and driver
+      description: Exact GPU model, PCI ID/compute capability if known, driver and kernel versions; include power/clocks/thermal settings if relevant.
+      placeholder: |
+        GPU model / PCI ID:
+        OS / kernel:
+        Driver / Mesa:
+        Clock / power / temperature conditions:
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Exact source identity
+      description: Commit SHA, artifact hash, or pinned source revision for the benchmark runner and shaders.
+      placeholder: "Commit SHA / SHA-256"
+    validations:
+      required: true
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Execution path
+      description: Specify which backend actually executed; SPIR-V in a compiler path does not imply Vulkan runtime.
+      options:
+        - Native NVIDIA RM / NAK
+        - Native AMD
+        - Native Intel
+        - Vulkan reference
+        - CUDA reference
+        - Other / unsure
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Workload and measurement method
+      description: Include problem size, shader variant, dispatch chain, number of processes/runs, warm-up exclusions, timing source, units, and aggregation (e.g. median).
+      placeholder: |
+        Workload / variant:
+        Dispatches per run:
+        Processes / frames / warm-up:
+        Timing source / units:
+        Aggregation:
+    validations:
+      required: true
+  - type: textarea
+    id: comparison
+    attributes:
+      label: Reference and observed results
+      description: Identify baseline and candidate separately; report raw numbers, units and any A/A control or uncertainty. Do not mix different GPUs or execution paths.
+    validations:
+      required: true
+  - type: textarea
+    id: correctness
+    attributes:
+      label: Output correctness and synchronization
+      description: State how GPU submission, completion/synchronization, buffer outputs, and correctness were checked. Write NOT_RUN or UNKNOWN where appropriate.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproduction commands and raw evidence
+      description: Redacted command receipts, logs, CSV/JSON evidence, artifact hashes, and any known failures or skipped runs.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I distinguished actual GPU measurements from CPU-only models and removed sensitive information.
+          required: true
