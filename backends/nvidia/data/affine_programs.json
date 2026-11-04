@@ -1,0 +1,30 @@
+{
+  "artifacts": {
+    "bin": {
+      "mode": 436,
+      "path": "@ARTIFACTS@/nvidia/affine/shader.bin",
+      "sha256": "77a272b5178472f9eb778997e785c20ec32064cb122d76627df2c7e7ffdd9746",
+      "size": 848
+    },
+    "info.bin": {
+      "mode": 436,
+      "path": "@ARTIFACTS@/nvidia/affine/shader.info.bin",
+      "sha256": "f44c58dc7ba668d635a47b90b637ed7fb8bfa19223b27c421cef95e6348f665c",
+      "size": 864
+    },
+    "json": {
+      "mode": 436,
+      "path": "@ARTIFACTS@/nvidia/affine/shader.json",
+      "sha256": "1775a4481bc467574c6ab937e4f091481f36678134d5d4b058fdf6980416efa2",
+      "size": 1205
+    },
+    "qmd": {
+      "mode": 436,
+      "path": "@ARTIFACTS@/nvidia/affine/shader.qmd",
+      "sha256": "d2c219725e0d35176372b8c93be7f9458d5c6e5836d8fda68b5147c165efa73f",
+      "size": 256
+    }
+  },
+  "profile": "affine-u32",
+  "schema": "affine-program-inputs.v1"
+}

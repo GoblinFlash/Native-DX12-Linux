@@ -1,0 +1,7 @@
+**
+!deps/
+!deps/apt-packages.txt
+!container/
+!container/Containerfile
+!container/Containerfile.dockerignore
+!container/snapshot-inrelease.sha256

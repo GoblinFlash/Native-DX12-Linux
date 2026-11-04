@@ -1,0 +1,30 @@
+diff --git a/src/gallium/drivers/iris/iris_program.c b/src/gallium/drivers/iris/iris_program.c
+index fae981f..392a53e 100644
+--- a/src/gallium/drivers/iris/iris_program.c
++++ b/src/gallium/drivers/iris/iris_program.c
+@@ -721,7 +721,9 @@ iris_upload_ubo_ssbo_surf_state(struct iris_context *ice,
+    isl_buffer_fill_state(&screen->isl_dev, map,
+                          .address = res->bo->address + res->offset +
+                                     buf->buffer_offset,
+-                         .size_B = buf->buffer_size - res->offset,
++                         .size_B = MIN2(buf->buffer_size,
++                                        res->bo->size - res->offset -
++                                        buf->buffer_offset),
+                          .format = dataport ? ISL_FORMAT_RAW
+                                             : ISL_FORMAT_R32G32B32A32_FLOAT,
+                          .swizzle = ISL_SWIZZLE_IDENTITY,
+diff --git a/src/gallium/drivers/iris/iris_state.c b/src/gallium/drivers/iris/iris_state.c
+index 9df4d64..d5b4f5a 100644
+--- a/src/gallium/drivers/iris/iris_state.c
++++ b/src/gallium/drivers/iris/iris_state.c
+@@ -6013,7 +6013,9 @@ iris_populate_64bit_binding_table(struct iris_context *ice,
+ 
+                isl_buffer_fill_state(&screen->isl_dev, surface_state_map,
+                                      .address = res->bo->address + res->offset + buf->buffer_offset,
+-                                     .size_B = buf->buffer_size - res->offset,
++                                     .size_B = MIN2(buf->buffer_size,
++                                                    res->bo->size - res->offset -
++                                                    buf->buffer_offset),
+                                      .format = dataport ? ISL_FORMAT_RAW : ISL_FORMAT_R32G32B32A32_FLOAT,
+                                      .swizzle = ISL_SWIZZLE_IDENTITY,
+                                      .stride_B = 1,

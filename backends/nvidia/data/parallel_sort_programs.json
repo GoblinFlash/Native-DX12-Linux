@@ -1,0 +1,677 @@
+{
+  "artifact_discovery_manifest": {
+    "distribution": "PRIVATE_ARCHIVE_NOT_REQUIRED_OR_DISTRIBUTED",
+    "historical_sha256": "1ab979c1d6820d2d85f0acc34d97dff317aaaa8f96643f1eb8971cccaf614c10"
+  },
+  "discovery_manifest_caveat": "UNAUDITED metadata locator only; packet.py and other old planners not opened or imported",
+  "gpu_executed": false,
+  "headers": [
+    {
+      "classification": "EXTERNAL_HEADER_ALLOWED_NOT_IMPLEMENTATION",
+      "comparison": "urllib raw bytes compared in this author turn; no downloaded copy retained",
+      "mode": 436,
+      "path": "@HEADERS@/clc9c0qmd.h",
+      "sha256": "12f61b40ca721248de170469c2673ba7f9f1ac5ea24e42e42b102e8c84d7f43b",
+      "size": 40075,
+      "upstream_byte_equal": true,
+      "upstream_commit": "5d957df1787982e35961ab2ee6834670c6684cb9",
+      "upstream_url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-doc/5d957df1787982e35961ab2ee6834670c6684cb9/classes/compute/clc9c0qmd.h"
+    },
+    {
+      "classification": "EXTERNAL_HEADER_ALLOWED_NOT_IMPLEMENTATION",
+      "comparison": "urllib raw bytes compared in this author turn; no downloaded copy retained",
+      "mode": 436,
+      "path": "@HEADERS@/clc9c0.h",
+      "sha256": "e15e4d37ad68439acc1985febf8f42fd1840067072112f85d6741a4171c4007f",
+      "size": 74146,
+      "upstream_byte_equal": true,
+      "upstream_commit": "5d957df1787982e35961ab2ee6834670c6684cb9",
+      "upstream_url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-doc/5d957df1787982e35961ab2ee6834670c6684cb9/classes/compute/clc9c0.h"
+    }
+  ],
+  "programs": {
+    "count": {
+      "artifacts": {
+        "bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/count/count.bin",
+          "sha256": "e3b9eb3516e64513c3fdd96d7b803b3803ad866805ce0906b9ed4387e1d24e05",
+          "size": 4176
+        },
+        "info.bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/count/count.info.bin",
+          "sha256": "94b9826602929d494831d598639accfe82a13507a9fa0f2d604c4ddafe778192",
+          "size": 864
+        },
+        "json": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/count/count.json",
+          "sha256": "9e837cac42f41d8f4bdd010e8ccbec9b12406afe01e6918b76f566fe1a9c94a4",
+          "size": 1509
+        },
+        "qmd": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/count/count.qmd",
+          "sha256": "fc56b5ab82c6b45d93c2805f8dde5b836fadfc329586696d792d65c13487e2da",
+          "size": 256
+        }
+      },
+      "classification": "EXTERNAL_WORKLOAD_COMPILER_ARTIFACTS_NOT_OWN_IMPLEMENTATION",
+      "header_decoded_seed_observation": {
+        "BARRIER_COUNT": 1,
+        "CTA_RASTER_DEPTH": 1,
+        "CTA_RASTER_HEIGHT": 1,
+        "CTA_RASTER_WIDTH": 1,
+        "CTA_THREAD_DIMENSION0": 128,
+        "CTA_THREAD_DIMENSION1": 1,
+        "CTA_THREAD_DIMENSION2": 1,
+        "MAX_SM_CONFIG_SHARED_MEM_SIZE": 26,
+        "MIN_SM_CONFIG_SHARED_MEM_SIZE": 3,
+        "PROGRAM_ADDRESS_LOWER": 0,
+        "PROGRAM_ADDRESS_UPPER": 2,
+        "PROGRAM_PREFETCH_ADDR_LOWER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_ADDR_UPPER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_SIZE": 0,
+        "QMD_MAJOR_VERSION": 3,
+        "QMD_VERSION": 0,
+        "REGISTER_COUNT_V": 24,
+        "SHARED_MEMORY_SIZE": 8192,
+        "TARGET_SM_CONFIG_SHARED_MEM_SIZE": 26
+      },
+      "metadata": {
+        "bindings": [
+          {
+            "base_offset": 0,
+            "binding": 0,
+            "reads": 4,
+            "size_offset": 8,
+            "writes": 0
+          },
+          {
+            "base_offset": 16,
+            "binding": 1,
+            "reads": 0,
+            "size_offset": 24,
+            "writes": 1
+          }
+        ],
+        "cb0": {
+          "bytes": 80,
+          "layout": "ndx12.nvidia.shared.cb0.v1",
+          "param_mask": 79,
+          "params_offset": 48,
+          "qmd_bytes": 128
+        },
+        "code_bytes": 4176,
+        "dispatch": "BLOCKED",
+        "dispatchable": false,
+        "gpu": "NOT_RUN",
+        "input_u8_contract": false,
+        "input_u8_proven": 0,
+        "predicated_loads": 0,
+        "profile": "ffx-count",
+        "schema": "ndx12.nvidia.shared.readymade_range_candidate.compiler.v1",
+        "scope": "CPU_ONLY",
+        "shader_info": {
+          "crs_size": 0,
+          "cs": {
+            "local_size": [
+              128,
+              1,
+              1
+            ],
+            "smem_size": 8192
+          },
+          "max_warps_per_sm": 48,
+          "num_control_barriers": 1,
+          "num_fills_from_mem": 0,
+          "num_fills_from_reg": 0,
+          "num_gprs": 24,
+          "num_instrs": 261,
+          "num_spills_to_mem": 0,
+          "num_spills_to_reg": 0,
+          "num_static_cycles": 8262,
+          "slm_size": 0,
+          "sm": 89,
+          "stage": 5
+        },
+        "shared_operations": {
+          "atomics": 4,
+          "barriers": 2,
+          "global_atomics": 0,
+          "loads": 1,
+          "stores": 16
+        },
+        "shared_range_proof": {
+          "fallback": 5,
+          "proven": 16
+        },
+        "target": {
+          "max_warps_per_mp": 48,
+          "origin": "PINNED_SM89_ARCHITECTURAL_TABLE_NOT_OCCUPANCY_MEASUREMENT",
+          "physical_device_verified": false,
+          "sm": 89
+        }
+      }
+    },
+    "reduce": {
+      "artifacts": {
+        "bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/reduce/reduce.bin",
+          "sha256": "230f869fa3aaa9804a7dbe2e44a224267cfb396998d928bfdd00809a34fc70cb",
+          "size": 4384
+        },
+        "info.bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/reduce/reduce.info.bin",
+          "sha256": "5ed49e6df02ce61d1512c586548249d0e3c9ee21e9f6855d3877a61ab3febbaf",
+          "size": 864
+        },
+        "json": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/reduce/reduce.json",
+          "sha256": "365176fe9fddd2ae1f42bfadb21b7789ca247461397a305ffa3dec6c01bcf168",
+          "size": 1507
+        },
+        "qmd": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/reduce/reduce.qmd",
+          "sha256": "7b4602f378844cdf4748f7d1739d4f6a8706052bae37e7eed6467a76b5529e69",
+          "size": 256
+        }
+      },
+      "classification": "EXTERNAL_WORKLOAD_COMPILER_ARTIFACTS_NOT_OWN_IMPLEMENTATION",
+      "header_decoded_seed_observation": {
+        "BARRIER_COUNT": 1,
+        "CTA_RASTER_DEPTH": 1,
+        "CTA_RASTER_HEIGHT": 1,
+        "CTA_RASTER_WIDTH": 1,
+        "CTA_THREAD_DIMENSION0": 128,
+        "CTA_THREAD_DIMENSION1": 1,
+        "CTA_THREAD_DIMENSION2": 1,
+        "MAX_SM_CONFIG_SHARED_MEM_SIZE": 26,
+        "MIN_SM_CONFIG_SHARED_MEM_SIZE": 3,
+        "PROGRAM_ADDRESS_LOWER": 0,
+        "PROGRAM_ADDRESS_UPPER": 2,
+        "PROGRAM_PREFETCH_ADDR_LOWER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_ADDR_UPPER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_SIZE": 0,
+        "QMD_MAJOR_VERSION": 3,
+        "QMD_VERSION": 0,
+        "REGISTER_COUNT_V": 24,
+        "SHARED_MEMORY_SIZE": 512,
+        "TARGET_SM_CONFIG_SHARED_MEM_SIZE": 3
+      },
+      "metadata": {
+        "bindings": [
+          {
+            "base_offset": 0,
+            "binding": 0,
+            "reads": 4,
+            "size_offset": 8,
+            "writes": 0
+          },
+          {
+            "base_offset": 16,
+            "binding": 1,
+            "reads": 0,
+            "size_offset": 24,
+            "writes": 1
+          }
+        ],
+        "cb0": {
+          "bytes": 80,
+          "layout": "ndx12.nvidia.shared.cb0.v1",
+          "param_mask": 20,
+          "params_offset": 48,
+          "qmd_bytes": 128
+        },
+        "code_bytes": 4384,
+        "dispatch": "BLOCKED",
+        "dispatchable": false,
+        "gpu": "NOT_RUN",
+        "input_u8_contract": false,
+        "input_u8_proven": 0,
+        "predicated_loads": 0,
+        "profile": "ffx-reduce",
+        "schema": "ndx12.nvidia.shared.readymade_range_candidate.compiler.v1",
+        "scope": "CPU_ONLY",
+        "shader_info": {
+          "crs_size": 0,
+          "cs": {
+            "local_size": [
+              128,
+              1,
+              1
+            ],
+            "smem_size": 512
+          },
+          "max_warps_per_sm": 48,
+          "num_control_barriers": 1,
+          "num_fills_from_mem": 0,
+          "num_fills_from_reg": 0,
+          "num_gprs": 24,
+          "num_instrs": 274,
+          "num_spills_to_mem": 0,
+          "num_spills_to_reg": 0,
+          "num_static_cycles": 1249,
+          "slm_size": 0,
+          "sm": 89,
+          "stage": 5
+        },
+        "shared_operations": {
+          "atomics": 0,
+          "barriers": 1,
+          "global_atomics": 0,
+          "loads": 1,
+          "stores": 1
+        },
+        "shared_range_proof": {
+          "fallback": 1,
+          "proven": 1
+        },
+        "target": {
+          "max_warps_per_mp": 48,
+          "origin": "PINNED_SM89_ARCHITECTURAL_TABLE_NOT_OCCUPANCY_MEASUREMENT",
+          "physical_device_verified": false,
+          "sm": 89
+        }
+      }
+    },
+    "scan": {
+      "artifacts": {
+        "bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scan/scan.bin",
+          "sha256": "8d435074c6eb6a037b7f132222a8d671c96caa7bd0c44ed7c34cda769e74c02e",
+          "size": 8304
+        },
+        "info.bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scan/scan.info.bin",
+          "sha256": "b56c3a2f4087deb142ef557112e05c8880616af9c3d03124fc07aa3a15d809fe",
+          "size": 864
+        },
+        "json": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scan/scan.json",
+          "sha256": "d139b489683ca3134600af4563199a8005a875fd0ba4eb8fd84d75bf2c50f2e9",
+          "size": 1511
+        },
+        "qmd": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scan/scan.qmd",
+          "sha256": "6d8fe534167b84d80426bc1ee6b5dd55645c129947f5a9c3813dd3b9f3613cb9",
+          "size": 256
+        }
+      },
+      "classification": "EXTERNAL_WORKLOAD_COMPILER_ARTIFACTS_NOT_OWN_IMPLEMENTATION",
+      "header_decoded_seed_observation": {
+        "BARRIER_COUNT": 1,
+        "CTA_RASTER_DEPTH": 1,
+        "CTA_RASTER_HEIGHT": 1,
+        "CTA_RASTER_WIDTH": 1,
+        "CTA_THREAD_DIMENSION0": 128,
+        "CTA_THREAD_DIMENSION1": 1,
+        "CTA_THREAD_DIMENSION2": 1,
+        "MAX_SM_CONFIG_SHARED_MEM_SIZE": 26,
+        "MIN_SM_CONFIG_SHARED_MEM_SIZE": 3,
+        "PROGRAM_ADDRESS_LOWER": 0,
+        "PROGRAM_ADDRESS_UPPER": 2,
+        "PROGRAM_PREFETCH_ADDR_LOWER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_ADDR_UPPER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_SIZE": 0,
+        "QMD_MAJOR_VERSION": 3,
+        "QMD_VERSION": 0,
+        "REGISTER_COUNT_V": 24,
+        "SHARED_MEMORY_SIZE": 2560,
+        "TARGET_SM_CONFIG_SHARED_MEM_SIZE": 9
+      },
+      "metadata": {
+        "bindings": [
+          {
+            "base_offset": 0,
+            "binding": 0,
+            "reads": 4,
+            "size_offset": 8,
+            "writes": 0
+          },
+          {
+            "base_offset": 16,
+            "binding": 1,
+            "reads": 0,
+            "size_offset": 24,
+            "writes": 4
+          }
+        ],
+        "cb0": {
+          "bytes": 80,
+          "layout": "ndx12.nvidia.shared.cb0.v1",
+          "param_mask": 32,
+          "params_offset": 48,
+          "qmd_bytes": 128
+        },
+        "code_bytes": 8304,
+        "dispatch": "BLOCKED",
+        "dispatchable": false,
+        "gpu": "NOT_RUN",
+        "input_u8_contract": false,
+        "input_u8_proven": 0,
+        "predicated_loads": 0,
+        "profile": "ffx-scan",
+        "schema": "ndx12.nvidia.shared.readymade_range_candidate.compiler.v1",
+        "scope": "CPU_ONLY",
+        "shader_info": {
+          "crs_size": 0,
+          "cs": {
+            "local_size": [
+              128,
+              1,
+              1
+            ],
+            "smem_size": 2560
+          },
+          "max_warps_per_sm": 48,
+          "num_control_barriers": 1,
+          "num_fills_from_mem": 0,
+          "num_fills_from_reg": 7,
+          "num_gprs": 24,
+          "num_instrs": 519,
+          "num_spills_to_mem": 0,
+          "num_spills_to_reg": 11,
+          "num_static_cycles": 2659,
+          "slm_size": 0,
+          "sm": 89,
+          "stage": 5
+        },
+        "shared_operations": {
+          "atomics": 0,
+          "barriers": 4,
+          "global_atomics": 0,
+          "loads": 14,
+          "stores": 14
+        },
+        "shared_range_proof": {
+          "fallback": 10,
+          "proven": 18
+        },
+        "target": {
+          "max_warps_per_mp": 48,
+          "origin": "PINNED_SM89_ARCHITECTURAL_TABLE_NOT_OCCUPANCY_MEASUREMENT",
+          "physical_device_verified": false,
+          "sm": 89
+        }
+      }
+    },
+    "scanadd": {
+      "artifacts": {
+        "bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scanadd/scanadd.bin",
+          "sha256": "ddc38661b41cef0b4d598e69e0c8b62aceb14357a26a20e34ac1dbcf4ac3898f",
+          "size": 9376
+        },
+        "info.bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scanadd/scanadd.info.bin",
+          "sha256": "928f2d33ceff0b34d30af3432d88f4c6dd209e4f2a5ca3b05abd75393e854884",
+          "size": 864
+        },
+        "json": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scanadd/scanadd.json",
+          "sha256": "13e19112986d631c787d44e676b5baf016ab732e80b930c6f2e8b66b2be21585",
+          "size": 1634
+        },
+        "qmd": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scanadd/scanadd.qmd",
+          "sha256": "6d8fe534167b84d80426bc1ee6b5dd55645c129947f5a9c3813dd3b9f3613cb9",
+          "size": 256
+        }
+      },
+      "classification": "EXTERNAL_WORKLOAD_COMPILER_ARTIFACTS_NOT_OWN_IMPLEMENTATION",
+      "header_decoded_seed_observation": {
+        "BARRIER_COUNT": 1,
+        "CTA_RASTER_DEPTH": 1,
+        "CTA_RASTER_HEIGHT": 1,
+        "CTA_RASTER_WIDTH": 1,
+        "CTA_THREAD_DIMENSION0": 128,
+        "CTA_THREAD_DIMENSION1": 1,
+        "CTA_THREAD_DIMENSION2": 1,
+        "MAX_SM_CONFIG_SHARED_MEM_SIZE": 26,
+        "MIN_SM_CONFIG_SHARED_MEM_SIZE": 3,
+        "PROGRAM_ADDRESS_LOWER": 0,
+        "PROGRAM_ADDRESS_UPPER": 2,
+        "PROGRAM_PREFETCH_ADDR_LOWER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_ADDR_UPPER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_SIZE": 0,
+        "QMD_MAJOR_VERSION": 3,
+        "QMD_VERSION": 0,
+        "REGISTER_COUNT_V": 24,
+        "SHARED_MEMORY_SIZE": 2560,
+        "TARGET_SM_CONFIG_SHARED_MEM_SIZE": 9
+      },
+      "metadata": {
+        "bindings": [
+          {
+            "base_offset": 0,
+            "binding": 0,
+            "reads": 4,
+            "size_offset": 8,
+            "writes": 0
+          },
+          {
+            "base_offset": 16,
+            "binding": 1,
+            "reads": 0,
+            "size_offset": 24,
+            "writes": 4
+          },
+          {
+            "base_offset": 32,
+            "binding": 2,
+            "reads": 1,
+            "size_offset": 40,
+            "writes": 0
+          }
+        ],
+        "cb0": {
+          "bytes": 80,
+          "layout": "ndx12.nvidia.shared.cb0.v1",
+          "param_mask": 20,
+          "params_offset": 48,
+          "qmd_bytes": 128
+        },
+        "code_bytes": 9376,
+        "dispatch": "BLOCKED",
+        "dispatchable": false,
+        "gpu": "NOT_RUN",
+        "input_u8_contract": false,
+        "input_u8_proven": 0,
+        "predicated_loads": 0,
+        "profile": "ffx-scan-add",
+        "schema": "ndx12.nvidia.shared.readymade_range_candidate.compiler.v1",
+        "scope": "CPU_ONLY",
+        "shader_info": {
+          "crs_size": 0,
+          "cs": {
+            "local_size": [
+              128,
+              1,
+              1
+            ],
+            "smem_size": 2560
+          },
+          "max_warps_per_sm": 48,
+          "num_control_barriers": 1,
+          "num_fills_from_mem": 0,
+          "num_fills_from_reg": 7,
+          "num_gprs": 24,
+          "num_instrs": 586,
+          "num_spills_to_mem": 0,
+          "num_spills_to_reg": 11,
+          "num_static_cycles": 2892,
+          "slm_size": 0,
+          "sm": 89,
+          "stage": 5
+        },
+        "shared_operations": {
+          "atomics": 0,
+          "barriers": 4,
+          "global_atomics": 0,
+          "loads": 14,
+          "stores": 14
+        },
+        "shared_range_proof": {
+          "fallback": 10,
+          "proven": 18
+        },
+        "target": {
+          "max_warps_per_mp": 48,
+          "origin": "PINNED_SM89_ARCHITECTURAL_TABLE_NOT_OCCUPANCY_MEASUREMENT",
+          "physical_device_verified": false,
+          "sm": 89
+        }
+      }
+    },
+    "scatter": {
+      "artifacts": {
+        "bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scatter/scatter.bin",
+          "sha256": "21a26e1bf7a48a40f02f5b1920f5b9528bab69dd11393746ef43c249771ec81e",
+          "size": 44032
+        },
+        "info.bin": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scatter/scatter.info.bin",
+          "sha256": "2415fc9bb40ff824641e7646fd812c8e798c12dc9866d46e418f9e8080a20efc",
+          "size": 864
+        },
+        "json": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scatter/scatter.json",
+          "sha256": "dced690c0757798a6d520b96ee19662d002f896c9db1a110e34475e7283ebb8a",
+          "size": 1639
+        },
+        "qmd": {
+          "mode": 436,
+          "path": "@ARTIFACTS@/nvidia/parallel_sort/scatter/scatter.qmd",
+          "sha256": "ff37df32fcffe9ce23115c3783b8edaef874f89e4006ba60f8f817f4c92a8a0e",
+          "size": 256
+        }
+      },
+      "classification": "EXTERNAL_WORKLOAD_COMPILER_ARTIFACTS_NOT_OWN_IMPLEMENTATION",
+      "header_decoded_seed_observation": {
+        "BARRIER_COUNT": 1,
+        "CTA_RASTER_DEPTH": 1,
+        "CTA_RASTER_HEIGHT": 1,
+        "CTA_RASTER_WIDTH": 1,
+        "CTA_THREAD_DIMENSION0": 128,
+        "CTA_THREAD_DIMENSION1": 1,
+        "CTA_THREAD_DIMENSION2": 1,
+        "MAX_SM_CONFIG_SHARED_MEM_SIZE": 26,
+        "MIN_SM_CONFIG_SHARED_MEM_SIZE": 3,
+        "PROGRAM_ADDRESS_LOWER": 0,
+        "PROGRAM_ADDRESS_UPPER": 2,
+        "PROGRAM_PREFETCH_ADDR_LOWER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_ADDR_UPPER_SHIFTED": 0,
+        "PROGRAM_PREFETCH_SIZE": 0,
+        "QMD_MAJOR_VERSION": 3,
+        "QMD_VERSION": 0,
+        "REGISTER_COUNT_V": 24,
+        "SHARED_MEMORY_SIZE": 1792,
+        "TARGET_SM_CONFIG_SHARED_MEM_SIZE": 9
+      },
+      "metadata": {
+        "bindings": [
+          {
+            "base_offset": 0,
+            "binding": 0,
+            "reads": 4,
+            "size_offset": 8,
+            "writes": 0
+          },
+          {
+            "base_offset": 16,
+            "binding": 1,
+            "reads": 0,
+            "size_offset": 24,
+            "writes": 4
+          },
+          {
+            "base_offset": 32,
+            "binding": 2,
+            "reads": 1,
+            "size_offset": 40,
+            "writes": 0
+          }
+        ],
+        "cb0": {
+          "bytes": 80,
+          "layout": "ndx12.nvidia.shared.cb0.v1",
+          "param_mask": 79,
+          "params_offset": 48,
+          "qmd_bytes": 128
+        },
+        "code_bytes": 44032,
+        "dispatch": "BLOCKED",
+        "dispatchable": false,
+        "gpu": "NOT_RUN",
+        "input_u8_contract": false,
+        "input_u8_proven": 0,
+        "predicated_loads": 0,
+        "profile": "ffx-scatter",
+        "schema": "ndx12.nvidia.shared.readymade_range_candidate.compiler.v1",
+        "scope": "CPU_ONLY",
+        "shader_info": {
+          "crs_size": 0,
+          "cs": {
+            "local_size": [
+              128,
+              1,
+              1
+            ],
+            "smem_size": 1600
+          },
+          "max_warps_per_sm": 48,
+          "num_control_barriers": 1,
+          "num_fills_from_mem": 0,
+          "num_fills_from_reg": 16,
+          "num_gprs": 24,
+          "num_instrs": 2752,
+          "num_spills_to_mem": 0,
+          "num_spills_to_reg": 25,
+          "num_static_cycles": 152879,
+          "slm_size": 0,
+          "sm": 89,
+          "stage": 5
+        },
+        "shared_operations": {
+          "atomics": 4,
+          "barriers": 53,
+          "global_atomics": 0,
+          "loads": 52,
+          "stores": 45
+        },
+        "shared_range_proof": {
+          "fallback": 100,
+          "proven": 1
+        },
+        "target": {
+          "max_warps_per_mp": 48,
+          "origin": "PINNED_SM89_ARCHITECTURAL_TABLE_NOT_OCCUPANCY_MEASUREMENT",
+          "physical_device_verified": false,
+          "sm": 89
+        }
+      }
+    }
+  },
+  "raw_info_abi_decoded": false,
+  "scope": "PACKET_SOURCE_INVENTORY_NOT_ADMISSION",
+  "total_code_bytes": 70272,
+  "utc": "2026-10-30T22:11:19.485615+00:00"
+}

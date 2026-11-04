@@ -1,0 +1,127 @@
+{
+  "declarations": {
+    "ADA_COMPUTE_A": {
+      "kind": "value",
+      "line": 32,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0xC9C0",
+      "value": 51648
+    },
+    "NVC56F_MEM_OP_A": {
+      "kind": "value",
+      "line": 119,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000028)",
+      "value": 40
+    },
+    "NVC56F_MEM_OP_B": {
+      "kind": "value",
+      "line": 133,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x0000002c)",
+      "value": 44
+    },
+    "NVC56F_MEM_OP_C": {
+      "kind": "value",
+      "line": 135,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000030)",
+      "value": 48
+    },
+    "NVC56F_MEM_OP_C_MEMBAR_TYPE": {
+      "hi": 2,
+      "kind": "field",
+      "line": 136,
+      "lo": 0,
+      "mask": 7,
+      "shiftmask": 7,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "2:0",
+      "width": 3
+    },
+    "NVC56F_MEM_OP_C_MEMBAR_TYPE_SYS_MEMBAR": {
+      "kind": "value",
+      "line": 137,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_MEM_OP_D": {
+      "kind": "value",
+      "line": 181,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000034)",
+      "value": 52
+    },
+    "NVC56F_MEM_OP_D_OPERATION": {
+      "hi": 31,
+      "kind": "field",
+      "line": 183,
+      "lo": 27,
+      "mask": 31,
+      "shiftmask": 4160749568,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "31:27",
+      "width": 5
+    },
+    "NVC56F_MEM_OP_D_OPERATION_L2_SYSMEM_INVALIDATE": {
+      "kind": "value",
+      "line": 188,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x0000000e",
+      "value": 14
+    },
+    "NVC56F_MEM_OP_D_OPERATION_MEMBAR": {
+      "kind": "value",
+      "line": 184,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000005",
+      "value": 5
+    },
+    "NVC9C0_SET_OBJECT": {
+      "kind": "value",
+      "line": 34,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0000",
+      "value": 0
+    },
+    "NVC9C0_SET_OBJECT_CLASS_ID": {
+      "hi": 15,
+      "kind": "field",
+      "line": 35,
+      "lo": 0,
+      "mask": 65535,
+      "shiftmask": 65535,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "15:0",
+      "width": 16
+    },
+    "NVC9C0_SET_OBJECT_ENGINE_ID": {
+      "hi": 20,
+      "kind": "field",
+      "line": 36,
+      "lo": 16,
+      "mask": 31,
+      "shiftmask": 2031616,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "20:16",
+      "width": 5
+    }
+  },
+  "extractor_sha256": "add20ea2a4c49f5eaddb6282d44f3c3edf9de2e63704daea9b6d9cf65e21e210",
+  "scope": "DESIGN_SOURCE_SUPPLEMENT_NOT_RUNTIME_ADMISSION",
+  "sources": [
+    {
+      "mode": 420,
+      "path": "@HEADERS@/clc56f.h",
+      "sha256": "8b7a6d6d5d5e3538f2f3e3b975d00c4aa94bd2480008c49aefcfc2566e3f658e",
+      "size": 25985
+    },
+    {
+      "mode": 436,
+      "path": "@HEADERS@/clc9c0.h",
+      "sha256": "e15e4d37ad68439acc1985febf8f42fd1840067072112f85d6741a4171c4007f",
+      "size": 74146
+    }
+  ]
+}

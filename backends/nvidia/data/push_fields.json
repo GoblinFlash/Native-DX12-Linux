@@ -1,0 +1,1427 @@
+{
+  "declarations": {
+    "NVC56F_DMA_INCR_ADDRESS": {
+      "hi": 11,
+      "kind": "field",
+      "line": 310,
+      "lo": 0,
+      "mask": 4095,
+      "shiftmask": 4095,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "11:0",
+      "width": 12
+    },
+    "NVC56F_DMA_INCR_COUNT": {
+      "hi": 28,
+      "kind": "field",
+      "line": 312,
+      "lo": 16,
+      "mask": 8191,
+      "shiftmask": 536805376,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "28:16",
+      "width": 13
+    },
+    "NVC56F_DMA_INCR_DATA": {
+      "hi": 31,
+      "kind": "field",
+      "line": 315,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC56F_DMA_INCR_OPCODE": {
+      "hi": 31,
+      "kind": "field",
+      "line": 313,
+      "lo": 29,
+      "mask": 7,
+      "shiftmask": 3758096384,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "31:29",
+      "width": 3
+    },
+    "NVC56F_DMA_INCR_OPCODE_VALUE": {
+      "kind": "value",
+      "line": 314,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000001)",
+      "value": 1
+    },
+    "NVC56F_DMA_INCR_SUBCHANNEL": {
+      "hi": 15,
+      "kind": "field",
+      "line": 311,
+      "lo": 13,
+      "mask": 7,
+      "shiftmask": 57344,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "15:13",
+      "width": 3
+    },
+    "NVC56F_SEM_ADDR_HI": {
+      "kind": "value",
+      "line": 208,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000060)",
+      "value": 96
+    },
+    "NVC56F_SEM_ADDR_HI_OFFSET": {
+      "hi": 7,
+      "kind": "field",
+      "line": 209,
+      "lo": 0,
+      "mask": 255,
+      "shiftmask": 255,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "7:0",
+      "width": 8
+    },
+    "NVC56F_SEM_ADDR_LO": {
+      "kind": "value",
+      "line": 206,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x0000005c)",
+      "value": 92
+    },
+    "NVC56F_SEM_ADDR_LO_OFFSET": {
+      "hi": 31,
+      "kind": "field",
+      "line": 207,
+      "lo": 2,
+      "mask": 1073741823,
+      "shiftmask": 4294967292,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "31:2",
+      "width": 30
+    },
+    "NVC56F_SEM_EXECUTE": {
+      "kind": "value",
+      "line": 214,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x0000006c)",
+      "value": 108
+    },
+    "NVC56F_SEM_EXECUTE_ACQUIRE_SWITCH_TSG": {
+      "hi": 12,
+      "kind": "field",
+      "line": 223,
+      "lo": 12,
+      "mask": 1,
+      "shiftmask": 4096,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "12:12",
+      "width": 1
+    },
+    "NVC56F_SEM_EXECUTE_ACQUIRE_SWITCH_TSG_DIS": {
+      "kind": "value",
+      "line": 224,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_SEM_EXECUTE_ACQUIRE_SWITCH_TSG_EN": {
+      "kind": "value",
+      "line": 225,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION": {
+      "hi": 2,
+      "kind": "field",
+      "line": 215,
+      "lo": 0,
+      "mask": 7,
+      "shiftmask": 7,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "2:0",
+      "width": 3
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION_ACQUIRE": {
+      "kind": "value",
+      "line": 216,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION_ACQ_AND": {
+      "kind": "value",
+      "line": 220,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000004",
+      "value": 4
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION_ACQ_CIRC_GEQ": {
+      "kind": "value",
+      "line": 219,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000003",
+      "value": 3
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION_ACQ_NOR": {
+      "kind": "value",
+      "line": 221,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000005",
+      "value": 5
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION_ACQ_STRICT_GEQ": {
+      "kind": "value",
+      "line": 218,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000002",
+      "value": 2
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION_REDUCTION": {
+      "kind": "value",
+      "line": 222,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000006",
+      "value": 6
+    },
+    "NVC56F_SEM_EXECUTE_OPERATION_RELEASE": {
+      "kind": "value",
+      "line": 217,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_SEM_EXECUTE_PAYLOAD_SIZE": {
+      "hi": 24,
+      "kind": "field",
+      "line": 229,
+      "lo": 24,
+      "mask": 1,
+      "shiftmask": 16777216,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "24:24",
+      "width": 1
+    },
+    "NVC56F_SEM_EXECUTE_PAYLOAD_SIZE_32BIT": {
+      "kind": "value",
+      "line": 230,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_SEM_EXECUTE_PAYLOAD_SIZE_64BIT": {
+      "kind": "value",
+      "line": 231,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION": {
+      "hi": 30,
+      "kind": "field",
+      "line": 235,
+      "lo": 27,
+      "mask": 15,
+      "shiftmask": 2013265920,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "30:27",
+      "width": 4
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_DEC": {
+      "kind": "value",
+      "line": 243,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000007",
+      "value": 7
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_FORMAT": {
+      "hi": 31,
+      "kind": "field",
+      "line": 244,
+      "lo": 31,
+      "mask": 1,
+      "shiftmask": 2147483648,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "31:31",
+      "width": 1
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_FORMAT_SIGNED": {
+      "kind": "value",
+      "line": 245,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_FORMAT_UNSIGNED": {
+      "kind": "value",
+      "line": 246,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_IADD": {
+      "kind": "value",
+      "line": 241,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000005",
+      "value": 5
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_IAND": {
+      "kind": "value",
+      "line": 239,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000003",
+      "value": 3
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_IMAX": {
+      "kind": "value",
+      "line": 237,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_IMIN": {
+      "kind": "value",
+      "line": 236,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_INC": {
+      "kind": "value",
+      "line": 242,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000006",
+      "value": 6
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_IOR": {
+      "kind": "value",
+      "line": 240,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000004",
+      "value": 4
+    },
+    "NVC56F_SEM_EXECUTE_REDUCTION_IXOR": {
+      "kind": "value",
+      "line": 238,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000002",
+      "value": 2
+    },
+    "NVC56F_SEM_EXECUTE_RELEASE_TIMESTAMP": {
+      "hi": 25,
+      "kind": "field",
+      "line": 232,
+      "lo": 25,
+      "mask": 1,
+      "shiftmask": 33554432,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "25:25",
+      "width": 1
+    },
+    "NVC56F_SEM_EXECUTE_RELEASE_TIMESTAMP_DIS": {
+      "kind": "value",
+      "line": 233,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_SEM_EXECUTE_RELEASE_TIMESTAMP_EN": {
+      "kind": "value",
+      "line": 234,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_SEM_EXECUTE_RELEASE_WFI": {
+      "hi": 20,
+      "kind": "field",
+      "line": 226,
+      "lo": 20,
+      "mask": 1,
+      "shiftmask": 1048576,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "20:20",
+      "width": 1
+    },
+    "NVC56F_SEM_EXECUTE_RELEASE_WFI_DIS": {
+      "kind": "value",
+      "line": 227,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_SEM_EXECUTE_RELEASE_WFI_EN": {
+      "kind": "value",
+      "line": 228,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_SEM_PAYLOAD_HI": {
+      "kind": "value",
+      "line": 212,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000068)",
+      "value": 104
+    },
+    "NVC56F_SEM_PAYLOAD_HI_PAYLOAD": {
+      "hi": 31,
+      "kind": "field",
+      "line": 213,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC56F_SEM_PAYLOAD_LO": {
+      "kind": "value",
+      "line": 210,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000064)",
+      "value": 100
+    },
+    "NVC56F_SEM_PAYLOAD_LO_PAYLOAD": {
+      "hi": 31,
+      "kind": "field",
+      "line": 211,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC56F_SET_OBJECT": {
+      "kind": "value",
+      "line": 68,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000000)",
+      "value": 0
+    },
+    "NVC56F_SET_OBJECT_ENGINE": {
+      "hi": 20,
+      "kind": "field",
+      "line": 70,
+      "lo": 16,
+      "mask": 31,
+      "shiftmask": 2031616,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "20:16",
+      "width": 5
+    },
+    "NVC56F_SET_OBJECT_ENGINE_SW": {
+      "kind": "value",
+      "line": 71,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x0000001f",
+      "value": 31
+    },
+    "NVC56F_SET_OBJECT_NVCLASS": {
+      "hi": 15,
+      "kind": "field",
+      "line": 69,
+      "lo": 0,
+      "mask": 65535,
+      "shiftmask": 65535,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "15:0",
+      "width": 16
+    },
+    "NVC56F_WFI": {
+      "kind": "value",
+      "line": 247,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "(0x00000078)",
+      "value": 120
+    },
+    "NVC56F_WFI_SCOPE": {
+      "hi": 0,
+      "kind": "field",
+      "line": 248,
+      "lo": 0,
+      "mask": 1,
+      "shiftmask": 1,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0:0",
+      "width": 1
+    },
+    "NVC56F_WFI_SCOPE_ALL": {
+      "kind": "value",
+      "line": 251,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC56F_WFI_SCOPE_CURRENT_SCG_TYPE": {
+      "kind": "value",
+      "line": 249,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC56F_WFI_SCOPE_CURRENT_VEID": {
+      "kind": "value",
+      "line": 250,
+      "source": "@HEADERS@/clc56f.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_CHECK_QMD_VERSION": {
+      "kind": "value",
+      "line": 393,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0290",
+      "value": 656
+    },
+    "NVC9C0_CHECK_QMD_VERSION_CURRENT": {
+      "hi": 15,
+      "kind": "field",
+      "line": 394,
+      "lo": 0,
+      "mask": 65535,
+      "shiftmask": 65535,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "15:0",
+      "width": 16
+    },
+    "NVC9C0_CHECK_QMD_VERSION_OLDEST_SUPPORTED": {
+      "hi": 31,
+      "kind": "field",
+      "line": 395,
+      "lo": 16,
+      "mask": 65535,
+      "shiftmask": 4294901760,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:16",
+      "width": 16
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES": {
+      "kind": "value",
+      "line": 299,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x021c",
+      "value": 540
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_CONSTANT": {
+      "hi": 12,
+      "kind": "field",
+      "line": 306,
+      "lo": 12,
+      "mask": 1,
+      "shiftmask": 4096,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "12:12",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_CONSTANT_FALSE": {
+      "kind": "value",
+      "line": 307,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_CONSTANT_TRUE": {
+      "kind": "value",
+      "line": 308,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_DATA": {
+      "hi": 4,
+      "kind": "field",
+      "line": 303,
+      "lo": 4,
+      "mask": 1,
+      "shiftmask": 16,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "4:4",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_DATA_FALSE": {
+      "kind": "value",
+      "line": 304,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_DATA_TRUE": {
+      "kind": "value",
+      "line": 305,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_FLUSH_DATA": {
+      "hi": 2,
+      "kind": "field",
+      "line": 312,
+      "lo": 2,
+      "mask": 1,
+      "shiftmask": 4,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "2:2",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_FLUSH_DATA_FALSE": {
+      "kind": "value",
+      "line": 313,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_FLUSH_DATA_TRUE": {
+      "kind": "value",
+      "line": 314,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_INSTRUCTION": {
+      "hi": 0,
+      "kind": "field",
+      "line": 300,
+      "lo": 0,
+      "mask": 1,
+      "shiftmask": 1,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0:0",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_INSTRUCTION_FALSE": {
+      "kind": "value",
+      "line": 301,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_INSTRUCTION_TRUE": {
+      "kind": "value",
+      "line": 302,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_LOCKS": {
+      "hi": 1,
+      "kind": "field",
+      "line": 309,
+      "lo": 1,
+      "mask": 1,
+      "shiftmask": 2,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "1:1",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_LOCKS_FALSE": {
+      "kind": "value",
+      "line": 310,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_LOCKS_TRUE": {
+      "kind": "value",
+      "line": 311,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI": {
+      "kind": "value",
+      "line": 700,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x1698",
+      "value": 5784
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_CONSTANT": {
+      "hi": 12,
+      "kind": "field",
+      "line": 707,
+      "lo": 12,
+      "mask": 1,
+      "shiftmask": 4096,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "12:12",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_CONSTANT_FALSE": {
+      "kind": "value",
+      "line": 708,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_CONSTANT_TRUE": {
+      "kind": "value",
+      "line": 709,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_GLOBAL_DATA": {
+      "hi": 4,
+      "kind": "field",
+      "line": 704,
+      "lo": 4,
+      "mask": 1,
+      "shiftmask": 16,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "4:4",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_GLOBAL_DATA_FALSE": {
+      "kind": "value",
+      "line": 705,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_GLOBAL_DATA_TRUE": {
+      "kind": "value",
+      "line": 706,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_INSTRUCTION": {
+      "hi": 0,
+      "kind": "field",
+      "line": 701,
+      "lo": 0,
+      "mask": 1,
+      "shiftmask": 1,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0:0",
+      "width": 1
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_INSTRUCTION_FALSE": {
+      "kind": "value",
+      "line": 702,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_INVALIDATE_SHADER_CACHES_NO_WFI_INSTRUCTION_TRUE": {
+      "kind": "value",
+      "line": 703,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_INVALIDATE_SKED_CACHES": {
+      "kind": "value",
+      "line": 397,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0298",
+      "value": 664
+    },
+    "NVC9C0_INVALIDATE_SKED_CACHES_V": {
+      "hi": 0,
+      "kind": "field",
+      "line": 398,
+      "lo": 0,
+      "mask": 1,
+      "shiftmask": 1,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0:0",
+      "width": 1
+    },
+    "NVC9C0_SEND_PCAS_A": {
+      "kind": "value",
+      "line": 441,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x02b4",
+      "value": 692
+    },
+    "NVC9C0_SEND_PCAS_A_QMD_ADDRESS_SHIFTED8": {
+      "hi": 31,
+      "kind": "field",
+      "line": 442,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC9C0_SEND_PCAS_B": {
+      "kind": "value",
+      "line": 444,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x02b8",
+      "value": 696
+    },
+    "NVC9C0_SEND_PCAS_B_DELTA": {
+      "hi": 31,
+      "kind": "field",
+      "line": 446,
+      "lo": 24,
+      "mask": 255,
+      "shiftmask": 4278190080,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:24",
+      "width": 8
+    },
+    "NVC9C0_SEND_PCAS_B_FROM": {
+      "hi": 23,
+      "kind": "field",
+      "line": 445,
+      "lo": 0,
+      "mask": 16777215,
+      "shiftmask": 16777215,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "23:0",
+      "width": 24
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B": {
+      "kind": "value",
+      "line": 456,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x02c0",
+      "value": 704
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_OFFSET_MINUS_ONE": {
+      "hi": 23,
+      "kind": "field",
+      "line": 471,
+      "lo": 14,
+      "mask": 1023,
+      "shiftmask": 16760832,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "23:14",
+      "width": 10
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION": {
+      "hi": 3,
+      "kind": "field",
+      "line": 457,
+      "lo": 0,
+      "mask": 15,
+      "shiftmask": 15,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "3:0",
+      "width": 4
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_DECREMENT_DEPENDENCE": {
+      "kind": "value",
+      "line": 463,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000007",
+      "value": 7
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_INCREMENT_CWD_REF_COUNTER": {
+      "kind": "value",
+      "line": 469,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0000000D",
+      "value": 13
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_INCREMENT_DEPENDENCE": {
+      "kind": "value",
+      "line": 468,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0000000C",
+      "value": 12
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_INCREMENT_PUT": {
+      "kind": "value",
+      "line": 462,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000006",
+      "value": 6
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_INVALIDATE": {
+      "kind": "value",
+      "line": 459,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_INVALIDATE_COPY_SCHEDULE": {
+      "kind": "value",
+      "line": 461,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000003",
+      "value": 3
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_INVALIDATE_PREFETCH_COPY_FORCE_REQUIRE_SCHEDULING": {
+      "kind": "value",
+      "line": 467,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0000000B",
+      "value": 11
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_INVALIDATE_PREFETCH_COPY_SCHEDULE": {
+      "kind": "value",
+      "line": 466,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0000000A",
+      "value": 10
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_NOP": {
+      "kind": "value",
+      "line": 458,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_PREFETCH": {
+      "kind": "value",
+      "line": 464,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000008",
+      "value": 8
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_PREFETCH_SCHEDULE": {
+      "kind": "value",
+      "line": 465,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000009",
+      "value": 9
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_PCAS_ACTION_SCHEDULE": {
+      "kind": "value",
+      "line": 460,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000002",
+      "value": 2
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS2_B_SELECT": {
+      "hi": 13,
+      "kind": "field",
+      "line": 470,
+      "lo": 8,
+      "mask": 63,
+      "shiftmask": 16128,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "13:8",
+      "width": 6
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS_B": {
+      "kind": "value",
+      "line": 448,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x02bc",
+      "value": 700
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS_B_INVALIDATE": {
+      "hi": 0,
+      "kind": "field",
+      "line": 449,
+      "lo": 0,
+      "mask": 1,
+      "shiftmask": 1,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0:0",
+      "width": 1
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS_B_INVALIDATE_FALSE": {
+      "kind": "value",
+      "line": 450,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS_B_INVALIDATE_TRUE": {
+      "kind": "value",
+      "line": 451,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS_B_SCHEDULE": {
+      "hi": 1,
+      "kind": "field",
+      "line": 452,
+      "lo": 1,
+      "mask": 1,
+      "shiftmask": 2,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "1:1",
+      "width": 1
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS_B_SCHEDULE_FALSE": {
+      "kind": "value",
+      "line": 453,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SEND_SIGNALING_PCAS_B_SCHEDULE_TRUE": {
+      "kind": "value",
+      "line": 454,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_QMD_VERSION": {
+      "kind": "value",
+      "line": 389,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0288",
+      "value": 648
+    },
+    "NVC9C0_SET_QMD_VERSION_CURRENT": {
+      "hi": 15,
+      "kind": "field",
+      "line": 390,
+      "lo": 0,
+      "mask": 65535,
+      "shiftmask": 65535,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "15:0",
+      "width": 16
+    },
+    "NVC9C0_SET_QMD_VERSION_OLDEST_SUPPORTED": {
+      "hi": 31,
+      "kind": "field",
+      "line": 391,
+      "lo": 16,
+      "mask": 65535,
+      "shiftmask": 4294901760,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:16",
+      "width": 16
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_A": {
+      "kind": "value",
+      "line": 732,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x1b00",
+      "value": 6912
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_A_OFFSET_UPPER": {
+      "hi": 7,
+      "kind": "field",
+      "line": 733,
+      "lo": 0,
+      "mask": 255,
+      "shiftmask": 255,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "7:0",
+      "width": 8
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_B": {
+      "kind": "value",
+      "line": 735,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x1b04",
+      "value": 6916
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_B_OFFSET_LOWER": {
+      "hi": 31,
+      "kind": "field",
+      "line": 736,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_C": {
+      "kind": "value",
+      "line": 738,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x1b08",
+      "value": 6920
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_C_PAYLOAD": {
+      "hi": 31,
+      "kind": "field",
+      "line": 739,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D": {
+      "kind": "value",
+      "line": 741,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x1b0c",
+      "value": 6924
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_AWAKEN_ENABLE": {
+      "hi": 20,
+      "kind": "field",
+      "line": 745,
+      "lo": 20,
+      "mask": 1,
+      "shiftmask": 1048576,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "20:20",
+      "width": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_AWAKEN_ENABLE_FALSE": {
+      "kind": "value",
+      "line": 746,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_AWAKEN_ENABLE_TRUE": {
+      "kind": "value",
+      "line": 747,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_CONDITIONAL_TRAP": {
+      "hi": 19,
+      "kind": "field",
+      "line": 769,
+      "lo": 19,
+      "mask": 1,
+      "shiftmask": 524288,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "19:19",
+      "width": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_CONDITIONAL_TRAP_FALSE": {
+      "kind": "value",
+      "line": 770,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_CONDITIONAL_TRAP_TRUE": {
+      "kind": "value",
+      "line": 771,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_FLUSH_DISABLE": {
+      "hi": 2,
+      "kind": "field",
+      "line": 751,
+      "lo": 2,
+      "mask": 1,
+      "shiftmask": 4,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "2:2",
+      "width": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_FLUSH_DISABLE_FALSE": {
+      "kind": "value",
+      "line": 752,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_FLUSH_DISABLE_TRUE": {
+      "kind": "value",
+      "line": 753,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_OPERATION": {
+      "hi": 1,
+      "kind": "field",
+      "line": 742,
+      "lo": 0,
+      "mask": 3,
+      "shiftmask": 3,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "1:0",
+      "width": 2
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_OPERATION_RELEASE": {
+      "kind": "value",
+      "line": 743,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_OPERATION_TRAP": {
+      "kind": "value",
+      "line": 744,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000003",
+      "value": 3
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_ENABLE": {
+      "hi": 3,
+      "kind": "field",
+      "line": 754,
+      "lo": 3,
+      "mask": 1,
+      "shiftmask": 8,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "3:3",
+      "width": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_ENABLE_FALSE": {
+      "kind": "value",
+      "line": 755,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_ENABLE_TRUE": {
+      "kind": "value",
+      "line": 756,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_FORMAT": {
+      "hi": 18,
+      "kind": "field",
+      "line": 766,
+      "lo": 17,
+      "mask": 3,
+      "shiftmask": 393216,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "18:17",
+      "width": 2
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_FORMAT_SIGNED_32": {
+      "kind": "value",
+      "line": 768,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_FORMAT_UNSIGNED_32": {
+      "kind": "value",
+      "line": 767,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP": {
+      "hi": 11,
+      "kind": "field",
+      "line": 757,
+      "lo": 9,
+      "mask": 7,
+      "shiftmask": 3584,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "11:9",
+      "width": 3
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_ADD": {
+      "kind": "value",
+      "line": 758,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_AND": {
+      "kind": "value",
+      "line": 763,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000005",
+      "value": 5
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_DEC": {
+      "kind": "value",
+      "line": 762,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000004",
+      "value": 4
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_INC": {
+      "kind": "value",
+      "line": 761,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000003",
+      "value": 3
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_MAX": {
+      "kind": "value",
+      "line": 760,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000002",
+      "value": 2
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_MIN": {
+      "kind": "value",
+      "line": 759,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_OR": {
+      "kind": "value",
+      "line": 764,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000006",
+      "value": 6
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_REDUCTION_OP_RED_XOR": {
+      "kind": "value",
+      "line": 765,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000007",
+      "value": 7
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_STRUCTURE_SIZE": {
+      "hi": 28,
+      "kind": "field",
+      "line": 748,
+      "lo": 28,
+      "mask": 1,
+      "shiftmask": 268435456,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "28:28",
+      "width": 1
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_STRUCTURE_SIZE_FOUR_WORDS": {
+      "kind": "value",
+      "line": 749,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000000",
+      "value": 0
+    },
+    "NVC9C0_SET_REPORT_SEMAPHORE_D_STRUCTURE_SIZE_ONE_WORD": {
+      "kind": "value",
+      "line": 750,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x00000001",
+      "value": 1
+    },
+    "NVC9C0_SET_SHADER_LOCAL_MEMORY_WINDOW_A": {
+      "kind": "value",
+      "line": 603,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x07b0",
+      "value": 1968
+    },
+    "NVC9C0_SET_SHADER_LOCAL_MEMORY_WINDOW_A_BASE_ADDRESS_UPPER": {
+      "hi": 16,
+      "kind": "field",
+      "line": 604,
+      "lo": 0,
+      "mask": 131071,
+      "shiftmask": 131071,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "16:0",
+      "width": 17
+    },
+    "NVC9C0_SET_SHADER_LOCAL_MEMORY_WINDOW_B": {
+      "kind": "value",
+      "line": 606,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x07b4",
+      "value": 1972
+    },
+    "NVC9C0_SET_SHADER_LOCAL_MEMORY_WINDOW_B_BASE_ADDRESS": {
+      "hi": 31,
+      "kind": "field",
+      "line": 607,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC9C0_SET_SHADER_SHARED_MEMORY_WINDOW_A": {
+      "kind": "value",
+      "line": 424,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x02a0",
+      "value": 672
+    },
+    "NVC9C0_SET_SHADER_SHARED_MEMORY_WINDOW_A_BASE_ADDRESS_UPPER": {
+      "hi": 16,
+      "kind": "field",
+      "line": 425,
+      "lo": 0,
+      "mask": 131071,
+      "shiftmask": 131071,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "16:0",
+      "width": 17
+    },
+    "NVC9C0_SET_SHADER_SHARED_MEMORY_WINDOW_B": {
+      "kind": "value",
+      "line": 427,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x02a4",
+      "value": 676
+    },
+    "NVC9C0_SET_SHADER_SHARED_MEMORY_WINDOW_B_BASE_ADDRESS": {
+      "hi": 31,
+      "kind": "field",
+      "line": 428,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:0",
+      "width": 32
+    },
+    "NVC9C0_WAIT_FOR_IDLE": {
+      "kind": "value",
+      "line": 52,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "0x0110",
+      "value": 272
+    },
+    "NVC9C0_WAIT_FOR_IDLE_V": {
+      "hi": 31,
+      "kind": "field",
+      "line": 53,
+      "lo": 0,
+      "mask": 4294967295,
+      "shiftmask": 4294967295,
+      "source": "@HEADERS@/clc9c0.h",
+      "spelling": "31:0",
+      "width": 32
+    }
+  },
+  "scope": "DECLARATIONS_ONLY_NOT_PUSH_ADMISSION",
+  "sources": [
+    {
+      "mode": 420,
+      "path": "@HEADERS@/clc56f.h",
+      "roots": [
+        "NVC56F_DMA_INCR",
+        "NVC56F_SET_OBJECT",
+        "NVC56F_SEM_ADDR_LO",
+        "NVC56F_SEM_ADDR_HI",
+        "NVC56F_SEM_PAYLOAD_LO",
+        "NVC56F_SEM_PAYLOAD_HI",
+        "NVC56F_SEM_EXECUTE",
+        "NVC56F_WFI"
+      ],
+      "sha256": "8b7a6d6d5d5e3538f2f3e3b975d00c4aa94bd2480008c49aefcfc2566e3f658e",
+      "size": 25985
+    },
+    {
+      "mode": 436,
+      "path": "@HEADERS@/clc9c0.h",
+      "roots": [
+        "NVC9C0_SET_SHADER_SHARED_MEMORY_WINDOW_A",
+        "NVC9C0_SET_SHADER_SHARED_MEMORY_WINDOW_B",
+        "NVC9C0_SET_SHADER_LOCAL_MEMORY_WINDOW_A",
+        "NVC9C0_SET_SHADER_LOCAL_MEMORY_WINDOW_B",
+        "NVC9C0_WAIT_FOR_IDLE",
+        "NVC9C0_INVALIDATE_SHADER_CACHES",
+        "NVC9C0_SET_QMD_VERSION",
+        "NVC9C0_CHECK_QMD_VERSION",
+        "NVC9C0_INVALIDATE_SKED_CACHES",
+        "NVC9C0_SEND_PCAS_A",
+        "NVC9C0_SEND_PCAS_B",
+        "NVC9C0_SEND_SIGNALING_PCAS_B",
+        "NVC9C0_SEND_SIGNALING_PCAS2_B",
+        "NVC9C0_SET_REPORT_SEMAPHORE_A",
+        "NVC9C0_SET_REPORT_SEMAPHORE_B",
+        "NVC9C0_SET_REPORT_SEMAPHORE_C",
+        "NVC9C0_SET_REPORT_SEMAPHORE_D"
+      ],
+      "sha256": "e15e4d37ad68439acc1985febf8f42fd1840067072112f85d6741a4171c4007f",
+      "size": 74146
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+--- a/src/gallium/meson.build
++++ b/src/gallium/meson.build
+@@ -255,3 +255,87 @@
+   subdir('frontends/torx')
+   subdir('targets/torx')
+ endif
++
++# Private layout integration; all five historical target groups remain enabled.
++ndx12_fs = import('fs')
++foreach option_name : ['package_root', 'sdk_root', 'converter_source', 'converter_build', 'probe_root']
++  value = get_option('ndx12_' + option_name)
++  if not value.startswith('/') or not ndx12_fs.is_dir(value)
++    error('NDX12_ROOT_REQUIRED:' + option_name)
++  endif
++endforeach
++ndx12_root = get_option('ndx12_package_root')
++ndx12_sdk = get_option('ndx12_sdk_root')
++ndx12_dxil = get_option('ndx12_converter_source')
++ndx12_lib = get_option('ndx12_converter_build')
++ndx12_probes = get_option('ndx12_probe_root')
++foreach required_file : [ndx12_root / 'include/ndx12.h',
++  ndx12_root / 'src/frontend/runtime.cpp', ndx12_root / 'src/frontend/vtables.inc',
++  ndx12_root / 'backends/intel/backend.c', ndx12_root / 'backends/intel/backend.h',
++  ndx12_root / 'tests/intel/compute.cpp', ndx12_root / 'tests/intel/triangle.cpp',
++  ndx12_root / 'tests/intel/textured_quad.cpp', ndx12_root / 'tests/intel/indexed_depth.cpp',
++  ndx12_sdk / 'directx/d3d12.h', ndx12_sdk / 'wsl/winadapter.h',
++  ndx12_dxil / 'dxil_spirv_c.h', ndx12_lib / 'libdxil-spirv-c-shared.so',
++  ndx12_probes / 'gallium_probe.c', ndx12_probes / 'gallium_semantics.c']
++  if not ndx12_fs.is_file(required_file)
++    error('NDX12_INPUT_MISSING:' + required_file)
++  endif
++endforeach
++
++executable(
++  'ndx12-gallium-probe',
++  ndx12_probes / 'gallium_probe.c',
++  ndx12_probes / 'gallium_semantics.c',
++  'targets/rusticl/rusticl_target.c',
++  include_directories : [inc_include, inc_src, inc_gallium, inc_gallium_aux,
++                         inc_gallium_drivers, inc_gallium_winsys],
++  link_with : [libgallium, libgalliumvl_stub, libpipe_loader_static, libswdri,
++               libswkmsdri, libwsw, libws_null],
++  dependencies : [driver_iris, idep_nir, idep_vtn, idep_mesautil, dep_libdrm],
++  install : false,
++)
++
++
++ndx12_public = include_directories(ndx12_root / 'include',
++  ndx12_sdk, ndx12_sdk / 'wsl/stubs')
++ndx12_converter = cpp.find_library('dxil-spirv-c-shared', dirs : [ndx12_lib], required : true)
++ndx12_runtime = shared_library('ndx12-experimental',
++  ndx12_root / 'src/frontend/runtime.cpp', ndx12_root / 'backends/intel/backend.c',
++  'targets/rusticl/rusticl_target.c',
++  include_directories : [ndx12_public, include_directories(ndx12_root / 'backends/intel', ndx12_dxil),
++    inc_include, inc_src, inc_gallium, inc_gallium_aux,
++    inc_gallium_drivers, inc_gallium_winsys],
++  link_with : [libgallium, libgalliumvl_stub, libpipe_loader_static, libswdri,
++               libswkmsdri, libwsw, libws_null],
++  dependencies : [driver_iris, idep_nir, idep_vtn, idep_mesautil, dep_libdrm,
++                  dependency('SPIRV-Tools')],
++  link_args : [ndx12_lib / 'libdxil-spirv-c-shared.so'],
++  gnu_symbol_visibility : 'default',
++  cpp_args : ['-fexceptions'],
++  build_rpath : '$ORIGIN',
++  install : false,
++)
++executable('ndx12-m1', ndx12_root / 'tests/intel/compute.cpp',
++  include_directories : ndx12_public,
++  cpp_args : ['-fexceptions'],
++  link_with : ndx12_runtime,
++  install : false,
++)
++executable('ndx12-m3', ndx12_root / 'tests/intel/triangle.cpp',
++  include_directories : ndx12_public,
++  cpp_args : ['-fexceptions'],
++  link_with : ndx12_runtime,
++  install : false,
++)
++executable('ndx12-m3-texture', ndx12_root / 'tests/intel/textured_quad.cpp',
++  include_directories : ndx12_public,
++  cpp_args : ['-fexceptions'],
++  link_with : ndx12_runtime,
++  install : false,
++)
++executable('ndx12-m3-depth', ndx12_root / 'tests/intel/indexed_depth.cpp',
++  include_directories : ndx12_public,
++  cpp_args : ['-fexceptions'],
++  link_with : ndx12_runtime,
++  install : false,
++)
+--- a/meson.options
++++ b/meson.options
+@@ -923,3 +923,9 @@
+   value : true,
+   description : 'Build panfrost disassemblers. Explicitly setting this option to false will cause the panfrost stack to build without disassemblers. This should be left enabled for distro builds.'
+ )
++
++option('ndx12_package_root', type : 'string', value : '', description : 'Explicit absolute Native DX12 package root')
++option('ndx12_sdk_root', type : 'string', value : '', description : 'Explicit absolute DirectX-Headers include root')
++option('ndx12_converter_source', type : 'string', value : '', description : 'Explicit absolute dxil-spirv source root')
++option('ndx12_converter_build', type : 'string', value : '', description : 'Explicit absolute dxil-spirv library directory')
++option('ndx12_probe_root', type : 'string', value : '', description : 'Explicit absolute private Gallium probe sources')

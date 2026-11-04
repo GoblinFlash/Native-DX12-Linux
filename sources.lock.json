@@ -1,0 +1,830 @@
+{
+  "files": [
+    {
+      "bytes": 35149,
+      "path": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "bytes": 88231,
+      "path": "NOTICE",
+      "sha256": "628287074ae0d429ebe8eaf4c4a41668fb87cf7cfdc22381db0290ef06752e7c"
+    },
+    {
+      "bytes": 9071,
+      "path": "README.md",
+      "sha256": "79e2b5b36a97994f6a2bef579fa369334ecfab27ff3d1609b12a49a2cda9ceed"
+    },
+    {
+      "bytes": 6750,
+      "path": "backends/amd/backend_radeonsi.c",
+      "sha256": "49e62f3932e8ceae56e7f69218226d9f8c9794203dc487ad427488cdd2a152a7"
+    },
+    {
+      "bytes": 2205,
+      "path": "backends/amd/backend_radeonsi.h",
+      "sha256": "d8ea47ca7340cd13f5f2244dcef61ec346606b5bfe61adbce484ca67ed529d62"
+    },
+    {
+      "bytes": 3721,
+      "path": "backends/amd/cpu_inspect.c",
+      "sha256": "91fd68117a216e77a8c376d3f7592b267798b71d86d252a7b759e28d7ce56309"
+    },
+    {
+      "bytes": 316,
+      "path": "backends/amd/cpu_inspect.h",
+      "sha256": "90fb479f14ded01203925904a493b4592f5d04d6a4eef207957ece915b6a4d2a"
+    },
+    {
+      "bytes": 47356,
+      "path": "backends/intel/backend.c",
+      "sha256": "09279c4fd64f9c92f7d52b449a3be12aadc1aee70d8a22c38fd73b095b34ae56"
+    },
+    {
+      "bytes": 3372,
+      "path": "backends/intel/backend.h",
+      "sha256": "bf050eac524c79997c56f3025b6a41095214e7ce66fee34a2d094b0163b1aa38"
+    },
+    {
+      "bytes": 49874,
+      "path": "backends/nvidia/abi/abi.json",
+      "sha256": "0fa893036bc32828bd96bb29659ea57caecd879a67160686eff53de610b21a07"
+    },
+    {
+      "bytes": 13576,
+      "path": "backends/nvidia/compiler/affine/dxil_shared/compile.c",
+      "sha256": "0482c66709a7418b025162a56810f8e4dd86f24251147db23e578e71f54c1564"
+    },
+    {
+      "bytes": 931,
+      "path": "backends/nvidia/compiler/affine/dxil_shared/program.h",
+      "sha256": "82fb8a8efa29adf2b68f72288b321c299c21730219ab46d1bceb08d5b0a2b596"
+    },
+    {
+      "bytes": 18793,
+      "path": "backends/nvidia/compiler/affine/dxil_shared/reader.cpp",
+      "sha256": "522eead817edbe8bc01fded7bd2d7385eb0fc74f691d422c9603ff036822ca33"
+    },
+    {
+      "bytes": 27449,
+      "path": "backends/nvidia/compiler/affine/nvidia_batch_compile.c",
+      "sha256": "745ab74355e18d199124415659cb040330ee5e8c43b94037cd67eb8817d644a9"
+    },
+    {
+      "bytes": 5388,
+      "path": "backends/nvidia/compiler/affine/nvidia_shared_lowering.h",
+      "sha256": "38410a6cf075673dd4a92b484dac937d8a23f388604757d814da6c5034e7bda7"
+    },
+    {
+      "bytes": 7929,
+      "path": "backends/nvidia/compiler/parallel_sort/base/nir_shared_range.h",
+      "sha256": "95194dcd90ca9ebee80ac8fe9cc368ad116bcf1627e4c0902c919cc1d7680047"
+    },
+    {
+      "bytes": 29357,
+      "path": "backends/nvidia/compiler/parallel_sort/base/nvidia_batch_compile.c",
+      "sha256": "7675310fef087f8b185ebb1bc36e7f228a1adea929a88ec36122c405dd9f20b6"
+    },
+    {
+      "bytes": 6775,
+      "path": "backends/nvidia/compiler/parallel_sort/base/nvidia_shared_lowering.h",
+      "sha256": "fb145a61d6a01c7b7e371114d69f69a3e49c66e22c5844316d40e7a1b3c66cbd"
+    },
+    {
+      "bytes": 6012,
+      "path": "backends/nvidia/compiler/parallel_sort/count/ffx_uniform_cf.h",
+      "sha256": "3dcd66c8c5cabe8ce063c5f670906ead5e56aa3571a4096f2e80d29c670aef28"
+    },
+    {
+      "bytes": 7929,
+      "path": "backends/nvidia/compiler/parallel_sort/count/nir_shared_range.h",
+      "sha256": "95194dcd90ca9ebee80ac8fe9cc368ad116bcf1627e4c0902c919cc1d7680047"
+    },
+    {
+      "bytes": 29704,
+      "path": "backends/nvidia/compiler/parallel_sort/count/nvidia_batch_compile.c",
+      "sha256": "c949f0043639ca2acc0064b25cfd8341f3044d1b5a97b5373d5b0484c7996932"
+    },
+    {
+      "bytes": 6775,
+      "path": "backends/nvidia/compiler/parallel_sort/count/nvidia_shared_lowering.h",
+      "sha256": "fb145a61d6a01c7b7e371114d69f69a3e49c66e22c5844316d40e7a1b3c66cbd"
+    },
+    {
+      "bytes": 6012,
+      "path": "backends/nvidia/compiler/parallel_sort/reduce/ffx_uniform_cf.h",
+      "sha256": "3dcd66c8c5cabe8ce063c5f670906ead5e56aa3571a4096f2e80d29c670aef28"
+    },
+    {
+      "bytes": 7929,
+      "path": "backends/nvidia/compiler/parallel_sort/reduce/nir_shared_range.h",
+      "sha256": "95194dcd90ca9ebee80ac8fe9cc368ad116bcf1627e4c0902c919cc1d7680047"
+    },
+    {
+      "bytes": 30895,
+      "path": "backends/nvidia/compiler/parallel_sort/reduce/nvidia_batch_compile.c",
+      "sha256": "741477e5a473acf671734e70702657f42339a70f62b39594c11bec5b1e103f48"
+    },
+    {
+      "bytes": 6775,
+      "path": "backends/nvidia/compiler/parallel_sort/reduce/nvidia_shared_lowering.h",
+      "sha256": "fb145a61d6a01c7b7e371114d69f69a3e49c66e22c5844316d40e7a1b3c66cbd"
+    },
+    {
+      "bytes": 6012,
+      "path": "backends/nvidia/compiler/parallel_sort/scan/ffx_uniform_cf.h",
+      "sha256": "3dcd66c8c5cabe8ce063c5f670906ead5e56aa3571a4096f2e80d29c670aef28"
+    },
+    {
+      "bytes": 7929,
+      "path": "backends/nvidia/compiler/parallel_sort/scan/nir_shared_range.h",
+      "sha256": "95194dcd90ca9ebee80ac8fe9cc368ad116bcf1627e4c0902c919cc1d7680047"
+    },
+    {
+      "bytes": 30871,
+      "path": "backends/nvidia/compiler/parallel_sort/scan/nvidia_batch_compile.c",
+      "sha256": "dfb7f4574879652a7dee6b596294452da4a96669034f5b9dbebe5a98e048539f"
+    },
+    {
+      "bytes": 6775,
+      "path": "backends/nvidia/compiler/parallel_sort/scan/nvidia_shared_lowering.h",
+      "sha256": "fb145a61d6a01c7b7e371114d69f69a3e49c66e22c5844316d40e7a1b3c66cbd"
+    },
+    {
+      "bytes": 6012,
+      "path": "backends/nvidia/compiler/parallel_sort/scanadd/ffx_uniform_cf.h",
+      "sha256": "3dcd66c8c5cabe8ce063c5f670906ead5e56aa3571a4096f2e80d29c670aef28"
+    },
+    {
+      "bytes": 7929,
+      "path": "backends/nvidia/compiler/parallel_sort/scanadd/nir_shared_range.h",
+      "sha256": "95194dcd90ca9ebee80ac8fe9cc368ad116bcf1627e4c0902c919cc1d7680047"
+    },
+    {
+      "bytes": 30896,
+      "path": "backends/nvidia/compiler/parallel_sort/scanadd/nvidia_batch_compile.c",
+      "sha256": "0bb614e840edcade3eba3f79dae330aab966769737821f8100692d98fe09f9e3"
+    },
+    {
+      "bytes": 6775,
+      "path": "backends/nvidia/compiler/parallel_sort/scanadd/nvidia_shared_lowering.h",
+      "sha256": "fb145a61d6a01c7b7e371114d69f69a3e49c66e22c5844316d40e7a1b3c66cbd"
+    },
+    {
+      "bytes": 6012,
+      "path": "backends/nvidia/compiler/parallel_sort/scatter/ffx_uniform_cf.h",
+      "sha256": "3dcd66c8c5cabe8ce063c5f670906ead5e56aa3571a4096f2e80d29c670aef28"
+    },
+    {
+      "bytes": 7929,
+      "path": "backends/nvidia/compiler/parallel_sort/scatter/nir_shared_range.h",
+      "sha256": "95194dcd90ca9ebee80ac8fe9cc368ad116bcf1627e4c0902c919cc1d7680047"
+    },
+    {
+      "bytes": 31101,
+      "path": "backends/nvidia/compiler/parallel_sort/scatter/nvidia_batch_compile.c",
+      "sha256": "a86213eed164fe75bda03fdbd048849d69d3e460477f461fed649cdaa02ed3f2"
+    },
+    {
+      "bytes": 6775,
+      "path": "backends/nvidia/compiler/parallel_sort/scatter/nvidia_shared_lowering.h",
+      "sha256": "fb145a61d6a01c7b7e371114d69f69a3e49c66e22c5844316d40e7a1b3c66cbd"
+    },
+    {
+      "bytes": 884,
+      "path": "backends/nvidia/data/affine_programs.json",
+      "sha256": "5c2997afec92e1ed32864f9d171868c4b459b99242f566a5c98ba7bb22183113"
+    },
+    {
+      "bytes": 2960,
+      "path": "backends/nvidia/data/mapping_flags.json",
+      "sha256": "04e8515b8891eba7f0d2653293152096f3a751945c667832bc49029251e2fe92"
+    },
+    {
+      "bytes": 12425,
+      "path": "backends/nvidia/data/packet_inputs.json",
+      "sha256": "09817cc0a8cea40923397ad5a1212a87be8f92164c5f18c8a8b4d24781f5dfb4"
+    },
+    {
+      "bytes": 21108,
+      "path": "backends/nvidia/data/parallel_sort_programs.json",
+      "sha256": "a5c59e3e363ea28d1cb731de4a3dd812d9d2be97de635d3d02e11993b660eb3d"
+    },
+    {
+      "bytes": 3039,
+      "path": "backends/nvidia/data/push_extra_fields.json",
+      "sha256": "867633c5b8379532bd93fff9df18adf411721f683286c5f866a5fddb135aec50"
+    },
+    {
+      "bytes": 36063,
+      "path": "backends/nvidia/data/push_fields.json",
+      "sha256": "071116eb27a592785e0831c4265b94e31234cdee815d47908a6f54b0ff1a5aeb"
+    },
+    {
+      "bytes": 7166,
+      "path": "backends/nvidia/data/qmd_fields.json",
+      "sha256": "261962da14a77982c0ebf13ddc1b033ff486e0659e5af0bc2524603799fa954b"
+    },
+    {
+      "bytes": 18325,
+      "path": "backends/nvidia/data/runtime_inputs.json",
+      "sha256": "ae42ff8ed5d45d52e8cb82af81a18ae5127e7b5479d5d51be4f1cc66dfecad35"
+    },
+    {
+      "bytes": 2045,
+      "path": "backends/nvidia/data/shader_info_abi.json",
+      "sha256": "1037557f3650fd506069a8000cae44effa7c80ce9acb1b55de8e4e3574ea7687"
+    },
+    {
+      "bytes": 1708,
+      "path": "backends/nvidia/native_words.c",
+      "sha256": "f968fdb76d5db5f6fb2a02513f2285b85a809043b321f75424ad880ac9b9c6a6"
+    },
+    {
+      "bytes": 971,
+      "path": "backends/nvidia/native_words.h",
+      "sha256": "030d1ff511e81b397207170df03203e6054372adbba11a6d2172fe00cc57c7a1"
+    },
+    {
+      "bytes": 10894,
+      "path": "backends/nvidia/reference/parallel_sort.py",
+      "sha256": "4efff6756e877af83034baf228c6fb59f35a5ec1724fc5c772d12a26a3c05f81"
+    },
+    {
+      "bytes": 2440,
+      "path": "backends/nvidia/runtime/affine_data.py",
+      "sha256": "107b97a7d11bde37bf617276a593a37cb4e6ddc955977b6c96f5bbe97a7ffc46"
+    },
+    {
+      "bytes": 12906,
+      "path": "backends/nvidia/runtime/affine_images.py",
+      "sha256": "39c7610d7ebc5155b15dda2113b93376935016f20bfc899514c13226e691310c"
+    },
+    {
+      "bytes": 1294,
+      "path": "backends/nvidia/runtime/affine_reference.py",
+      "sha256": "282524a7c70a568293450012278584230121a1f1cfaf5f98823d80bc56ed50e0"
+    },
+    {
+      "bytes": 6869,
+      "path": "backends/nvidia/runtime/bootstrap_identity.py",
+      "sha256": "04be17b5a10a4318a2e387218e803729cfb671c0a79bb48d70247cba0cd5219f"
+    },
+    {
+      "bytes": 5393,
+      "path": "backends/nvidia/runtime/cb0_images.py",
+      "sha256": "82911035cf4d37ee54f3014693f29f65129508ccdad4c2b66a33bdfc9e00f228"
+    },
+    {
+      "bytes": 11641,
+      "path": "backends/nvidia/runtime/channel_images.py",
+      "sha256": "279e1b018513d8ac124cc90b3b15da374a43bc40ee199882aa0f5eeaf57fa36d"
+    },
+    {
+      "bytes": 14210,
+      "path": "backends/nvidia/runtime/channel_objects.py",
+      "sha256": "09d8c1e1f9c84267307f4f019f53aaae5b30c8594eb2f1b4480a8cd16b3e27e5"
+    },
+    {
+      "bytes": 8094,
+      "path": "backends/nvidia/runtime/channel_resources.py",
+      "sha256": "e476dc535e0eb47e9a8fecf8c3ba3800a8dd9db932767f80f064deae0b5a8078"
+    },
+    {
+      "bytes": 4163,
+      "path": "backends/nvidia/runtime/control_images.py",
+      "sha256": "497467e1172ccd50962c74634d4f5d26df84866995e0fb69499c62a1c6dcec4b"
+    },
+    {
+      "bytes": 5773,
+      "path": "backends/nvidia/runtime/control_layout.py",
+      "sha256": "aa1aa5388126e776d54dca93df6621432cbf8ce061e60ff7e476bf272cd0399b"
+    },
+    {
+      "bytes": 15254,
+      "path": "backends/nvidia/runtime/data_resources.py",
+      "sha256": "8d62240c3bdc47981bc5e0552f69274fde9f2cc0fb7f7eec653bb431cbe0fbad"
+    },
+    {
+      "bytes": 1905,
+      "path": "backends/nvidia/runtime/gp_entry.py",
+      "sha256": "9856d12698127385e74e1b78632ce636ed23af6138a1c01b15aa46e33bbb279e"
+    },
+    {
+      "bytes": 4790,
+      "path": "backends/nvidia/runtime/initial_data_upload.py",
+      "sha256": "0ca8953006f7d8914a267a82ac1d63594e543b3690e836fa8bacf78bfc993522"
+    },
+    {
+      "bytes": 27742,
+      "path": "backends/nvidia/runtime/linux_backend.py",
+      "sha256": "288121d326bd15c381082ae5a3f59e840bcb62ef139b346c8c5f81bebbf1e33d"
+    },
+    {
+      "bytes": 5257,
+      "path": "backends/nvidia/runtime/mapping_flags.py",
+      "sha256": "4e2191a820dffffda8e5ec324e02e457a784826e8a0dbed856aeeaaa2f00d7a0"
+    },
+    {
+      "bytes": 19192,
+      "path": "backends/nvidia/runtime/mapping_protocol.py",
+      "sha256": "66456afa75af357feedcffac471f334d815a954126a9d15e964439d7e53bc036"
+    },
+    {
+      "bytes": 15795,
+      "path": "backends/nvidia/runtime/mapping_transport.py",
+      "sha256": "a464e7beead287aa64837a3d2e7c17b4fd7760af3287f0abaa3445735a654d2a"
+    },
+    {
+      "bytes": 25045,
+      "path": "backends/nvidia/runtime/native_bootstrap.py",
+      "sha256": "528985e8ba54cfce37eb2ac93f9159e802bf18f047034f321766566348f2239c"
+    },
+    {
+      "bytes": 7909,
+      "path": "backends/nvidia/runtime/native_execution.py",
+      "sha256": "00f78446b89b662fa5758df05c6a6181fb81a4ff65ec8862b78063919289532a"
+    },
+    {
+      "bytes": 17639,
+      "path": "backends/nvidia/runtime/native_execution_evidence.py",
+      "sha256": "5ab59c18fd2b17ca73ef6c0e4eaa9fc89f7a8455a535e38139bba33e6b886b74"
+    },
+    {
+      "bytes": 8164,
+      "path": "backends/nvidia/runtime/native_execution_health.py",
+      "sha256": "a907da0dd9656f5198eb4eb39d58a03720edcc5f4ae52d1d56ef030999ed9c5d"
+    },
+    {
+      "bytes": 17857,
+      "path": "backends/nvidia/runtime/native_packet_completion.py",
+      "sha256": "776afc4a4b8479ff09946d8c7ce44b5aea116cd8eb9926935a4191288dbe8b28"
+    },
+    {
+      "bytes": 9311,
+      "path": "backends/nvidia/runtime/native_packet_publication.py",
+      "sha256": "5bd89a9e91f8ef3b1ec1dcdace740ade80f365f27e4e226c0e826b4c27397d93"
+    },
+    {
+      "bytes": 10706,
+      "path": "backends/nvidia/runtime/native_retirement.py",
+      "sha256": "709b2bbdbc6ef1cb75ecd3f1f56f5e0426d24963c0d8d89f17e5521c5611a9cc"
+    },
+    {
+      "bytes": 8635,
+      "path": "backends/nvidia/runtime/native_words_binding.py",
+      "sha256": "d2b8688eb75ced0078518c06126ebf2c9f81c26f8ccf8f8a36723d34c7598611"
+    },
+    {
+      "bytes": 23857,
+      "path": "backends/nvidia/runtime/packet_preparation.py",
+      "sha256": "9dd4f4964a8c2ce468a52bca3dc739e3c85a334ba0ba2e32b06cfcf1062b8b63"
+    },
+    {
+      "bytes": 26643,
+      "path": "backends/nvidia/runtime/packet_publication.py",
+      "sha256": "9c9dd43d165df8766e8012e0fea50b0ab369c6bc995065863f7f8bfa4dbf363b"
+    },
+    {
+      "bytes": 19631,
+      "path": "backends/nvidia/runtime/packet_schedule.py",
+      "sha256": "5e0a73e6c740bd16529a97b79e39fad5352ea5db11a47ff8d0d9e5d1910c7759"
+    },
+    {
+      "bytes": 5402,
+      "path": "backends/nvidia/runtime/post_execution_images.py",
+      "sha256": "fac3029608cb96a060363f04b59f958158b60d12184ce58a298f2800fb56fe70"
+    },
+    {
+      "bytes": 15600,
+      "path": "backends/nvidia/runtime/preparation_loader.py",
+      "sha256": "758d1e5d0e315c4233143c1b59cf7e9227474610e451f9e6d3bebbb8dfc20d89"
+    },
+    {
+      "bytes": 4271,
+      "path": "backends/nvidia/runtime/preparation_memory.py",
+      "sha256": "751ca146f95ebb47715a58ba3def9cd3727ac5be0d49a748dd5528d502dfe7bb"
+    },
+    {
+      "bytes": 10239,
+      "path": "backends/nvidia/runtime/preparation_publication.py",
+      "sha256": "9e9453549d68ab58c569dbd12e0500ea1f16c96921eb8260ed1d4d3b7f467781"
+    },
+    {
+      "bytes": 7505,
+      "path": "backends/nvidia/runtime/preparation_schedule.py",
+      "sha256": "7d65aa3b1b4098a1ecc3a3d7201c341e9885f47963e0e10299f725c504ae1b4a"
+    },
+    {
+      "bytes": 5939,
+      "path": "backends/nvidia/runtime/preparation_upload.py",
+      "sha256": "6d35e32b9e033672b68dca1fa6edfd9a6fe7d479f0da6c16b3e599d73f0a2be5"
+    },
+    {
+      "bytes": 9661,
+      "path": "backends/nvidia/runtime/process_retention.py",
+      "sha256": "11f96eb26091b189522db8eacdd77690018f263984e8c8e929c78ee52fdbafb7"
+    },
+    {
+      "bytes": 2194,
+      "path": "backends/nvidia/runtime/push_bits.py",
+      "sha256": "e1416c2d364ae5f192fce241ceacd1a9401706507d4e0ef03890c3b893ca71c2"
+    },
+    {
+      "bytes": 11231,
+      "path": "backends/nvidia/runtime/push_images.py",
+      "sha256": "61a7f6fc77d0a66013f3d7866b93081a86e311c1fc91f47cf1857a87254dea40"
+    },
+    {
+      "bytes": 1288,
+      "path": "backends/nvidia/runtime/qmd_bits.py",
+      "sha256": "416d3d2391cd75b5620a0440937c7e356e2623346dcd33a15cb121398687058a"
+    },
+    {
+      "bytes": 4086,
+      "path": "backends/nvidia/runtime/qmd_images.py",
+      "sha256": "cd4e8b1a7fc204a98ea1d5277b97250da216051d4e0c7ed94f8720e810ac0030"
+    },
+    {
+      "bytes": 1166,
+      "path": "backends/nvidia/runtime/replacement_inputs.py",
+      "sha256": "0e68f136aa90f92baa6b129e700af2d2f765fa7282b41b8395734743cdd64432"
+    },
+    {
+      "bytes": 43943,
+      "path": "backends/nvidia/runtime/rm_arena.py",
+      "sha256": "55a446d9d0788d8023c42228b62c6bf7fc4a22f194a4cb3874f83bf2137c2683"
+    },
+    {
+      "bytes": 8837,
+      "path": "backends/nvidia/runtime/rm_channel.py",
+      "sha256": "dbe93e7f5ac23f8b94b08e192e1488cad1f591b2f61a88cd9531bee09e945662"
+    },
+    {
+      "bytes": 11447,
+      "path": "backends/nvidia/runtime/shader_info_check.py",
+      "sha256": "9ec3e6c445bcdbde5ae82bf94b5d2087a1c5dc06d54a6b3dba95ac68179ce36e"
+    },
+    {
+      "bytes": 3736,
+      "path": "backends/nvidia/runtime/sort_data_layout.py",
+      "sha256": "3fec7cdfc0faa2e458093613bb40e0164646ce06beafda057dfc24da7b9429a3"
+    },
+    {
+      "bytes": 4695,
+      "path": "backends/nvidia/runtime/sort_workload.py",
+      "sha256": "eb7e35ea4f32e4c811f850df48fe839d4aa47cb3e4f7a0972496e7d59a20de91"
+    },
+    {
+      "bytes": 24138,
+      "path": "build.py",
+      "sha256": "2cdbd287eafb895bcc7f0d21ad48dc71dddf56bf514905eef31a00b9beaa5885"
+    },
+    {
+      "bytes": 1634,
+      "path": "container/Containerfile",
+      "sha256": "a76e0392b5be4758e6655a3a66cde41c5af40d08acdc5194a7aefedcce827343"
+    },
+    {
+      "bytes": 145,
+      "path": "container/Containerfile.dockerignore",
+      "sha256": "082c1d59e2862bc113b87aa381c21a09b4d6d402a510e293e8cf3d271d949cbc"
+    },
+    {
+      "bytes": 6726,
+      "path": "container/README.md",
+      "sha256": "8f62824fa1858893157422146c387bc1334ebb10c752a0eb3f56df220243fe70"
+    },
+    {
+      "bytes": 3553,
+      "path": "container/run.py",
+      "sha256": "d9bbc89c16a66a1dd9910d799fe71bce432160fbbeeb86fb605232a16b167b7f"
+    },
+    {
+      "bytes": 479,
+      "path": "container/snapshot-inrelease.sha256",
+      "sha256": "d8e456c5553d749975ede6158e97861e1a958a532af0d1a4f0c92bccff951c4c"
+    },
+    {
+      "bytes": 3186,
+      "path": "container/test_launcher.py",
+      "sha256": "d1422d388dbeb26758547ade88b0515c73d5d5288e27b93b96ecef2f8c75a0b8"
+    },
+    {
+      "bytes": 3668,
+      "path": "deps/README.md",
+      "sha256": "9f69329391402536ccde40363559421df46cb6ebfa141667d761256490844136"
+    },
+    {
+      "bytes": 1818,
+      "path": "deps/apt-packages.txt",
+      "sha256": "b82a875bf88e48aebe9d78044e3dfd37c0e9d3340ded1646bab5f910bb02dbe7"
+    },
+    {
+      "bytes": 42159,
+      "path": "deps/deps.lock.json",
+      "sha256": "d35dda4d4ea43a1949c3d8a472baa5cd830b5b74574d40314f90f507d2162ddf"
+    },
+    {
+      "bytes": 8752,
+      "path": "deps/manifests/directx-headers.json",
+      "sha256": "39c8b4b94ebb20b7e17204d87cb793714d33e4bc389a2a4687e3312ad9d3ab47"
+    },
+    {
+      "bytes": 2584,
+      "path": "deps/manifests/dxc.json",
+      "sha256": "2dcdea2753526335a6b93787dc9697d31ea95022350358fec19f90e5578405a3"
+    },
+    {
+      "bytes": 1424390,
+      "path": "deps/manifests/dxil-spirv.json",
+      "sha256": "3dc392b50620d03c287db2f9c00ae7c559f76da0401c81d87595d1782d7c9860"
+    },
+    {
+      "bytes": 186,
+      "path": "deps/manifests/ffx-parallelsort.json",
+      "sha256": "84dcf92bcff5e80762190c78242d4097add796155f1827bca061ce86aba8f36b"
+    },
+    {
+      "bytes": 32803,
+      "path": "deps/manifests/libdrm.json",
+      "sha256": "60b5906d7ffd138a2626e34e7d05e132e3861f56fd1cb5e275469263c4d7163b"
+    },
+    {
+      "bytes": 1599274,
+      "path": "deps/manifests/mesa.json",
+      "sha256": "0ac400b759ff6349697e0247f19323e8e1ab7b163f97d7174418884f2b52bf28"
+    },
+    {
+      "bytes": 9422,
+      "path": "deps/manifests/nvidia-open-gpu-kernel-modules-headers.json",
+      "sha256": "36450742c1a1759fdd420a1d0dd3fe19d250b09f9aac0afc8e44d6351dd66ab2"
+    },
+    {
+      "bytes": 36272,
+      "path": "deps/prepare_deps.py",
+      "sha256": "cb35dd34413031ef6efc8a24b0fc3e99918a081e2439cea33ef4f5b20cd399c2"
+    },
+    {
+      "bytes": 1571,
+      "path": "include/ndx12.h",
+      "sha256": "4d29c77905f07d58e8f7cb413d776632a35ce08aa5326eb0409cb5b03fb6e580"
+    },
+    {
+      "bytes": 3492,
+      "path": "include/ndx_evidence.h",
+      "sha256": "ce897568f0ab935f7f315f95f1a4d26073187dc482ff6642279fb8309a4e9ed6"
+    },
+    {
+      "bytes": 495,
+      "path": "shaders/affine_u32.hlsl",
+      "sha256": "4f51db9c4fc3311e2398ddf079e6c71205059b05cbdd324ab255d6687ac9431c"
+    },
+    {
+      "bytes": 1142,
+      "path": "shaders/parallel_sort/count.hlsl",
+      "sha256": "64d25fcf89b772306af70f13d2de05cb577d40439909c3077776011b4253039f"
+    },
+    {
+      "bytes": 1035,
+      "path": "shaders/parallel_sort/reduce.hlsl",
+      "sha256": "8eb5e9c6332085dd8120c8477081431bde65d5c591fe7ffdca29747397cc091c"
+    },
+    {
+      "bytes": 1249,
+      "path": "shaders/parallel_sort/scan.hlsl",
+      "sha256": "2a8cd085977590542c50cddc48a61cb1a8841191c2bf551ea4db760a9cf50758"
+    },
+    {
+      "bytes": 1747,
+      "path": "shaders/parallel_sort/scan_add.hlsl",
+      "sha256": "f9e195535776881a757c2ed667901c166aed85dc80727ed983ef1e9f5ed85b3a"
+    },
+    {
+      "bytes": 1160,
+      "path": "shaders/parallel_sort/scatter.hlsl",
+      "sha256": "3346b4c8865ce65a85d86f554e2266b9807d986e00a0f392a5189ae31f22bf67"
+    },
+    {
+      "bytes": 1099,
+      "path": "shaders/upstream/LICENSE.txt",
+      "sha256": "1bed2f55030780f264c71e69ce14734e50c60f4d36bbb9c20ef1c98df451d7d8"
+    },
+    {
+      "bytes": 466,
+      "path": "src/compiler/dxil/core/core_internal.h",
+      "sha256": "917102cb40cbaf26e748b4fec148f520df4f51aa4a2f7ddb79281dc76ddfa10f"
+    },
+    {
+      "bytes": 13027,
+      "path": "src/compiler/dxil/core/dxil_reader.cpp",
+      "sha256": "79ac78bca0de036222d290dde4deb44023c84d4b3c68a522af56ce29cc24b71c"
+    },
+    {
+      "bytes": 4209,
+      "path": "src/compiler/dxil/core/nir_emitter.c",
+      "sha256": "eb66d0c6f9b1b7b40bd279cb57f0296b6a610c3b994287a4193067144603653b"
+    },
+    {
+      "bytes": 885,
+      "path": "src/compiler/dxil/core/nir_emitter.h",
+      "sha256": "76b9acc80543f53cd0873e9e5b704a7fa7cec023b15e0d2c14d327b8fe0605db"
+    },
+    {
+      "bytes": 1470,
+      "path": "src/compiler/dxil/core/prepared_shader.h",
+      "sha256": "3f152e6e7f039bb1454c3d350d6353e2f66cd8fa4719eb7282d81799629a6a12"
+    },
+    {
+      "bytes": 65858,
+      "path": "src/frontend/runtime.cpp",
+      "sha256": "0691c291efa370c8af491e5c0a111a12586536f408dce7e299bf84e4b24082d4"
+    },
+    {
+      "bytes": 14651,
+      "path": "src/frontend/vtables.inc",
+      "sha256": "9fe79e7f91978b04712fdae28186bfbd661029cb77b377d147fe00b998ebd17d"
+    },
+    {
+      "bytes": 206,
+      "path": "tests/amd/shaders/arithmetic.hlsl",
+      "sha256": "bc153d40aee0f847715e0fc9c8fbe6cae97e8d11b21490c5cf3a2be239296b7e"
+    },
+    {
+      "bytes": 205,
+      "path": "tests/amd/shaders/baseline.hlsl",
+      "sha256": "52e10330ea7919af2be143f0c129f396216ca13fe50cac14f437b92f3f124feb"
+    },
+    {
+      "bytes": 211,
+      "path": "tests/amd/shaders/bitwise.hlsl",
+      "sha256": "a2d2d6d0b8216599585b8e2e6439e0a9aa4ffae1e1cfbd79dc26ed4e4f78295e"
+    },
+    {
+      "bytes": 203,
+      "path": "tests/amd/shaders/boundary.hlsl",
+      "sha256": "30c62ab33ec6731b1a5a66165f172f9b8370cdec189cddeb4c341d1956124fa8"
+    },
+    {
+      "bytes": 12599,
+      "path": "tests/amd/test_adapter.c",
+      "sha256": "273692b44ed08ee1cc1dd792197d053f9eb7a75dcf16e0d3270c783231beadff"
+    },
+    {
+      "bytes": 18804,
+      "path": "tests/intel/compute.cpp",
+      "sha256": "eed00c3c5c6cd00e5090b452824ad8a9ac2d4bd9d3a0289673841a6639a8590d"
+    },
+    {
+      "bytes": 1576,
+      "path": "tests/intel/evidence_outputs.h",
+      "sha256": "fdef5b37bb4b237fc490483c6b77ca2f254c60a1160e9457002e7e8b0880c07d"
+    },
+    {
+      "bytes": 21429,
+      "path": "tests/intel/indexed_depth.cpp",
+      "sha256": "60b94f31f53035ff1205582dd60e97aa9519958022bb9f8d3967c86e463edb28"
+    },
+    {
+      "bytes": 18198,
+      "path": "tests/intel/probes/gallium_probe.c",
+      "sha256": "8a74f17e918f89965e54b3d27eb280a2070f76e919c9445b656160311bea8c25"
+    },
+    {
+      "bytes": 494,
+      "path": "tests/intel/probes/gallium_probe.h",
+      "sha256": "e8e11d0efc5ebc20a530070dad37fefdbd9f892615702f7c76c6b823015b7c33"
+    },
+    {
+      "bytes": 23440,
+      "path": "tests/intel/probes/gallium_semantics.c",
+      "sha256": "a8bd8b03347c8f9928688f6854370e28137a59324c78031bd79052b4e8dc3da7"
+    },
+    {
+      "bytes": 19959,
+      "path": "tests/intel/textured_quad.cpp",
+      "sha256": "89f8dbbc9a084ffc5e00d4599de2777ce981e0d77104b7765d502d2678d27aaa"
+    },
+    {
+      "bytes": 16475,
+      "path": "tests/intel/triangle.cpp",
+      "sha256": "1244ca0f5b98b802e868e8c93770aa50584787a636e798fba0a67eb85c600006"
+    },
+    {
+      "bytes": 10860,
+      "path": "tests/test_build.py",
+      "sha256": "87b287eb08cd5dc49757c1a93724cf764b1c17f779f4567d9fcd13817bf1348c"
+    },
+    {
+      "bytes": 6858,
+      "path": "tests/test_runtime_guard.py",
+      "sha256": "d861efda958ae72c748995f1ccc8910a64a208888160c40b550bcaedcd0cf80f"
+    },
+    {
+      "bytes": 15928,
+      "path": "tests/test_runtime_release.py",
+      "sha256": "26d60bc598cc76f367a4febe3cd6b156b66a9d417947c5285821af79011bf558"
+    },
+    {
+      "bytes": 1331,
+      "path": "tests/third_party/miniengine/NOTICE.md",
+      "sha256": "0a8216535f68482104e32ba8ea1679ff419e9821b70394e44f71664c29a9d0e1"
+    },
+    {
+      "bytes": 1375,
+      "path": "tests/third_party/miniengine/adaptation.patch",
+      "sha256": "3bf72a9f6cd739c6c51b0d1dd924c9a561f526420d4c2ae1c0ce4a970906f70a"
+    },
+    {
+      "bytes": 1838,
+      "path": "tests/third_party/miniengine/adapted/histogram.hlsl",
+      "sha256": "e70311f8b8b29e3e061ad39caa60b6ce561332157caeed2360dd6562dbde946b"
+    },
+    {
+      "bytes": 1533,
+      "path": "tests/third_party/miniengine/upstream/GenerateHistogramCS.hlsl",
+      "sha256": "c6b3f94391722b31c1fe831a1eeb8600fba696fc33a388b50351977f0509bd94"
+    },
+    {
+      "bytes": 1077,
+      "path": "tests/third_party/miniengine/upstream/LICENSE",
+      "sha256": "cf248820bf1178370bb4f1670a59f8748d46bc96d0f64080cd631511c6046409"
+    },
+    {
+      "bytes": 1096,
+      "path": "tests/third_party/miniengine/upstream/PostEffectsRS.hlsli",
+      "sha256": "3e469ae20f56cedf833e2d12df6897f5a8e9d7e74b42040bb380999e32e53776"
+    },
+    {
+      "bytes": 26272,
+      "path": "tools/abi/nvidia_probe.c",
+      "sha256": "5db2ebbf96a4d29ac9e93d51cef4ba15d46fba1f806c6cb4dee619b0def8150a"
+    },
+    {
+      "bytes": 2908,
+      "path": "tools/generate_vtables.py",
+      "sha256": "6387aae6c578f2c6b5f6c114f39d6fdbefbb11cf28c08d1235e0167bea0b549a"
+    },
+    {
+      "bytes": 4729,
+      "path": "tools/patches/mesa/frontend_targets.patch",
+      "sha256": "a31df8a6c0ad4d4a2360d069ee55371f48cde9a5218add402925a5b4297ca6d6"
+    },
+    {
+      "bytes": 1939,
+      "path": "tools/patches/mesa/iris_buffer_ranges.patch",
+      "sha256": "2e63c30602838eeb107d5ccea2bdb5fa5fb2c856391b90d41598053f471105fe"
+    },
+    {
+      "bytes": 10105,
+      "path": "tools/runtime/installer.py",
+      "sha256": "2b929b315eeacb16be41ab297781d54d85ff11b5b64816979737bf149390d443"
+    },
+    {
+      "bytes": 91051,
+      "path": "tools/runtime/templates.json",
+      "sha256": "965d8a8efc7228f0b82a00c0ba9539a01f12a8c46a87a8b38140aaebbc68cd15"
+    },
+    {
+      "bytes": 4330,
+      "path": "tools/runtime/verify.py",
+      "sha256": "51638a579f79c6eae644b9ecd3ca870952470043baa136017310f7065ad66a16"
+    },
+    {
+      "bytes": 12254,
+      "path": "tools/shaders/parallel_sort/build_count_adapter.py",
+      "sha256": "21ed206d56ffd116a5ce3fa623994cf412634eb01bdaf344bf75c43dd461c794"
+    },
+    {
+      "bytes": 14561,
+      "path": "tools/shaders/parallel_sort/build_reduce_adapter.py",
+      "sha256": "143b199b8bbbc8dfd25fd443034d2bf8cf1ef9a343c4515359011e85f2b91dd2"
+    },
+    {
+      "bytes": 14719,
+      "path": "tools/shaders/parallel_sort/build_scan_adapter.py",
+      "sha256": "84ac7ba6e77e04560b3c9d73a6b70a56d56af41e9d890e9f8ec3e4bd206b4f03"
+    },
+    {
+      "bytes": 15121,
+      "path": "tools/shaders/parallel_sort/build_scan_add_adapter.py",
+      "sha256": "7ad8942ac7a4776fff9c5bc78e99367a61ab88c396c3d067058c69461f995f11"
+    },
+    {
+      "bytes": 15928,
+      "path": "tools/shaders/parallel_sort/build_scatter_adapter.py",
+      "sha256": "e067baddd6a20a3afedacd2954c24e29492b2ae2589581291cbe2086a8288e48"
+    },
+    {
+      "bytes": 4210,
+      "path": "tools/shaders/parallel_sort/ffx_build_config.py",
+      "sha256": "cc3f0da4a792ef43a04ed3307e5ebf8ae2fda0697f01c4d0b77f6a33c5980302"
+    },
+    {
+      "bytes": 6363,
+      "path": "tools/shaders/parallel_sort/ffx_recipe.json",
+      "sha256": "08e150c38c0eff4071798715efc21a07a2dd7d6f68ccde449fc04a7d2d1cf904"
+    }
+  ],
+  "schema": "ndx12.source-lock.v1"
+}

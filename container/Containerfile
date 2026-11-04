@@ -1,0 +1,17 @@
+FROM docker.io/library/ubuntu@sha256:157dc3d6e4a3e4f2c68d12df9df9ed6e808b59af6d4c3757b432b4f519916725
+ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd https://snapshot.ubuntu.com/ubuntu/20261102T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb /opt/ndx12/bootstrap-ca.deb
+RUN dpkg-deb -x /opt/ndx12/bootstrap-ca.deb / && mkdir -p /etc/ssl/certs && cat /usr/share/ca-certificates/mozilla/*.crt > /etc/ssl/certs/ca-certificates.crt
+# Snapshot fixes repository contents; source/artifact pins remain authoritative.
+ENV APT_SNAPSHOT=20261102T000000Z
+COPY container/snapshot-inrelease.sha256 /opt/ndx12/snapshot-inrelease.sha256
+COPY deps/apt-packages.txt /opt/ndx12/apt-packages.txt
+RUN printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s/\nSuites: resolute resolute-updates resolute-security\nComponents: main universe\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\nCheck-Valid-Until: no\n' "$APT_SNAPSHOT" > /etc/apt/sources.list.d/ubuntu.sources && \
+    apt-get -o Acquire::https::CaInfo=/etc/ssl/certs/ca-certificates.crt -o APT::Update::Error-Mode=any update && \
+    sha256sum --check /opt/ndx12/snapshot-inrelease.sha256 && \
+    DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::https::CaInfo=/etc/ssl/certs/ca-certificates.crt install -y --no-install-recommends \
+    $(awk '!/^#/ && NF {print $1}' /opt/ndx12/apt-packages.txt) && \
+    dpkg-query -W > /opt/ndx12/installed-packages.tsv && \
+    rm -rf /var/lib/apt/lists/*
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONDONTWRITEBYTECODE=1
+WORKDIR /package
+USER 65532:65532

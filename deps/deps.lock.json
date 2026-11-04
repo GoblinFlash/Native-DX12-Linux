@@ -1,0 +1,1008 @@
+{
+  "apt_packages": [
+    {
+      "package": "bindgen",
+      "version": "0.72.1-1"
+    },
+    {
+      "package": "bison",
+      "version": "2:3.8.2+dfsg-1ubuntu0.26.04.1"
+    },
+    {
+      "package": "ca-certificates",
+      "version": "20260816ubuntu0.26.04.1"
+    },
+    {
+      "package": "cmake",
+      "version": "4.2.3-2ubuntu2"
+    },
+    {
+      "package": "flex",
+      "version": "2.6.4-8.2build2"
+    },
+    {
+      "package": "g++-15",
+      "version": "15.2.0-16ubuntu1"
+    },
+    {
+      "package": "gcc-15",
+      "version": "15.2.0-16ubuntu1"
+    },
+    {
+      "package": "git",
+      "version": "1:2.53.0-1ubuntu1.1"
+    },
+    {
+      "package": "libclang-21-dev",
+      "version": "1:21.1.8-6ubuntu1"
+    },
+    {
+      "package": "libclang-cpp21-dev",
+      "version": "1:21.1.8-6ubuntu1"
+    },
+    {
+      "package": "libclc-21",
+      "version": "1:21.1.8-6ubuntu1"
+    },
+    {
+      "package": "libclc-21-dev",
+      "version": "1:21.1.8-6ubuntu1"
+    },
+    {
+      "package": "libdrm-dev",
+      "version": "2.4.131-1"
+    },
+    {
+      "package": "libelf-dev",
+      "version": "0.194-4"
+    },
+    {
+      "package": "libexpat1-dev",
+      "version": "2.7.4-1ubuntu0.2"
+    },
+    {
+      "package": "libllvmspirvlib-21-dev",
+      "version": "21.1.5-1"
+    },
+    {
+      "package": "libudev-dev",
+      "version": "259.9-0ubuntu0.1"
+    },
+    {
+      "package": "libzstd-dev",
+      "version": "1.5.7+dfsg-3"
+    },
+    {
+      "package": "llvm-21",
+      "version": "1:21.1.8-6ubuntu1"
+    },
+    {
+      "package": "llvm-21-dev",
+      "version": "1:21.1.8-6ubuntu1"
+    },
+    {
+      "package": "llvm-21-tools",
+      "version": "1:21.1.8-6ubuntu1"
+    },
+    {
+      "package": "meson",
+      "version": "1.10.1-1ubuntu2"
+    },
+    {
+      "package": "ninja-build",
+      "version": "1.13.2-1"
+    },
+    {
+      "package": "patch",
+      "version": "2.8-2build1"
+    },
+    {
+      "package": "pkgconf",
+      "version": "2.5.1-4"
+    },
+    {
+      "package": "python3",
+      "version": "3.14.3-0ubuntu2"
+    },
+    {
+      "package": "python3-mako",
+      "version": "1.3.10-3ubuntu0.1"
+    },
+    {
+      "package": "python3-packaging",
+      "version": "26.0-1"
+    },
+    {
+      "package": "python3-ply",
+      "version": "3.11-10"
+    },
+    {
+      "package": "python3-yaml",
+      "version": "6.0.3-1build1"
+    },
+    {
+      "package": "rustc",
+      "version": "1.93.1ubuntu1"
+    },
+    {
+      "package": "spirv-headers",
+      "version": "1.6.1+1.4.341.0-1"
+    },
+    {
+      "package": "spirv-tools",
+      "version": "2026.1-1"
+    },
+    {
+      "package": "spirv-tools-dev",
+      "version": "2026.1-1"
+    },
+    {
+      "package": "util-linux",
+      "version": "2.41.3-3ubuntu2.2"
+    },
+    {
+      "package": "xz-utils",
+      "version": "5.8.3-1ubuntu0.1"
+    },
+    {
+      "package": "zlib1g-dev",
+      "version": "1:1.3.dfsg+really1.3.1-1ubuntu3.2"
+    },
+    {
+      "package": "cbindgen",
+      "version": "0.29.2-3"
+    }
+  ],
+  "blobs": [
+    {
+      "bytes": 18157,
+      "filename": "paste-1.0.14.tar.gz",
+      "name": "paste-1.0.14",
+      "sha256": "de3145af08024dea9fa9914f381a17b8fc6034dfb00f3a84013f7ff43f29ed4c",
+      "url": "https://static.crates.io/crates/paste/1.0.14/download",
+      "use": "mesa-wrap",
+      "wrap": "subprojects/paste-1-rs.wrap"
+    },
+    {
+      "bytes": 48958,
+      "filename": "proc-macro2-1.0.86.tar.gz",
+      "name": "proc-macro2-1.0.86",
+      "sha256": "5e719e8df665df0d1c8fbfd238015744736151d4445ec0836b8e628aae103b77",
+      "url": "https://static.crates.io/crates/proc-macro2/1.0.86/download",
+      "use": "mesa-wrap",
+      "wrap": "subprojects/proc-macro2-1-rs.wrap"
+    },
+    {
+      "bytes": 28136,
+      "filename": "quote-1.0.35.tar.gz",
+      "name": "quote-1.0.35",
+      "sha256": "291ec9ab5efd934aaf503a6466c5d5251535d108ee747472c3977cc5acc868ef",
+      "url": "https://static.crates.io/crates/quote/1.0.35/download",
+      "use": "mesa-wrap",
+      "wrap": "subprojects/quote-1-rs.wrap"
+    },
+    {
+      "bytes": 14154,
+      "filename": "rustc-hash-2.1.1.tar.gz",
+      "name": "rustc-hash-2.1.1",
+      "sha256": "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d",
+      "url": "https://static.crates.io/crates/rustc-hash/2.1.1/download",
+      "use": "mesa-wrap",
+      "wrap": "subprojects/rustc-hash-2-rs.wrap"
+    },
+    {
+      "bytes": 278076,
+      "filename": "syn-2.0.87.tar.gz",
+      "name": "syn-2.0.87",
+      "sha256": "25aa4ce346d03a6dcd68dd8b4010bcb74e54e62c90c573f394c46eae99aba32d",
+      "url": "https://static.crates.io/crates/syn/2.0.87/download",
+      "use": "mesa-wrap",
+      "wrap": "subprojects/syn-2-rs.wrap"
+    },
+    {
+      "bytes": 42168,
+      "filename": "unicode-ident-1.0.12.tar.gz",
+      "name": "unicode-ident-1.0.12",
+      "sha256": "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b",
+      "url": "https://static.crates.io/crates/unicode-ident/1.0.12/download",
+      "use": "mesa-wrap",
+      "wrap": "subprojects/unicode-ident-1-rs.wrap"
+    }
+  ],
+  "ffx_base": {
+    "expected_baselines": {
+      "shader.bin": "6dfe0274a69ba3d02d9effded63c45078e13143f41af94ad87f35412f0125ee0",
+      "shader.info.bin": "a580fdbce92ef0baaa266a56065d3446b5ec2e51874ec5410e960a3088ca152e",
+      "shader.json": "ad0882d6812935b89795f26d18fbf278a4f9d663565a3d65148282ee509dbc6e",
+      "shader.nak.txt": "a4d30807636b3846eba2265485a30fdc0fc3c44cdb76bed88507117cead6dbd5",
+      "shader.qmd": "f4b1ea240fb3dd05f0c50c265db54ca9ce5a111496d681451026ff0d40ce4ec7"
+    },
+    "link_libraries": [
+      "-lSPIRV-Tools",
+      "-lz",
+      "-lzstd",
+      "-lm",
+      "-ldl",
+      "-pthread"
+    ],
+    "ordinary_profile": "readymade-hist-pred-guarded",
+    "ordinary_spv": {
+      "converter_args": [
+        "--ssbo-uav",
+        "--ssbo-alignment",
+        "4",
+        "--no-bda",
+        "--no-compute-shader-derivatives"
+      ],
+      "dxc_args": [
+        "-T",
+        "cs_6_0",
+        "-E",
+        "main",
+        "-O3"
+      ],
+      "expected_sha256": "9938d9e3f763afd679be16b227523c25c154fd5b7116712555bacfb27b64a055",
+      "hlsl": "tests/third_party/miniengine/adapted/histogram.hlsl",
+      "hlsl_sha256": "e70311f8b8b29e3e061ad39caa60b6ce561332157caeed2360dd6562dbde946b"
+    },
+    "package_copies": [
+      {
+        "from": "shaders/parallel_sort/count.hlsl",
+        "sha256": "64d25fcf89b772306af70f13d2de05cb577d40439909c3077776011b4253039f",
+        "to": "shaders/ParallelSortCount.hlsl"
+      },
+      {
+        "from": "shaders/parallel_sort/reduce.hlsl",
+        "sha256": "8eb5e9c6332085dd8120c8477081431bde65d5c591fe7ffdca29747397cc091c",
+        "to": "shaders/ParallelSortCountReduce.hlsl"
+      },
+      {
+        "from": "shaders/parallel_sort/scan.hlsl",
+        "sha256": "2a8cd085977590542c50cddc48a61cb1a8841191c2bf551ea4db760a9cf50758",
+        "to": "shaders/ParallelSortScan.hlsl"
+      },
+      {
+        "from": "shaders/parallel_sort/scan_add.hlsl",
+        "sha256": "f9e195535776881a757c2ed667901c166aed85dc80727ed983ef1e9f5ed85b3a",
+        "to": "shaders/ParallelSortScanAdd.hlsl"
+      },
+      {
+        "from": "shaders/parallel_sort/scatter.hlsl",
+        "sha256": "3346b4c8865ce65a85d86f554e2266b9807d986e00a0f392a5189ae31f22bf67",
+        "to": "shaders/ParallelSortScatter.hlsl"
+      },
+      {
+        "from": "backends/nvidia/compiler/parallel_sort/count/ffx_uniform_cf.h",
+        "sha256": "3dcd66c8c5cabe8ce063c5f670906ead5e56aa3571a4096f2e80d29c670aef28",
+        "to": "extra/ffx_uniform_cf.h"
+      },
+      {
+        "from": "backends/nvidia/compiler/parallel_sort/base/nvidia_batch_compile.c",
+        "sha256": "7675310fef087f8b185ebb1bc36e7f228a1adea929a88ec36122c405dd9f20b6",
+        "to": "base/nvidia_batch_compile.c"
+      },
+      {
+        "from": "backends/nvidia/compiler/parallel_sort/base/nvidia_shared_lowering.h",
+        "sha256": "fb145a61d6a01c7b7e371114d69f69a3e49c66e22c5844316d40e7a1b3c66cbd",
+        "to": "base/nvidia_shared_lowering.h"
+      },
+      {
+        "from": "backends/nvidia/compiler/parallel_sort/base/nir_shared_range.h",
+        "sha256": "95194dcd90ca9ebee80ac8fe9cc368ad116bcf1627e4c0902c919cc1d7680047",
+        "to": "base/nir_shared_range.h"
+      }
+    ],
+    "recipe": "tools/shaders/parallel_sort/ffx_recipe.json",
+    "recipe_sha256": "08e150c38c0eff4071798715efc21a07a2dd7d6f68ccde449fc04a7d2d1cf904"
+  },
+  "intel_patches": [
+    {
+      "path": "tools/patches/mesa/frontend_targets.patch",
+      "sha256": "a31df8a6c0ad4d4a2360d069ee55371f48cde9a5218add402925a5b4297ca6d6"
+    },
+    {
+      "path": "tools/patches/mesa/iris_buffer_ranges.patch",
+      "sha256": "2e63c30602838eeb107d5ccea2bdb5fa5fb2c856391b90d41598053f471105fe"
+    }
+  ],
+  "intel_probe_root": "tests/intel/probes",
+  "meson": {
+    "amd": [
+      "--wrap-mode=nodownload",
+      "-Dgallium-drivers=radeonsi",
+      "-Dvulkan-drivers=[]",
+      "-Dplatforms=[]",
+      "-Dllvm=enabled",
+      "-Dshared-llvm=enabled",
+      "-Dopengl=true",
+      "-Dgles1=disabled",
+      "-Dgles2=disabled",
+      "-Dglx=disabled",
+      "-Degl=disabled",
+      "-Dgbm=disabled",
+      "-Dvideo-codecs=[]",
+      "-Dvalgrind=disabled",
+      "-Dlibunwind=disabled",
+      "-Dbuild-tests=false",
+      "-Ddebug=false",
+      "-Db_ndebug=false"
+    ],
+    "amd_targets": [
+      "src/gallium/drivers/radeonsi/libradeonsi.a"
+    ],
+    "intel": [
+      "--wrap-mode=nodownload",
+      "-Dgallium-drivers=iris",
+      "-Dvulkan-drivers=[]",
+      "-Dplatforms=[]",
+      "-Dllvm=enabled",
+      "-Dshared-llvm=enabled",
+      "-Dgallium-rusticl=true",
+      "-Dopengl=false",
+      "-Dgles1=disabled",
+      "-Dgles2=disabled",
+      "-Dglx=disabled",
+      "-Degl=disabled",
+      "-Dgbm=disabled",
+      "-Dvideo-codecs=[]",
+      "-Dvalgrind=disabled",
+      "-Dlibunwind=disabled",
+      "-Dbuild-tests=false",
+      "-Ddebug=false",
+      "-Db_ndebug=false"
+    ],
+    "intel_targets": [
+      "src/gallium/libndx12-experimental.so",
+      "src/gallium/ndx12-m1",
+      "src/gallium/ndx12-m3",
+      "src/gallium/ndx12-m3-texture",
+      "src/gallium/ndx12-m3-depth",
+      "src/gallium/ndx12-gallium-probe"
+    ],
+    "libdrm": [
+      "--wrap-mode=nodownload",
+      "-Dintel=disabled",
+      "-Dradeon=disabled",
+      "-Damdgpu=enabled",
+      "-Dnouveau=disabled",
+      "-Dvmwgfx=disabled",
+      "-Dtests=false",
+      "-Dinstall-test-programs=false"
+    ],
+    "rtx": [
+      "--wrap-mode=nodownload",
+      "-Dgallium-drivers=[]",
+      "-Dvulkan-drivers=nouveau",
+      "-Dplatforms=[]",
+      "-Dllvm=enabled",
+      "-Dshared-llvm=enabled",
+      "-Dopengl=false",
+      "-Dgles1=disabled",
+      "-Dgles2=disabled",
+      "-Dglx=disabled",
+      "-Degl=disabled",
+      "-Dgbm=disabled",
+      "-Dvideo-codecs=[]",
+      "-Dvalgrind=disabled",
+      "-Dlibunwind=disabled",
+      "-Dbuild-tests=false",
+      "-Ddebug=false",
+      "-Db_ndebug=false"
+    ],
+    "rtx_targets": [
+      "src/nouveau/compiler/libnak.a",
+      "src/nouveau/compiler/libnak_rs.a",
+      "src/nouveau/nil/libnil.a",
+      "src/nouveau/nil/liblibnil_format_table.a",
+      "src/nouveau/headers/libnvidia_headers_c.a",
+      "src/compiler/rust/libcompiler_c_helpers.a",
+      "src/compiler/rust/libcompiler_bindings.a",
+      "src/compiler/spirv/libvtn.a",
+      "src/compiler/nir/libnir.a",
+      "src/compiler/libcompiler.a",
+      "src/util/libmesa_util.a",
+      "src/util/blake3/libblake3.a",
+      "src/c11/impl/libmesa_util_c11.a"
+    ]
+  },
+  "platform": {
+    "arch": "amd64",
+    "observed_on": "Ubuntu 26.04.1 LTS",
+    "os": "Ubuntu 26.04 LTS"
+  },
+  "schema": "ndx12.ubuntu-deps-lock.v1",
+  "sources": [
+    {
+      "commit": "d1e369d8a63eb82ba277e4e25d35982ce2760204",
+      "consumers": [
+        "intel",
+        "rtx",
+        "amd"
+      ],
+      "kind": "git",
+      "license_files": [
+        "docs/license.rst"
+      ],
+      "manifest": "manifests/mesa.json",
+      "manifest_sha256": "0ac400b759ff6349697e0247f19323e8e1ab7b163f97d7174418884f2b52bf28",
+      "name": "mesa",
+      "notes": "Pristine tree (CSV files checked out CRLF per .gitattributes). Rust crates come from blobs; RTX/AMD use it unpatched, Intel applies intel_patches.",
+      "url": "https://gitlab.freedesktop.org/mesa/mesa.git"
+    },
+    {
+      "commit": "8434b0639fb2a48ce13aac08a420ecce5d23df0e",
+      "consumers": [
+        "intel",
+        "rtx",
+        "amd"
+      ],
+      "kind": "git",
+      "license_files": [
+        "LICENSE.MIT"
+      ],
+      "manifest": "manifests/dxil-spirv.json",
+      "manifest_sha256": "3dc392b50620d03c287db2f9c00ae7c559f76da0401c81d87595d1782d7c9860",
+      "name": "dxil-spirv",
+      "submodules": [
+        {
+          "commit": "8dae2d8573af08378c6059aca3d5987da99d20b5",
+          "path": "subprojects/dxbc-spirv",
+          "url": "https://github.com/doitsujin/dxbc-spirv"
+        },
+        {
+          "commit": "c8ad050fcb29e42a2f57d9f59e97488f465c436d",
+          "parent": "subprojects/dxbc-spirv",
+          "path": "subprojects/dxbc-spirv/submodules/spirv_headers",
+          "url": "https://github.com/KhronosGroup/SPIRV-Headers.git"
+        },
+        {
+          "commit": "be71ee8c12cd7dc5ca8fa9581f708c2e8561fe2a",
+          "path": "third_party/SPIRV-Cross",
+          "url": "https://github.com/KhronosGroup/SPIRV-Cross"
+        },
+        {
+          "commit": "199cb207b911501ddd76dcddf100a6e21c15ef23",
+          "path": "third_party/SPIRV-Tools",
+          "url": "https://github.com/KhronosGroup/SPIRV-Tools"
+        },
+        {
+          "commit": "c63848ecf2200425511319fd8bf2c17b751e501e",
+          "path": "third_party/spirv-headers",
+          "url": "https://github.com/KhronosGroup/SPIRV-Headers"
+        }
+      ],
+      "url": "https://github.com/HansKristian-Work/dxil-spirv.git"
+    },
+    {
+      "commit": "ee479f0bd5f7b884f202bcf0c3f076cc050dd256",
+      "consumers": [
+        "intel"
+      ],
+      "kind": "git",
+      "license_files": [
+        "LICENSE"
+      ],
+      "manifest": "manifests/directx-headers.json",
+      "manifest_sha256": "39c8b4b94ebb20b7e17204d87cb793714d33e4bc389a2a4687e3312ad9d3ab47",
+      "name": "directx-headers",
+      "release": "v1.619.5",
+      "url": "https://github.com/microsoft/DirectX-Headers.git"
+    },
+    {
+      "archive": {
+        "bytes": 436912,
+        "sha256": "fc68f9d0ba2ea63c9432a299e14fea09fad7a8a66e8039fcd7802ca59f77b4f5",
+        "strip_components": 1,
+        "url": "https://dri.freedesktop.org/libdrm/libdrm-2.4.133.tar.xz"
+      },
+      "consumers": [
+        "amd"
+      ],
+      "kind": "tarball",
+      "license_files": [
+        "xf86drm.c"
+      ],
+      "manifest": "manifests/libdrm.json",
+      "manifest_sha256": "60b5906d7ffd138a2626e34e7d05e132e3861f56fd1cb5e275469263c4d7163b",
+      "name": "libdrm",
+      "version": "2.4.133"
+    },
+    {
+      "archive": {
+        "bytes": 13297763,
+        "sha256": "96faadc7f5c282d2ffda49804beb4c3ee38127bc252b723234e3c5cdf7aa39a1",
+        "strip_components": 0,
+        "url": "https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.9.2609/linux_dxc_2026_09_28.x86_x64.tar.gz"
+      },
+      "consumers": [
+        "intel",
+        "rtx",
+        "amd"
+      ],
+      "kind": "tarball",
+      "license_files": [
+        "LICENSE-MS.txt",
+        "LICENSE-LLVM.txt"
+      ],
+      "manifest": "manifests/dxc.json",
+      "manifest_sha256": "2dcdea2753526335a6b93787dc9697d31ea95022350358fec19f90e5578405a3",
+      "name": "dxc",
+      "release": "v1.9.2609",
+      "source_commit": "01b62ad47db7dee3dd33f90e7339cf9e860b3f93"
+    },
+    {
+      "consumers": [
+        "rtx"
+      ],
+      "files": [
+        {
+          "bytes": 1644,
+          "path": "kernel-open/common/inc/nvCpuUuid.h",
+          "sha256": "a228c1ac5b26b9e4d7d1efa7dd69bf111bd0bbadddd65bb016e610e13871a234",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/kernel-open/common/inc/nvCpuUuid.h"
+        },
+        {
+          "bytes": 7964,
+          "path": "kernel-open/common/inc/nv_uvm_user_types.h",
+          "sha256": "515e192fbd1730579dc0aa542914a95b6ab3edd0e9a490dff7e630908a40cd70",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/kernel-open/common/inc/nv_uvm_user_types.h"
+        },
+        {
+          "bytes": 31088,
+          "path": "kernel-open/common/inc/nvtypes.h",
+          "sha256": "878e5711756efa8041803a4f5663fa3ada10ffcd9521e9fbdea0da59ca1d7ceb",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/kernel-open/common/inc/nvtypes.h"
+        },
+        {
+          "bytes": 37975,
+          "path": "kernel-open/nvidia-uvm/uvm_ioctl.h",
+          "sha256": "df747fb83872daa5b4a3373f0a9a5ee77afbe6eb6045f71770043b6efdbe3836",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/kernel-open/nvidia-uvm/uvm_ioctl.h"
+        },
+        {
+          "bytes": 1962,
+          "path": "kernel-open/nvidia-uvm/uvm_linux_ioctl.h",
+          "sha256": "0ffb5cf3679fb5e150745e54b72fab861e319823e419f36376468a60862c2748",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/kernel-open/nvidia-uvm/uvm_linux_ioctl.h"
+        },
+        {
+          "bytes": 59142,
+          "path": "kernel-open/nvidia-uvm/uvm_types.h",
+          "sha256": "a1aa7e70f89691db74c2eb2c6d293d332bfa5d9fd6df3b6fc60a613bb899add9",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/kernel-open/nvidia-uvm/uvm_types.h"
+        },
+        {
+          "bytes": 9321,
+          "path": "src/common/inc/swref/published/turing/tu102/dev_mmu.h",
+          "sha256": "1668eb3c9399b35fc2e2c6a5f6986ff65be6151d9f110f569b9ca6cc25104c06",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/inc/swref/published/turing/tu102/dev_mmu.h"
+        },
+        {
+          "bytes": 15080,
+          "path": "src/common/sdk/nvidia/inc/alloc/alloc_channel.h",
+          "sha256": "2c8469aab65859d44de580d43d1d01128cdf1752c1276c89002171cc7299576f",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/alloc/alloc_channel.h"
+        },
+        {
+          "bytes": 4787,
+          "path": "src/common/sdk/nvidia/inc/cc_drv.h",
+          "sha256": "bacd6692eb1049c4df162109081a9039b4ffa38636b120224e9a8dcb17f1fbd8",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/cc_drv.h"
+        },
+        {
+          "bytes": 2094,
+          "path": "src/common/sdk/nvidia/inc/class/cl0000.h",
+          "sha256": "2f8c158b1e0d55fb425497054539e9dcb24002ec5e4949dd56b9b2b8e17d0208",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl0000.h"
+        },
+        {
+          "bytes": 2290,
+          "path": "src/common/sdk/nvidia/inc/class/cl0000_notification.h",
+          "sha256": "e468580fb8b3ebeed6dd57fef2e4360e105cd9c9f5bf388f4d030c2da66e3f93",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl0000_notification.h"
+        },
+        {
+          "bytes": 2168,
+          "path": "src/common/sdk/nvidia/inc/class/cl003e.h",
+          "sha256": "4870b6c5592fe481075143a0724d5767fb745ae5a04a15fc62fc2246dfba6c47",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl003e.h"
+        },
+        {
+          "bytes": 2390,
+          "path": "src/common/sdk/nvidia/inc/class/cl0040.h",
+          "sha256": "8e6fef4c77c91a352b862767d7292951fe44f5a4b2271fa5bbc7b03b3c7bd414",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl0040.h"
+        },
+        {
+          "bytes": 3279,
+          "path": "src/common/sdk/nvidia/inc/class/cl0070.h",
+          "sha256": "6617fb96ec110b5d3cad0ecff9f1aac20fa824eb3134b3fefe5615e35c1ea01f",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl0070.h"
+        },
+        {
+          "bytes": 2325,
+          "path": "src/common/sdk/nvidia/inc/class/cl0080.h",
+          "sha256": "8829ae3793aaad80dc8e9b560882d4e900565de7ce7832c0ea0ceffe7fe12b08",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl0080.h"
+        },
+        {
+          "bytes": 1733,
+          "path": "src/common/sdk/nvidia/inc/class/cl0080_notification.h",
+          "sha256": "e271a4ec6165294992573334077261ab16976dbdf2881d55415590d2e9ee444e",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl0080_notification.h"
+        },
+        {
+          "bytes": 1746,
+          "path": "src/common/sdk/nvidia/inc/class/cl2080.h",
+          "sha256": "6f0c32970e6ba7e56dec28c44594b41570237bf74b1ea33ab5e8bcd139805351",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl2080.h"
+        },
+        {
+          "bytes": 35754,
+          "path": "src/common/sdk/nvidia/inc/class/cl2080_notification.h",
+          "sha256": "18ae5755a73d61c7b38ec772ce33ce6d8585864ab97d33cd23fbc509aa4ff316",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl2080_notification.h"
+        },
+        {
+          "bytes": 1971,
+          "path": "src/common/sdk/nvidia/inc/class/cl9010.h",
+          "sha256": "f388882c995687540d7515e25f68613e3f8a67a35add99d761afd005656a49c7",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl9010.h"
+        },
+        {
+          "bytes": 1308,
+          "path": "src/common/sdk/nvidia/inc/class/cl9010_callback.h",
+          "sha256": "2571a29472ad80a60c60f2bcaedc8354179b45c6248c98792503349dae419ba8",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl9010_callback.h"
+        },
+        {
+          "bytes": 1472,
+          "path": "src/common/sdk/nvidia/inc/class/cl9067.h",
+          "sha256": "d2266b0ba4b84897c4c3d1b0f5047c72a9d5247c61c5bf0bfcbb7812e0b53654",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl9067.h"
+        },
+        {
+          "bytes": 1461,
+          "path": "src/common/sdk/nvidia/inc/class/cl90f1.h",
+          "sha256": "c1bd28c0a38f74b3e92c6a0b52b2e76bd6782ca6b112593dc69eda88913600b9",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cl90f1.h"
+        },
+        {
+          "bytes": 1473,
+          "path": "src/common/sdk/nvidia/inc/class/cla06c.h",
+          "sha256": "30846382b0e34e930ce16d4ea9f31245b561509171a7df1bf1c0560a7b101053",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/cla06c.h"
+        },
+        {
+          "bytes": 1693,
+          "path": "src/common/sdk/nvidia/inc/class/clc361.h",
+          "sha256": "65c33030f555713c63d3e8aba43f09738c46823bab141a9a07145ca22dc9f06b",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/clc361.h"
+        },
+        {
+          "bytes": 1311,
+          "path": "src/common/sdk/nvidia/inc/class/clc461.h",
+          "sha256": "b0bc3bad11a680f3a61b3cd98a3f84f46ffb164ff308351951dd807f1a5db047",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/clc461.h"
+        },
+        {
+          "bytes": 25985,
+          "path": "src/common/sdk/nvidia/inc/class/clc56f.h",
+          "sha256": "8b7a6d6d5d5e3538f2f3e3b975d00c4aa94bd2480008c49aefcfc2566e3f658e",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/clc56f.h"
+        },
+        {
+          "bytes": 1299,
+          "path": "src/common/sdk/nvidia/inc/class/clc9c0.h",
+          "sha256": "abdfdcfdd2dd5e0a9c823cde3894beceebba79322dc0bbc0a82c15da81e1804a",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/class/clc9c0.h"
+        },
+        {
+          "bytes": 11713,
+          "path": "src/common/sdk/nvidia/inc/cpuopsys.h",
+          "sha256": "329ab764372bace3e1445315bb7a3766d4f60aacb8523ac3e3c760c79358f4fb",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/cpuopsys.h"
+        },
+        {
+          "bytes": 2619,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0000/ctrl0000base.h",
+          "sha256": "971aeb17a78a9eda00a20555063e7e37355e1a4acf917ad377aea07385c287a0",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0000/ctrl0000base.h"
+        },
+        {
+          "bytes": 43493,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0000/ctrl0000gpu.h",
+          "sha256": "af306168bc3f575c02b499e66a7631d8881d2cee897c680e15ea54cddf2ad6db",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0000/ctrl0000gpu.h"
+        },
+        {
+          "bytes": 157054,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0000/ctrl0000system.h",
+          "sha256": "408864b93f92b8bec1968389a377e018f4b5fd216ac21003c4bbc40b5b0f2a73",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0000/ctrl0000system.h"
+        },
+        {
+          "bytes": 2354,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0073/ctrl0073base.h",
+          "sha256": "246e8fd22a023ee9acc4dd4d74cc8232a295faa0fd7709d3bdd58c4a079073c0",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0073/ctrl0073base.h"
+        },
+        {
+          "bytes": 124343,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0073/ctrl0073system.h",
+          "sha256": "851e8dbf57469f1409cb98396f3d1ae46a059b1a6f86a2f74c9613011c618fba",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0073/ctrl0073system.h"
+        },
+        {
+          "bytes": 3272,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080base.h",
+          "sha256": "c3b6ef34d6b73aa9aba0bd17dbc9d92ce60cc42fbe5f6ff8176e44c894d7cfc8",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080base.h"
+        },
+        {
+          "bytes": 14639,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080gr.h",
+          "sha256": "d5e4c50d04cdb155a91976947995565bcc8a34ea366604975bf38029b29354c9",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080gr.h"
+        },
+        {
+          "bytes": 4629,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080nvdec.h",
+          "sha256": "42417f6d3742c5b8fbb2cef5dbb3a701ac64e976db52a583d0e62ed087f65e3f",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080nvdec.h"
+        },
+        {
+          "bytes": 3908,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080nvenc.h",
+          "sha256": "3c3f1b6c2c7b33afb420ac5f15dd23d46249f5991b061e13c29b37e227ed44b3",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl0080/ctrl0080nvenc.h"
+        },
+        {
+          "bytes": 7348,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080base.h",
+          "sha256": "2bccabed1b30cf39f0e2668003f42057ee7c213de6630bb23aed2453dfa65d86",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080base.h"
+        },
+        {
+          "bytes": 42904,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080boardobj.h",
+          "sha256": "57059c05f65eeaf8e71dd7d50e1781ff452623a5185ae4a6cf70b58a15625b9a",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080boardobj.h"
+        },
+        {
+          "bytes": 1393,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080boardobjgrpclasses.h",
+          "sha256": "211cc385d0f5d9510e6cd52616ea8feec843f321b7951c8213ec07e0c6c0621b",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080boardobjgrpclasses.h"
+        },
+        {
+          "bytes": 84766,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080bus.h",
+          "sha256": "e9237857e7438e12cc76f80503fc3f0a9cfca7813a4f47e6411fb5dd314aeec3",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080bus.h"
+        },
+        {
+          "bytes": 46639,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080fifo.h",
+          "sha256": "64bb4cc69d26f34881cd698c643f64497166801766f747948159e32eb7f91a6e",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080fifo.h"
+        },
+        {
+          "bytes": 205465,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080gpu.h",
+          "sha256": "3916355deee885297ace65a8fb27b739f14d005ae3bb5afbb0a2cc500b03d9cf",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080gpu.h"
+        },
+        {
+          "bytes": 95135,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080gr.h",
+          "sha256": "3606a7eca1edab791659af041ecbe207596e516db2f94db261dadd57f939b478",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080gr.h"
+        },
+        {
+          "bytes": 228118,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080internal.h",
+          "sha256": "b860f25c4a03727449eb63aa3317075fd7a7c82f785ff64cc3be96fdc1a6096d",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080internal.h"
+        },
+        {
+          "bytes": 14881,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080mc.h",
+          "sha256": "a0331acf5b34a9b408a2acc86edb64a504e605be188faf048cba795e90c3dcae",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080mc.h"
+        },
+        {
+          "bytes": 165592,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080nvlink.h",
+          "sha256": "bf4eb9a77ca2296f3015869db2c479c52f83a270648f5f85f9b8290da049fd63",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080nvlink.h"
+        },
+        {
+          "bytes": 1841,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080nvlink_common.h",
+          "sha256": "25c2515169bf0e2e4fcc2fcd38d43a8e45760bc4a24490940f117f0c43b439da",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl2080/ctrl2080nvlink_common.h"
+        },
+        {
+          "bytes": 69835,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl30f1.h",
+          "sha256": "84b54590be99e7898fe33303b4b13138804c76234e050f7f5c469e9e7fe42f09",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl30f1.h"
+        },
+        {
+          "bytes": 7802,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl906f.h",
+          "sha256": "0beed857919bc90dca3b3063be3529181eee2c92c8dc67fdb4ff0d4003f116e3",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl906f.h"
+        },
+        {
+          "bytes": 13048,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrl90f1.h",
+          "sha256": "ed30642e8648456affe5923c9c6284d7c61964b56bab67ccb0d7f4dc595967a9",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrl90f1.h"
+        },
+        {
+          "bytes": 16536,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrla06c.h",
+          "sha256": "e3a92aa6db7774e5cbf1f672089532e5e3ce05d22dc54e330c8132889171a11f",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrla06c.h"
+        },
+        {
+          "bytes": 2089,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrla06f/ctrla06fbase.h",
+          "sha256": "34da8c298fb57213ee604fa04b335f9b5baecc558c40295455cefc28aaa98796",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrla06f/ctrla06fbase.h"
+        },
+        {
+          "bytes": 9971,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrla06f/ctrla06fgpfifo.h",
+          "sha256": "0364c6aa445dec859c8889017e91351de66345d82f09e2dfcef9892b0ed3f63d",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrla06f/ctrla06fgpfifo.h"
+        },
+        {
+          "bytes": 6478,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrlc36f.h",
+          "sha256": "43c9b91089a609e76f68965d6516bae20bcf7d41a2c7a9e7b744e9baa2462141",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrlc36f.h"
+        },
+        {
+          "bytes": 2537,
+          "path": "src/common/sdk/nvidia/inc/ctrl/ctrlxxxx.h",
+          "sha256": "3c34cab9ddee358b3480a96795ec5068eae1c3f2328921a8d0a83d0d3f751db7",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/ctrl/ctrlxxxx.h"
+        },
+        {
+          "bytes": 5421,
+          "path": "src/common/sdk/nvidia/inc/mmu_fmt_types.h",
+          "sha256": "31fa483495839465611e6dc45001196c3b01082dae7c78d0724910b90c2c3a77",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/mmu_fmt_types.h"
+        },
+        {
+          "bytes": 1304,
+          "path": "src/common/sdk/nvidia/inc/nvcfg_sdk.h",
+          "sha256": "cb9b9ddf1d9d55527e182c1864fb45dcc7331e6de1498a71814cfc5bbe0c62c8",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvcfg_sdk.h"
+        },
+        {
+          "bytes": 20747,
+          "path": "src/common/sdk/nvidia/inc/nvfixedtypes.h",
+          "sha256": "4682ac614a8e3c598fb481139de0e5ed1923314f361db9aad0c0749da6dbd5b9",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvfixedtypes.h"
+        },
+        {
+          "bytes": 7866,
+          "path": "src/common/sdk/nvidia/inc/nvgputypes.h",
+          "sha256": "dcb4bf6a0eae9883ef36438dac4765a47a90555a01e887c380caf0690c7be08d",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvgputypes.h"
+        },
+        {
+          "bytes": 3647,
+          "path": "src/common/sdk/nvidia/inc/nvimpshared.h",
+          "sha256": "77a54cb2e5afa4d1d0d7ad579609bb00c63a90113216962f9db0c6b6eb957726",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvimpshared.h"
+        },
+        {
+          "bytes": 1967,
+          "path": "src/common/sdk/nvidia/inc/nvlimits.h",
+          "sha256": "7c7bf27c5360464b459f6069d2e72f6070bb3fdd0862baccf6c7aa71da67c593",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvlimits.h"
+        },
+        {
+          "bytes": 48773,
+          "path": "src/common/sdk/nvidia/inc/nvmisc.h",
+          "sha256": "52fa10e9d9d35e0e5c7b71621eda632a97af29f7ca7117b0f4b91704ca1ce775",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvmisc.h"
+        },
+        {
+          "bytes": 158029,
+          "path": "src/common/sdk/nvidia/inc/nvos.h",
+          "sha256": "27adc076fe1a265d41374f7c865a6afb6a2f1025fc4e136d03431a638570f35c",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvos.h"
+        },
+        {
+          "bytes": 4565,
+          "path": "src/common/sdk/nvidia/inc/nvstatus.h",
+          "sha256": "e8267172a1f7a56420d612c6734b3554b9ff6a3d33fdda21b1371ff4ce4b8675",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvstatus.h"
+        },
+        {
+          "bytes": 19637,
+          "path": "src/common/sdk/nvidia/inc/nvstatuscodes.h",
+          "sha256": "4a9a39b51862d21cfa446414135386616a4a4914dd34dc83f98099295fea7b56",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvstatuscodes.h"
+        },
+        {
+          "bytes": 30226,
+          "path": "src/common/sdk/nvidia/inc/nvtypes.h",
+          "sha256": "da23dbc28805c390d62338dba5603eb12b2e94c8aaf873c1c42c1a5f10f26b79",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/nvtypes.h"
+        },
+        {
+          "bytes": 9561,
+          "path": "src/common/sdk/nvidia/inc/rs_access.h",
+          "sha256": "ee3174aa565a08594f66c325b06d24bd8e798d933bf74ff12c803cf3614bb117",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/common/sdk/nvidia/inc/rs_access.h"
+        },
+        {
+          "bytes": 2809,
+          "path": "src/nvidia/arch/nvalloc/unix/include/nv-ioctl-numa.h",
+          "sha256": "73b8d70a2b02f0c80d7b6d1dc2b5c12104f5010b4ea403cd4a599ef2e5a234de",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/nvidia/arch/nvalloc/unix/include/nv-ioctl-numa.h"
+        },
+        {
+          "bytes": 2228,
+          "path": "src/nvidia/arch/nvalloc/unix/include/nv-ioctl-numbers.h",
+          "sha256": "60f90de095ef152ab36a3dabda979448870b182b4a082bebd7a1af2b70075623",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/nvidia/arch/nvalloc/unix/include/nv-ioctl-numbers.h"
+        },
+        {
+          "bytes": 4820,
+          "path": "src/nvidia/arch/nvalloc/unix/include/nv-ioctl.h",
+          "sha256": "c2aa6dad513c8dd1ae9bd412b649ccf1928c45dccf32adbbce8a3bed28420f48",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/nvidia/arch/nvalloc/unix/include/nv-ioctl.h"
+        },
+        {
+          "bytes": 1700,
+          "path": "src/nvidia/arch/nvalloc/unix/include/nv-unix-nvos-params-wrappers.h",
+          "sha256": "d3ff263781baae28ade28d5fd7a9f69d2019e8f4ca7bfb5675fa280be77792e5",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/nvidia/arch/nvalloc/unix/include/nv-unix-nvos-params-wrappers.h"
+        },
+        {
+          "bytes": 2757,
+          "path": "src/nvidia/arch/nvalloc/unix/include/nv_escape.h",
+          "sha256": "51da358aac86eba22c9ca9db137cd2b41e36f433b9848f99dbc1ce744f5115e7",
+          "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/615.78.08/src/nvidia/arch/nvalloc/unix/include/nv_escape.h"
+        }
+      ],
+      "kind": "file-set",
+      "license_files": [],
+      "manifest": "manifests/nvidia-open-gpu-kernel-modules-headers.json",
+      "manifest_sha256": "36450742c1a1759fdd420a1d0dd3fe19d250b09f9aac0afc8e44d6351dd66ab2",
+      "name": "nvidia-open-gpu-kernel-modules-headers",
+      "notes": "73 declaration headers only (ABI probe input), fetched per file at tag 615.78.08 and checked by SHA-256. COPYING of that repository applies; no driver implementation is copied.",
+      "release": "615.78.08",
+      "repository": "https://github.com/NVIDIA/open-gpu-kernel-modules"
+    },
+    {
+      "commit": "0c539948c8d196ae338d91efbc8ca495f1ea0d1d",
+      "consumers": [
+        "rtx"
+      ],
+      "files": [
+        {
+          "bytes": 22541,
+          "path": "ffx-parallelsort/FFX_ParallelSort.h",
+          "sha256": "50d6309459f2e2ce6abd9d48099d4e34d1b126b81a69e824443def0380723d84",
+          "url": "https://raw.githubusercontent.com/GPUOpen-Effects/FidelityFX-ParallelSort/0c539948c8d196ae338d91efbc8ca495f1ea0d1d/ffx-parallelsort/FFX_ParallelSort.h"
+        }
+      ],
+      "kind": "file-set",
+      "license_files": [],
+      "manifest": "manifests/ffx-parallelsort.json",
+      "manifest_sha256": "84dcf92bcff5e80762190c78242d4097add796155f1827bca061ce86aba8f36b",
+      "name": "ffx-parallelsort",
+      "repository": "https://github.com/GPUOpen-Effects/FidelityFX-ParallelSort"
+    }
+  ],
+  "status": "PRIVATE_DRAFT_NOT_RELEASE_CLEARED"
+}

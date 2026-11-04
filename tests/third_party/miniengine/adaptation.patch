@@ -1,0 +1,36 @@
+--- upstream/GenerateHistogramCS.hlsl
++++ adapted/histogram.hlsl
+@@ -15,9 +15,9 @@
+ // The histogram measures logarithmic luminance ranging from 2^-12 up to 2^4.  This should provide a nice window
+ // where the exposure would range from 2^-4 up to 2^4.
+ 
+-#include "PostEffectsRS.hlsli"
+-
+-Texture2D<uint> LumaBuf : register( t0 );
++// NDX12 adaptation (READYMADE-001): no textures/root signatures in the RTX adapter, so the
++// luma texture becomes a UAV structured buffer indexed with an explicit width.
++RWStructuredBuffer<uint> LumaBuf : register( u1 );
+ RWByteAddressBuffer Histogram : register( u0 );
+ 
+ groupshared uint g_TileHistogram[256];
+@@ -25,9 +25,10 @@
+ cbuffer CB0 : register(b0)
+ {
+     uint kBufferHeight;
++    uint kBufferWidth;      // NDX12 adaptation: texture width
++    uint kReserved0, kReserved1, kReserved2, kReserved3, kReserved4, kReserved5; // NDX12: b0 is 32 bytes
+ }
+ 
+-[RootSignature(PostEffects_RootSig)]
+ [numthreads( 16, 16, 1 )]
+ void main( uint GI : SV_GroupIndex, uint3 DTid : SV_DispatchThreadID )
+ {
+@@ -38,7 +39,7 @@
+     // Loop until the entire column has been processed
+     for (uint2 ST = DTid.xy; ST.y < kBufferHeight; ST.y += 16)
+     {
+-        uint QuantizedLogLuma = LumaBuf[ST];
++        uint QuantizedLogLuma = LumaBuf[ST.y * kBufferWidth + ST.x];
+         InterlockedAdd( g_TileHistogram[QuantizedLogLuma], 1 );
+     }
+ 

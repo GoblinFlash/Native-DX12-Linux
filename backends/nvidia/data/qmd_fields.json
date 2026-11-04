@@ -1,0 +1,367 @@
+{
+  "fields": {
+    "BARRIER_COUNT": {
+      "hi": 767,
+      "lo": 763,
+      "width": 5
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[0]": {
+      "hi": 1055,
+      "lo": 1024,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[1]": {
+      "hi": 1119,
+      "lo": 1088,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[2]": {
+      "hi": 1183,
+      "lo": 1152,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[3]": {
+      "hi": 1247,
+      "lo": 1216,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[4]": {
+      "hi": 1311,
+      "lo": 1280,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[5]": {
+      "hi": 1375,
+      "lo": 1344,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[6]": {
+      "hi": 1439,
+      "lo": 1408,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_LOWER[7]": {
+      "hi": 1503,
+      "lo": 1472,
+      "width": 32
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[0]": {
+      "hi": 1072,
+      "lo": 1056,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[1]": {
+      "hi": 1136,
+      "lo": 1120,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[2]": {
+      "hi": 1200,
+      "lo": 1184,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[3]": {
+      "hi": 1264,
+      "lo": 1248,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[4]": {
+      "hi": 1328,
+      "lo": 1312,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[5]": {
+      "hi": 1392,
+      "lo": 1376,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[6]": {
+      "hi": 1456,
+      "lo": 1440,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_ADDR_UPPER[7]": {
+      "hi": 1520,
+      "lo": 1504,
+      "width": 17
+    },
+    "CONSTANT_BUFFER_INVALIDATE[0]": {
+      "hi": 1074,
+      "lo": 1074,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_INVALIDATE[1]": {
+      "hi": 1138,
+      "lo": 1138,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_INVALIDATE[2]": {
+      "hi": 1202,
+      "lo": 1202,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_INVALIDATE[3]": {
+      "hi": 1266,
+      "lo": 1266,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_INVALIDATE[4]": {
+      "hi": 1330,
+      "lo": 1330,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_INVALIDATE[5]": {
+      "hi": 1394,
+      "lo": 1394,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_INVALIDATE[6]": {
+      "hi": 1458,
+      "lo": 1458,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_INVALIDATE[7]": {
+      "hi": 1522,
+      "lo": 1522,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[0]": {
+      "hi": 1073,
+      "lo": 1073,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[1]": {
+      "hi": 1137,
+      "lo": 1137,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[2]": {
+      "hi": 1201,
+      "lo": 1201,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[3]": {
+      "hi": 1265,
+      "lo": 1265,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[4]": {
+      "hi": 1329,
+      "lo": 1329,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[5]": {
+      "hi": 1393,
+      "lo": 1393,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[6]": {
+      "hi": 1457,
+      "lo": 1457,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_PREFETCH_POST[7]": {
+      "hi": 1521,
+      "lo": 1521,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[0]": {
+      "hi": 1087,
+      "lo": 1075,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[1]": {
+      "hi": 1151,
+      "lo": 1139,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[2]": {
+      "hi": 1215,
+      "lo": 1203,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[3]": {
+      "hi": 1279,
+      "lo": 1267,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[4]": {
+      "hi": 1343,
+      "lo": 1331,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[5]": {
+      "hi": 1407,
+      "lo": 1395,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[6]": {
+      "hi": 1471,
+      "lo": 1459,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_SIZE_SHIFTED4[7]": {
+      "hi": 1535,
+      "lo": 1523,
+      "width": 13
+    },
+    "CONSTANT_BUFFER_VALID[0]": {
+      "hi": 640,
+      "lo": 640,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_VALID[1]": {
+      "hi": 641,
+      "lo": 641,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_VALID[2]": {
+      "hi": 642,
+      "lo": 642,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_VALID[3]": {
+      "hi": 643,
+      "lo": 643,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_VALID[4]": {
+      "hi": 644,
+      "lo": 644,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_VALID[5]": {
+      "hi": 645,
+      "lo": 645,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_VALID[6]": {
+      "hi": 646,
+      "lo": 646,
+      "width": 1
+    },
+    "CONSTANT_BUFFER_VALID[7]": {
+      "hi": 647,
+      "lo": 647,
+      "width": 1
+    },
+    "CTA_RASTER_DEPTH": {
+      "hi": 463,
+      "lo": 448,
+      "width": 16
+    },
+    "CTA_RASTER_HEIGHT": {
+      "hi": 431,
+      "lo": 416,
+      "width": 16
+    },
+    "CTA_RASTER_WIDTH": {
+      "hi": 415,
+      "lo": 384,
+      "width": 32
+    },
+    "CTA_THREAD_DIMENSION0": {
+      "hi": 607,
+      "lo": 592,
+      "width": 16
+    },
+    "CTA_THREAD_DIMENSION1": {
+      "hi": 623,
+      "lo": 608,
+      "width": 16
+    },
+    "CTA_THREAD_DIMENSION2": {
+      "hi": 639,
+      "lo": 624,
+      "width": 16
+    },
+    "MAX_SM_CONFIG_SHARED_MEM_SIZE": {
+      "hi": 574,
+      "lo": 569,
+      "width": 6
+    },
+    "MIN_SM_CONFIG_SHARED_MEM_SIZE": {
+      "hi": 567,
+      "lo": 562,
+      "width": 6
+    },
+    "PROGRAM_ADDRESS_LOWER": {
+      "hi": 1567,
+      "lo": 1536,
+      "width": 32
+    },
+    "PROGRAM_ADDRESS_UPPER": {
+      "hi": 1584,
+      "lo": 1568,
+      "width": 17
+    },
+    "PROGRAM_PREFETCH_ADDR_LOWER_SHIFTED": {
+      "hi": 287,
+      "lo": 256,
+      "width": 32
+    },
+    "PROGRAM_PREFETCH_ADDR_UPPER_SHIFTED": {
+      "hi": 1640,
+      "lo": 1632,
+      "width": 9
+    },
+    "PROGRAM_PREFETCH_SIZE": {
+      "hi": 1649,
+      "lo": 1641,
+      "width": 9
+    },
+    "PROGRAM_PREFETCH_TYPE": {
+      "hi": 1651,
+      "lo": 1650,
+      "width": 2
+    },
+    "QMD_MAJOR_VERSION": {
+      "hi": 583,
+      "lo": 580,
+      "width": 4
+    },
+    "QMD_VERSION": {
+      "hi": 579,
+      "lo": 576,
+      "width": 4
+    },
+    "REGISTER_COUNT_V": {
+      "hi": 656,
+      "lo": 648,
+      "width": 9
+    },
+    "SASS_VERSION": {
+      "hi": 1663,
+      "lo": 1656,
+      "width": 8
+    },
+    "SHADER_LOCAL_MEMORY_HIGH_SIZE": {
+      "hi": 1623,
+      "lo": 1600,
+      "width": 24
+    },
+    "SHADER_LOCAL_MEMORY_LOW_SIZE": {
+      "hi": 759,
+      "lo": 736,
+      "width": 24
+    },
+    "SHARED_MEMORY_SIZE": {
+      "hi": 561,
+      "lo": 544,
+      "width": 18
+    },
+    "TARGET_SM_CONFIG_SHARED_MEM_SIZE": {
+      "hi": 662,
+      "lo": 657,
+      "width": 6
+    }
+  },
+  "qmd_constructed": false,
+  "schema": "ndx.qmd-v03-fields.v1",
+  "source": {
+    "commit": "5d957df1787982e35961ab2ee6834670c6684cb9",
+    "path": "@HEADERS@/clc9c0qmd.h",
+    "sha256": "12f61b40ca721248de170469c2673ba7f9f1ac5ea24e42e42b102e8c84d7f43b"
+  },
+  "units_inferred": false
+}
