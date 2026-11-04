@@ -1,11 +1,13 @@
 # Native DX12 Linux
 
-Project created by Andrew Kapica — GoblinFlash.
+Created by Andrew Kapica — GoblinFlash.
 
-Experimental native Linux components for a bounded subset of Direct3D 12.
-The documented build platform is Ubuntu 26.04 on x86-64. This source tree contains
-NVIDIA, Intel and AMD components. It does not provide complete Direct3D 12,
-Shader Model, feature-level, Windows ABI, DXGI or game compatibility.
+Working to bring native DirectX 12 support to Linux — without Vulkan translation.
+
+This is an experimental project. The documented build platform is Ubuntu 26.04 (x86-64).
+The source tree includes NVIDIA, AMD, and Intel components.
+
+Full Direct3D 12 support is not yet available, including complete Shader Model and feature-level coverage, Windows ABI, DXGI, and game compatibility.
 
 ## Components and evidence boundaries
 
