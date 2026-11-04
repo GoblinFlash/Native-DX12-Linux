@@ -15,6 +15,10 @@ Follow the project's progress and technical discussions:
 
 [NVIDIA Developer Forums — Native DirectX 12 on Linux](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938)
 
+## Architecture
+
+![Native DX12 Linux — experimental NVIDIA compute path](docs/native_dx12_linux_pipeline.svg)
+
 ## Components and evidence boundaries
 
 | Component | Source path and implementation | Evidence for this package |
