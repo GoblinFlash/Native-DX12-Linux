@@ -9,6 +9,12 @@ The source tree includes NVIDIA, AMD, and Intel components.
 
 Full Direct3D 12 support is not yet available, including complete Shader Model and feature-level coverage, Windows ABI, DXGI, and game compatibility.
 
+## Community & Discussion
+
+Follow the project's progress and technical discussions:
+
+[NVIDIA Developer Forums — Native DirectX 12 on Linux](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938)
+
 ## Components and evidence boundaries
 
 | Component | Source path and implementation | Evidence for this package |
