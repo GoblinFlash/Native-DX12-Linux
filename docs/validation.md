@@ -186,7 +186,7 @@ and fresh hardware execution are separate evidence levels.
 
 ## Licensing
 
-Andrew Kapica's project-owned portions: Copyright (C) 2026 Andrew Kapica,
+Andrew Kapica project-owned portions: Copyright (C) 2026 Andrew Kapica,
 GPL-3.0-or-later; see [LICENSE](../LICENSE). Third-party originals, adaptations and declaration
 material retain their applicable original terms and notices; see [NOTICE](../NOTICE) and
 component licence files. This is not a blanket GPL relicensing of dependencies
