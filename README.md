@@ -58,6 +58,12 @@ Vulkan and CUDA appear as separate reference measurements, not a like-for-like r
 | AMD Radeon | CPU-side development and checks underway; GPU testing is a next step. |
 | Intel Iris Xe | Used for early development and testing; further work is planned. |
 
+## GPU Benchmarking
+
+Work is underway to make GPU benchmarks easier to run on your own Linux machine.
+
+**Current test hardware: NVIDIA RTX 4090.** Support for the NVIDIA RTX 30 series is coming soon.
+
 ## Explore the project
 
 - **[Build the source](container/README.md)** — instructions for compiling on the CPU; no GPU test is launched.
