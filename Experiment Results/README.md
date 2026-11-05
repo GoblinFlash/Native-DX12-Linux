@@ -1,6 +1,6 @@
 # Experiment Results
 
-Recorded experiments and checks, organized by GPU vendor:
+Recorded experiments and checks:
 
 1. **[NVIDIA](NVIDIA/README.md)** — RTX 4090 GPU experiments, measured improvements and checked results.
 2. **[AMD](AMD/README.md)** — RadeonSI adapter checks performed on the CPU. No AMD GPU benchmark results in this release.
