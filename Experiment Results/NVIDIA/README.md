@@ -18,7 +18,7 @@ These are recorded GPU compute experiments. The two performance charts compare a
 
 The arrangements describe how the generated values were organized for the test. They are not display resolutions. The recorded experiment passed 2,880 full output-buffer comparisons.
 
-![RTX 4090 histogram experiment — original before-and-after chart](../../docs/rtx4090-d4-original.png)
+![RTX 4090 histogram experiment — original before-and-after chart](rtx4090-d4-original.png)
 
 ## Test 2 — Four GPU programs working together
 
@@ -33,7 +33,7 @@ The arrangements describe how the generated values were organized for the test. 
 
 This measures the complete four-program GPU sequence, not just the changed final program. The recorded experiment passed 2,620 full output-buffer comparisons. Vulkan and CUDA appear on the chart as separate reference measurements, not a universal speed ranking.
 
-![RTX 4090 full GPU sequence — original chart](../../docs/rtx4090-fullbench-original.png)
+![RTX 4090 full GPU sequence — original chart](rtx4090-fullbench-original.png)
 
 ## Other recorded RTX 4090 execution tests
 
@@ -48,6 +48,6 @@ These two execution checks do not include a qualified performance comparison.
 
 Work is underway to make GPU benchmarks easier to run on another Linux machine. The public source release does not yet contain a ready-to-run version of these exact benchmark campaigns. The underlying development evidence for the charts is retained privately.
 
-For the recorded hardware, methods, source identities and limitations, see [measurement and validation details](../../docs/validation.md).
+For the recorded hardware, methods, source identities and limitations, see [measurement and execution details](measurement-details.md). Build and CPU checks are documented [separately](../../docs/validation.md).
 
 [All experiment results](../README.md) · [Project home](../../README.md)

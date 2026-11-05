@@ -30,7 +30,7 @@ The test uses **16,384 generated values from 0 to 255**, similar to grayscale pi
 
 **What improved?** Four repeated operations were grouped together. The GPU completed the same task in **up to 44.22% less time**, with the same checked result.
 
-![RTX 4090 D4 experiment: before and after GPU interval](docs/rtx4090-d4-original.png)
+![RTX 4090 D4 experiment: before and after GPU interval](Experiment%20Results/NVIDIA/rtx4090-d4-original.png)
 
 **Why is it important?** Faster histograms mean less time spent on this part of image processing.
 
@@ -42,13 +42,13 @@ The **64×64** and **127×65** labels on the chart refer to the dimensions of th
 
 **What improved?** The last program now reads four histogram values together instead of one by one. The **whole four-program task finished about 5–6% faster**, with the same checked result.
 
-![RTX 4090 four-program pipeline and reference implementations](docs/rtx4090-fullbench-original.png)
+![RTX 4090 four-program pipeline and reference implementations](Experiment%20Results/NVIDIA/rtx4090-fullbench-original.png)
 
 **Why is it important?** The improvement made the **complete sequence faster**, not just one isolated operation.
 
 Vulkan and CUDA appear as separate reference measurements, not a like-for-like ranking.
 
-[Measurement details](docs/validation.md)
+[Measurement details](Experiment%20Results/NVIDIA/measurement-details.md)
 
 ## Current project status
 

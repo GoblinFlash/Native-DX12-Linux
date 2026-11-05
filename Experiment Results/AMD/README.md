@@ -2,6 +2,8 @@
 
 **Current public evidence:** CPU-side checks of the RadeonSI adapter. An AMD GPU benchmark has not yet been qualified in this release.
 
+The source includes a CORE/RadeonSI adapter, compiler dependencies and CPU contract tests. Full AMD frontend and device execution have not been qualified in this release.
+
 ## What has been tested?
 
 The recorded adapter test covered 56 CPU-side checks, including:

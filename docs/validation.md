@@ -1,96 +1,13 @@
-# Technical results, build notes and evidence boundaries
+# Build and CPU validation
 
-This page retains the detailed technical record from the previously published README. The public front page summarizes selected results; this record documents the scope and limitations of the source distribution.
+This page explains how the source package is built and checked on the CPU, and what those checks do and do not establish. GPU experiment measurements and their original charts are organized separately:
 
-## Components and evidence boundaries
+- [NVIDIA RTX 4090 — measured experiments and execution checks](../Experiment%20Results/NVIDIA/README.md)
+- [AMD — CPU-side adapter checks](../Experiment%20Results/AMD/README.md)
+- [Intel — early Iris Xe development and test programs](../Experiment%20Results/Intel/README.md)
 
-| Component | Source path and implementation | Evidence for this package |
-| --- | --- | --- |
-| NVIDIA | Shared RM/UVM compute runtime for affine and FidelityFX ParallelSort. Affine uses DXIL/LLVMBC -> NIR -> NAK; ParallelSort uses DXIL -> SPIR-V -> NIR -> NAK. | The two recorded RTX 4090 cases below. These do not qualify the experimental D3D12 frontend API. |
-| Intel | C++ frontend and Gallium/Iris backend, with compute and offscreen graphics examples. DXIL -> SPIR-V -> NIR. | CPU/build evidence applies to the source versions named in its receipts. No Intel GPU qualification is claimed for this export. |
-| AMD | CORE/RadeonSI adapter, compiler dependencies and CPU contract tests. | Recorded CPU adapter checks: 56 controls and four output images. Full AMD frontend/device execution is not qualified; no AMD GPU claim. |
-
-The NVIDIA submission code uses RM/UVM. SPIR-V is a compiler intermediate for
-ParallelSort, not a claim that the workload uses a Vulkan runtime. This README
-does not extend historical path/library checks to every rebuilt output.
-
-## Measured RTX 4090 compute experiments
-
-The two charts on the front page summarize bounded development experiments on an
-RTX 4090. Neither experiment proves full Direct3D 12 execution, game performance
-or speedups on other devices. The raw development evidence is retained privately;
-the source release does not provide a ready-to-run reproduction of these plots.
-
-**D4 histogram experiment (2026-10-29):** each case contains 16,384 generated
-input values in the range 0–255, stored as 32-bit integers. The GPU counts the
-occurrences of each value. All three cases contain the same number of values;
-their different width-by-height arrangements change the GPU work distribution.
-
-| Input arrangement | Original (µs) | Changed (µs) | Paired median time reduction |
-| --- | ---: | ---: | ---: |
-| 128×128 | 3.392 | 2.624 | 22.64% |
-| 32×512 | 7.936 | 4.848 | 39.01% |
-| 16×1024 | 14.112 | 7.872 | 44.22% |
-
-The change groups four repeated load/atomic operations and changes how guards
-are represented. The intervals cover the complete histogram GPU dispatch, not
-just the compiler or one instruction. Four paired process comparisons were made
-per arrangement. All 2,880 complete output-buffer checks passed. The displayed
-percentages are paired-process median reductions and are not always the ratios
-of the two displayed medians. Independent saved-evidence verification agreed
-with the report; production integration is a separate decision.
-
-**Four-program chain (2026-10-29):** each input contains synthetic 32-bit values
-arranged as 64×64 (4,096 values) or 127×65 (8,255 values). The GPU executes
-`reduce → shared histogram → global histogram → combine`. The changed final
-program reads four adjacent histogram values in one operation rather than
-loading each separately. The other three programs and the work ordering are
-unchanged.
-
-| Input arrangement | Original native path (µs) | Changed native path (µs) | Whole-chain time reduction |
-| --- | ---: | ---: | ---: |
-| 64×64 | 4.608 | 4.336 | 5.90% |
-| 127×65 | 5.632 | 5.344 | 5.11% |
-
-These times cover the complete four-program GPU interval, including the
-necessary synchronization between programs, not application startup or CPU
-frontend overhead. Three process medians were recorded for each path and input
-arrangement, and all 2,620 complete 64-KiB buffer comparisons matched expected
-results. Vulkan and CUDA were independently measured reference implementations;
-differences in synchronization and caching prevent a general backend ranking.
-The author report did not claim an independent review of this new campaign.
-
-## Recorded RTX 4090 cases
-
-The recorded host used GeForce RTX 4090, PCI 10de:2684, Ada SM89, NVIDIA UNIX
-Open Kernel Module 615.78.08, Ubuntu 26.04.1, kernel 7.0.0-42-generic, x86-64.
-
-| Case | Recorded execution | Checked result |
-| --- | --- | --- |
-| Affine u32 | N=129; one dispatch; grid 2x1x1, local size 128x1x1 | Independent u32 arithmetic, complete input/output/guard buffers and padding |
-| FidelityFX ParallelSort | N=515, max_groups=1; prefix40, 40 dispatches | Independent final sorting/permutation check and complete final images; no per-dispatch image qualification |
-
-Both recorded attempts reached CLOSED with zero remaining owners, completion
-signal 101 and GET=PUT=1. One FIFO entry contains the 40-dispatch sort workload;
-GET/PUT is not the dispatch count. The control-image check compared 1,048,072
-bytes, excluding exactly 504 bytes of RM USERD. There were no new kernel records
-inside either execution window. Sixteen AppArmor "who" records outside those
-windows were reported separately.
-
-Evidence identity for these recorded cases:
-
-- Source lock: 2174d8755fe39a40c80cca58ab01044c4ae7efdff8a1e60e455b06cd4da201ad.
-- Affine shader binary: ffbc8fd32b70a4485c34a2fa9d5ee85c01af3539a645b1cffa3525a1b3c448ae.
-- Affine output image: e2dd76c76f477af81812707b2ac0c661a23189677f2ef6170e17205f76ddf38a.
-- Recorded summary SHA-256: 537f45f75bc7e0a433496d87174c084fc34f10a30cb9f69bae49649f95ba50e4.
-
-These identities name the recorded version, not a later documentation revision.
-The raw development evidence is retained privately and is not part of the source
-distribution. This summary describes recorded observations; it is not a
-publicly replayable GPU evidence bundle. No benchmark, long-term stability,
-other GPU/driver, arbitrary shader or general D3D12 Dispatch is qualified.
-The runtime's formal native_execution_proven flags remain false; the experimental
-observations above are reported separately.
+The `tests/` folder contains test code and sample workloads, not the experiment
+results. The NVIDIA, AMD and Intel results are under `Experiment Results/`.
 
 ## CPU build
 
@@ -126,7 +43,7 @@ cache exited 0, followed by complete offline manifest verification: 13/13
 entries passed. The same cache was reused and verified again for the build
 below, without another fetch.
 
-The immediate source predecessor of this documentation-only revision then
+A recorded source revision then
 passed one clean all-target CPU build in an existing immutable Podman toolchain
 image: `--targets intel,rtx,amd`, `--jobs 2`, outer `--network=none`, no devices,
 exit 0 in 516 seconds. All 18 dependency commands exited 0. Of 37 project
@@ -135,9 +52,8 @@ commands, 35 exited 0 and two expected refusals exited 1 with
 and with `-O`: 177 files, 81 runtime pins, 61 packet pins and 43 modules.
 AMD retains `full_frontend_link=false`; GPU execution was `NOT_RUN`.
 
-This documentation-only revision and its updated source lock succeed those
-built bytes; no new clean build of this revision was run. Code, dependencies
-and runtime templates are unchanged here. The result does not provision a
+The current documentation and source lock succeed those built bytes; no clean
+rebuild of the current source revision is claimed here. The historical result does not provision a
 clean host or transfer the recorded GPU qualification to rebuilt artifacts.
 Bit-identical complete outputs across hosts or build roots are not promised.
 
@@ -175,9 +91,10 @@ integrity boundary, not an OS sandbox for arbitrary native code or existing FDs.
 ## GPU use and current limits
 
 There is currently no documented public plan generator or end-to-end NVIDIA
-example runner in this source export. native_bootstrap.py consumes an explicitly
+benchmark runner in this source export. `native_bootstrap.py` consumes an explicitly
 pinned host/workload plan; a copied development plan is not a portable example.
-The recorded cases above therefore do not constitute a public one-command demo.
+The [recorded NVIDIA measurements](../Experiment%20Results/NVIDIA/measurement-details.md)
+therefore cannot be replayed as a public one-command demo yet.
 The build container exposes no GPU devices and never enables execution.
 
 No public runtime split or Intel/AMD removal is implied. Affine and ParallelSort

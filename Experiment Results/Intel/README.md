@@ -4,6 +4,8 @@
 
 Intel was used during early development of Native DX12 Linux. The public repository contains example programs and build checks, but it does not yet include a qualified Intel GPU performance benchmark.
 
+The source includes a C++ frontend, a Gallium/Iris backend and compute and offscreen graphics examples. The shader preparation path explored DXIL → SPIR-V → NIR; this does not establish GPU execution for the current release.
+
 ## What can be examined in the source?
 
 | Program | What it is designed to test |
