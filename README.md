@@ -1,167 +1,71 @@
 # Native DX12 Linux
 
-Created by Andrew Kapica — GoblinFlash.
+**Direct3D 12 on Linux — without Vulkan or VKD3D translation.**
 
-Working to bring native DirectX 12 support to Linux — without Vulkan translation.
+**Created by Andrew Kapica — GoblinFlash**
 
-This is an experimental project. The documented build platform is Ubuntu 26.04 (x86-64).
-The source tree includes NVIDIA, AMD, and Intel components.
+Native DX12 Linux is an open-source project that aims to run Direct3D 12 natively
+on Linux. So far it includes an experimental D3D12 frontend, a shader compiler for
+NVIDIA GPUs, and a separate test path that has already run compute work directly
+on an RTX 4090.
 
-Full Direct3D 12 support is not yet available, including complete Shader Model and feature-level coverage, Windows ABI, DXGI, and game compatibility.
+It cannot run games or full Direct3D 12 applications yet.
 
-## Community & Discussion
+NVIDIA comes first, followed by AMD and Intel. Early development was tested on
+Intel Iris Xe.
 
-Follow the project's progress and technical discussions:
+## What works so far?
 
-[NVIDIA Developer Forums — Native DirectX 12 on Linux](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938)
+- **Native GPU execution on Linux**, without going through Vulkan.
+- **Successful RTX 4090 tests**, with results checked for correctness.
+- **Measured performance improvements** in GPU calculations.
 
-## Architecture
+## RTX 4090 — measured improvements
 
-![Native DX12 Linux — experimental NVIDIA compute path](docs/native_dx12_linux_pipeline.svg)
+### Test 1: Faster histogram calculations
 
-## Components and evidence boundaries
+**What does it do?** The GPU counts how often different values appear in a set of data. This is called a **histogram** — the same kind of calculation used to analyse brightness and contrast in images.
 
-| Component | Source path and implementation | Evidence for this package |
-| --- | --- | --- |
-| NVIDIA | Shared RM/UVM compute runtime for affine and FidelityFX ParallelSort. Affine uses DXIL/LLVMBC -> NIR -> NAK; ParallelSort uses DXIL -> SPIR-V -> NIR -> NAK. | The two recorded RTX 4090 cases below. These do not qualify the experimental D3D12 frontend API. |
-| Intel | C++ frontend and Gallium/Iris backend, with compute and offscreen graphics examples. DXIL -> SPIR-V -> NIR. | CPU/build evidence applies to the source versions named in its receipts. No Intel GPU qualification is claimed for this export. |
-| AMD | CORE/RadeonSI adapter, compiler dependencies and CPU contract tests. | Recorded CPU adapter checks: 56 controls and four output images. Full AMD frontend/device execution is not qualified; no AMD GPU claim. |
+The test uses **16,384 generated values from 0 to 255**, similar to grayscale pixel brightness. The **128×128, 32×512 and 16×1024** labels show different arrangements of that same amount of data.
 
-The NVIDIA submission code uses RM/UVM. SPIR-V is a compiler intermediate for
-ParallelSort, not a claim that the workload uses a Vulkan runtime. This README
-does not extend historical path/library checks to every rebuilt output.
+**What improved?** Four repeated operations were grouped together. The GPU completed the same task in **up to 44.22% less time**, with the same checked result.
 
-## Recorded RTX 4090 cases
+![RTX 4090 D4 experiment: before and after GPU interval](docs/rtx4090-d4-original.png)
 
-The recorded host used GeForce RTX 4090, PCI 10de:2684, Ada SM89, NVIDIA UNIX
-Open Kernel Module 615.78.08, Ubuntu 26.04.1, kernel 7.0.0-42-generic, x86-64.
+**Why is it important?** Faster histograms mean less time spent on this part of image processing.
 
-| Case | Recorded execution | Checked result |
-| --- | --- | --- |
-| Affine u32 | N=129; one dispatch; grid 2x1x1, local size 128x1x1 | Independent u32 arithmetic, complete input/output/guard buffers and padding |
-| FidelityFX ParallelSort | N=515, max_groups=1; prefix40, 40 dispatches | Independent final sorting/permutation check and complete final images; no per-dispatch image qualification |
+### Test 2: Faster data processing across four GPU programs
 
-Both recorded attempts reached CLOSED with zero remaining owners, completion
-signal 101 and GET=PUT=1. One FIFO entry contains the 40-dispatch sort workload;
-GET/PUT is not the dispatch count. The control-image check compared 1,048,072
-bytes, excluding exactly 504 bytes of RM USERD. There were no new kernel records
-inside either execution window. Sixteen AppArmor "who" records outside those
-windows were reported separately.
+**What does it do?** The GPU runs four connected programs: one prepares the data, two build counts of the values, and the last combines those counts. This is similar to image-processing tasks where the result of one step is used by the next.
 
-Evidence identity for these recorded cases:
+The **64×64** and **127×65** labels on the chart refer to the dimensions of the generated test data.
 
-- Source lock: 2174d8755fe39a40c80cca58ab01044c4ae7efdff8a1e60e455b06cd4da201ad.
-- Affine shader binary: ffbc8fd32b70a4485c34a2fa9d5ee85c01af3539a645b1cffa3525a1b3c448ae.
-- Affine output image: e2dd76c76f477af81812707b2ac0c661a23189677f2ef6170e17205f76ddf38a.
-- Recorded summary SHA-256: 537f45f75bc7e0a433496d87174c084fc34f10a30cb9f69bae49649f95ba50e4.
+**What improved?** The last program now reads four histogram values together instead of one by one. The **whole four-program task finished about 5–6% faster**, with the same checked result.
 
-These identities name the recorded version, not a later documentation revision.
-The raw development evidence is retained privately and is not part of the source
-distribution. This summary describes recorded observations; it is not a
-publicly replayable GPU evidence bundle. No benchmark, long-term stability,
-other GPU/driver, arbitrary shader or general D3D12 Dispatch is qualified.
-The runtime's formal native_execution_proven flags remain false; the experimental
-observations above are reported separately.
+![RTX 4090 four-program pipeline and reference implementations](docs/rtx4090-fullbench-original.png)
 
-## CPU build
+**Why is it important?** The improvement made the **complete sequence faster**, not just one isolated operation.
 
-The entrypoint is build.py. See [dependencies](deps/README.md) and
-[the build container](container/README.md) for prerequisites, pinned source
-acquisition and output ownership. The tools do not install system packages.
-Build outputs, dependency caches and source directories must be separate.
+Vulkan and CUDA appear as separate reference measurements, not a like-for-like ranking.
 
-Run these commands from the source root, after explicitly installing prerequisites.
-The first command accesses the network and writes a dependency cache. The second
-uses a fresh output directory and runs CPU compilation/admission checks only:
+[Measurement details](docs/validation.md)
 
-```sh
-python3 -I -B deps/prepare_deps.py fetch --cache /absolute/ndx12-cache
-python3 -I -B build.py --build-root /absolute/fresh-ndx12-build \
-  --cache /absolute/ndx12-cache --jobs 2 --offline --targets intel,rtx,amd
-```
+## Current project status
 
-The cache must be outside the source and build roots. The build root must be fresh.
-Jobs are limited to four; two are the example setting. --offline uses a network
-namespace and refuses missing inputs. For OCI execution the launcher provides
---network=none and does not request nested unshare; retain its launch receipt.
-A successful build writes project/build-results.json, but does not launch GPU work.
+| Area | Status |
+| --- | --- |
+| NVIDIA RTX 4090 | GPU tests completed with checked results. Public GPU testing tools are in development. |
+| AMD Radeon | CPU-side development and checks underway; GPU testing is a next step. |
+| Intel Iris Xe | Used for early development and testing; further work is planned. |
 
-An earlier real Podman build compiled all three selected CPU targets from a
-verified local dependency cache. That receipt predates six runtime-input/template
-changes: 172 of 178 input files match the later runtime input set. The later
-production runtime stage passed CPU verification using existing pinned compiler
-outputs; it did not repeat the full dependency/compiler build.
+## Explore the project
 
-In a later validation on 2026-11-03, one public-endpoint fetch into a fresh
-cache exited 0, followed by complete offline manifest verification: 13/13
-entries passed. The same cache was reused and verified again for the build
-below, without another fetch.
+- **[Build the source](container/README.md)** — instructions for compiling on the CPU; no GPU test is launched.
+- **[How it works](docs/native_dx12_linux_pipeline.svg)** — an overview of the experimental NVIDIA path.
+- **[NVIDIA Developer Forums discussion](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938)** — progress and community feedback.
 
-The immediate source predecessor of this documentation-only revision then
-passed one clean all-target CPU build in an existing immutable Podman toolchain
-image: `--targets intel,rtx,amd`, `--jobs 2`, outer `--network=none`, no devices,
-exit 0 in 516 seconds. All 18 dependency commands exited 0. Of 37 project
-commands, 35 exited 0 and two expected refusals exited 1 with
-`RTX_REJECT:DIRECT_PROFILE`. Installed runtime verification passed normally
-and with `-O`: 177 files, 81 runtime pins, 61 packet pins and 43 modules.
-AMD retains `full_frontend_link=false`; GPU execution was `NOT_RUN`.
+The documented build environment is Ubuntu 26.04 x86-64.
 
-This documentation-only revision and its updated source lock succeed those
-built bytes; no new clean build of this revision was run. Code, dependencies
-and runtime templates are unchanged here. The result does not provision a
-clean host or transfer the recorded GPU qualification to rebuilt artifacts.
-Bit-identical complete outputs across hosts or build roots are not promised.
+## License and credits
 
-## CPU regression checks
-
-Tests require an explicit existing output directory outside the source root.
-They create retained per-run subdirectories. Execute normal and optimized Python:
-
-```sh
-NDX12_TEST_ROOT=/absolute/ndx12-test-output python3 -I -B tests/test_build.py
-NDX12_TEST_ROOT=/absolute/ndx12-test-output python3 -I -B -O tests/test_build.py
-NDX12_TEST_ROOT=/absolute/ndx12-test-output python3 -I -B tests/test_runtime_guard.py
-NDX12_TEST_ROOT=/absolute/ndx12-test-output python3 -I -B -O tests/test_runtime_guard.py
-```
-
-After a completed build, relocation/profile tests consume its runtime-inputs:
-
-```sh
-NDX12_TEST_ROOT=/absolute/ndx12-test-output NDX12_RUNTIME_INPUTS=/absolute/fresh-ndx12-build/project/runtime-inputs python3 -I -B tests/test_runtime_release.py
-NDX12_TEST_ROOT=/absolute/ndx12-test-output NDX12_RUNTIME_INPUTS=/absolute/fresh-ndx12-build/project/runtime-inputs python3 -I -B -O tests/test_runtime_release.py
-```
-
-Recorded tests on the pinned source ran 20 build-test methods, 14 runtime-release
-methods and one guard method containing 27 source-defined subcases per Python
-mode. A subcase count is distinct from unittest method count. Runtime admission
-checked 177 installed files, 81 runtime pins, 61 packet pins and 43 loaded modules.
-Device access and native libraries were blocked in those admission checks;
-CARD_INFO profile checks were mocked. These are CPU results, not device execution.
-
-The loader retains logical @PACKAGE@/, @HEADERS@/ and @ARTIFACTS@/ locators.
-It checks traversal/symlink boundaries and reads metadata/content from the same
-opened descriptor. /proc/self/fd is required. This is a trusted-interpreter
-integrity boundary, not an OS sandbox for arbitrary native code or existing FDs.
-
-## GPU use and current limits
-
-There is currently no documented public plan generator or end-to-end NVIDIA
-example runner in this source export. native_bootstrap.py consumes an explicitly
-pinned host/workload plan; a copied development plan is not a portable example.
-The recorded cases above therefore do not constitute a public one-command demo.
-The build container exposes no GPU devices and never enables execution.
-
-No public runtime split or Intel/AMD removal is implied. Affine and ParallelSort
-share admission and dependencies. CPU preparation, a saved receipt, code review
-and fresh hardware execution are separate evidence levels.
-
-## Licensing
-
-Andrew Kapica's project-owned portions: Copyright (C) 2026 Andrew Kapica,
-GPL-3.0-or-later; see LICENSE. Third-party originals, adaptations and declaration
-material retain their applicable original terms and notices; see NOTICE and
-component licence files. This is not a blanket GPL relicensing of dependencies
-or a clean-room claim.
-
-The source distribution excludes dependency trees, build outputs, toolchain/OCI
-images, credentials, private sessions and raw development evidence.
+Created by **Andrew Kapica — GoblinFlash**. Project-owned material is licensed under **GPL-3.0-or-later**. Third-party components retain their original licenses; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
