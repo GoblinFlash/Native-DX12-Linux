@@ -6,7 +6,7 @@ This page explains how the source package is built and checked on the CPU, and w
 - [AMD — CPU-side adapter checks](../Experiment%20Results/AMD/README.md)
 - [Intel — early Iris Xe development and test programs](../Experiment%20Results/Intel/README.md)
 
-The `tests/` folder contains test code and sample workloads, not the experiment
+The [`tests/` folder](../tests/README.md) contains test code and sample workloads, not the experiment
 results. The NVIDIA, AMD and Intel results are under `Experiment Results/`.
 
 ## CPU build
