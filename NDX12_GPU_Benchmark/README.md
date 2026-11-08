@@ -73,7 +73,9 @@ These results were recorded on physical GPUs assigned to Linux VMs. They establi
 
 Linux x86-64, a working systemd service manager, standard CPython 3.13 or newer with the GIL enabled, sudo and NVIDIA UVM are required. The optional Vulkan reference also needs the Vulkan loader, NVIDIA Vulkan driver and glibc 2.38 or newer. No local shader compiler or CUDA installation is needed.
 
-See the package README for checksum verification, installation and launch instructions.
+## Getting started
+
+See [How to run](HOW_TO_RUN.md) for installation, launch instructions and sharing results.
 
 ## Reading and sharing results
 
