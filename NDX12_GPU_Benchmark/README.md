@@ -66,10 +66,11 @@ RTX 3050 A Laptop GPU uses the SM89 runtime; the other listed laptop models use 
 
 | GPU | Package tested | NVIDIA Open driver | Recorded result |
 | --- | --- | --- | --- |
+| RTX 4090 | v17, full run recorded on 7 November 2026 | 615.78.08 | Full run completed: 119 native and 70 Vulkan reference processes passed correctness checks |
 | RTX 3090 | v19, archive SHA-256 beginning `e61a1372` | 620.70.06 | Full run completed: 119 native and 70 Vulkan reference processes passed correctness checks |
 | RTX 4090 | Earlier D4/A benchmark package, archive SHA-256 beginning `99963342` | 620.70.06 | Full run completed: 119 native processes passed correctness checks; Vulkan was not run in this recorded run |
 
-These results were recorded on physical GPUs assigned to Linux VMs. They establish hardware execution, not bare-metal testing. The v20 tool changes have CPU validation only in this summary. Hardware validation of the final corrected release remains to be recorded; neither row should be read as validation of that release or of driver 615.78.08.
+These results were recorded on physical GPUs assigned to Linux VMs. They establish hardware execution, not bare-metal testing. The v20 tool changes have CPU validation only in this summary. The recorded runs include RTX 4090 on driver 615.78.08 and RTX 3090 / RTX 4090 on driver 620.70.06. Hardware validation of the final corrected release remains to be recorded; these earlier results do not validate its changed runtime bytes.
 
 Linux x86-64, a working systemd service manager, standard CPython 3.13 or newer with the GIL enabled, sudo and NVIDIA UVM are required. The optional Vulkan reference also needs the Vulkan loader, NVIDIA Vulkan driver and glibc 2.38 or newer. No local shader compiler or CUDA installation is needed.
 

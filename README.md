@@ -54,7 +54,9 @@ Vulkan and CUDA appear as separate reference measurements, not a like-for-like r
 
 | Area | Status |
 | --- | --- |
-| NVIDIA RTX 4090 | GPU tests completed with checked results. Public GPU testing tools are in development. |
+| NVIDIA RTX 4090 | Recorded GPU runs passed correctness checks on NVIDIA Open drivers 615.78.08 and 620.70.06. |
+| NVIDIA RTX 3090 | Recorded GPU runs passed correctness checks on NVIDIA Open driver 620.70.06. |
+| GPU benchmark package | Release candidate under review. Earlier GPU results apply to the package revisions listed in the [benchmark overview](NDX12_GPU_Benchmark/README.md). |
 | AMD Radeon | CPU-side development and checks underway; GPU testing is a next step. |
 | Intel Iris Xe | Used for early development and testing; further work is planned. |
 
