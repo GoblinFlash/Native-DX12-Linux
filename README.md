@@ -60,9 +60,9 @@ Vulkan and CUDA appear as separate reference measurements, not a like-for-like r
 
 ## GPU Benchmarking
 
-Work is underway to make GPU benchmarks easier to run on your own Linux machine.
+**[Native DirectX 12 Experimental Benchmark For Linux](NDX12_GPU_Benchmark/README.md)**
 
-**Current test hardware: NVIDIA RTX 4090.** Support for the NVIDIA RTX 30 series is coming soon.
+See the benchmark overview for workloads, requirements and the full GPU list with hardware testing status. Recorded runs cover RTX 3090 and RTX 4090 on the package revisions identified there. The corrected release candidate is still under review; this page provides its description, not a package download.
 
 ## Explore the project
 
