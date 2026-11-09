@@ -1,0 +1,67 @@
+name: Benchmark results / Test submission
+description: Share a benchmark run from your GPU, including completed, partial or failed runs.
+title: "[Results] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing! Give the GPU model, driver and benchmark version, then attach your results below.
+
+        **This issue and its attachments are public and linked to your GitHub account.**
+        Inspect `share-results.tar.gz` before attaching it. Remove anything you do not want public, such as usernames, hostnames, IP addresses, serial numbers or personal paths. Mention any redaction without repeating the removed values.
+        Do not upload the full raw evidence folder from `/var/tmp/ndx12-results/`. If you cannot safely share the bundle, describe the result instead.
+  - type: input
+    id: version
+    attributes:
+      label: Benchmark version
+      description: Release version; add the archive SHA-256 if known. Write unknown if you cannot identify it.
+      placeholder: "v0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU model
+      description: Include Laptop GPU if applicable. No serial number or machine identifier is needed.
+      placeholder: "NVIDIA GeForce RTX 3090"
+    validations:
+      required: true
+  - type: input
+    id: driver
+    attributes:
+      label: NVIDIA driver version
+      description: Exact version and Open or proprietary kernel module if known. Write unknown if necessary.
+      placeholder: "620.70.06, Open kernel module"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Linux distribution and version (optional)
+      placeholder: "Ubuntu 26.04.1 or EndeavourOS"
+  - type: dropdown
+    id: run_status
+    attributes:
+      label: Run status
+      description: Report what happened. A completed run is not automatically a correctness PASS; the attached results will be checked.
+      options:
+        - Full test completed
+        - Selected tests completed
+        - Stopped or interrupted before completion
+        - Failed or refused to start
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Results attachment or summary
+      description: Drag share-results.tar.gz into this field and wait for the upload to finish. If it is unavailable or cannot be shared safely, describe the result or error instead. Checked charts may also be attached.
+      placeholder: "Attach the inspected share-results.tar.gz here, or describe why no bundle is available."
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional details (optional)
+      description: Selected tests, whether Vulkan ran, current or locked clocks, bare metal or VM, interruptions, or redactions. No host identifiers or private paths are needed.

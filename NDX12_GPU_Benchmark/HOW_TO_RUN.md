@@ -2,7 +2,7 @@
 
 ## Download v0.1.0
 
-**[Open the latest release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/latest)**
+**[Open release v0.1.0](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.0)**
 
 Download these **three files into the same new folder**:
 
@@ -91,7 +91,7 @@ These instructions are for release v0.1.0 of the benchmark. Its package keeps it
 
 8. **Open the results.** When the run finishes, open the `charts.html` path printed under **CHARTS**.
 
-9. **Share your results.** [Open a GitHub issue](https://github.com/GoblinFlash/Native-DX12-Linux/issues) and include your GPU model, NVIDIA driver version and result charts. The launcher also prepares `share-results.tar.gz`, which holds the results intended for sharing. **SEND THIS FILE** is the terminal label identifying that archive; nothing is sent automatically.
+9. **Share your results.** [Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml) using the short form. Include your benchmark version, GPU model, NVIDIA driver version and whether the run completed. The launcher also prepares `share-results.tar.gz`, which holds the results intended for sharing. **SEND THIS FILE** is the terminal label identifying that archive; nothing is sent automatically. Inspect the bundle before attaching it and remove private information. Issues and attachments are public and linked to your GitHub account.
 
 When you start `ndx12-benchmark` from your normal account, a copy of the charts page and share bundle is also placed in `~/ndx12-results/<run folder>/`.
 

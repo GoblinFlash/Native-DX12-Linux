@@ -1,19 +1,24 @@
 {
   "files": [
     {
+      "path": ".github/ISSUE_TEMPLATE/benchmark_results.yml",
+      "bytes": 2910,
+      "sha256": "1d5a05893ae9746d7ac7a8c082ec11050d400773db558250c5722b6fc4b0e3a7"
+    },
+    {
       "bytes": 35149,
       "path": "LICENSE",
       "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
     },
     {
       "path": "NDX12_GPU_Benchmark/HOW_TO_RUN.md",
-      "bytes": 8514,
-      "sha256": "206b7daec5db88934db0a599e93c580b4d9aafe6c9258ec8d9e04321fa88c79f"
+      "bytes": 8743,
+      "sha256": "7a3cd3a3ef1ea897f24a59862f1baa8c2b4f51b8063dced101e7e295ca68963b"
     },
     {
       "path": "NDX12_GPU_Benchmark/README.md",
-      "bytes": 6956,
-      "sha256": "263bd4533578db0086762fe458fd834b2275149e6e70d4b236d809e418e14d60"
+      "bytes": 7250,
+      "sha256": "b0fdd7871fd7c12126bb6e77202649f2e7d0329118239d88c8875329e892de3a"
     },
     {
       "path": "NDX12_GPU_Benchmark/RELEASE-v0.1.0.md",

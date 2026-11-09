@@ -90,6 +90,6 @@ The current package uses system-memory data buffers. The experimental VRAM candi
 
 The package includes system RAM telemetry and process snapshots alongside GPU telemetry. RAM usage describes the whole host. Hardware results are tied to the package revisions in the validation table above.
 
-The launcher produces a combined charts page and a `share-results.tar.gz` bundle. Inspect that bundle before sharing it. Keep the full raw evidence folder private because it contains machine identifiers.
+The launcher produces a combined charts page and a `share-results.tar.gz` bundle. **[Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml)** using the short form; completed, partial and failed runs are welcome. Inspect the bundle and remove private information before attaching it. GitHub issues and attachments are public and linked to your account. Keep the full raw evidence folder private because it contains machine identifiers.
 
 **Current status: v0.1.0 experimental release.**
