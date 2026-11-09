@@ -56,7 +56,7 @@ Vulkan and CUDA appear as separate reference measurements, not a like-for-like r
 | --- | --- |
 | NVIDIA RTX 4090 | Recorded GPU runs passed correctness checks on NVIDIA Open drivers 615.78.08 and 620.70.06. |
 | NVIDIA RTX 3090 | Recorded GPU runs passed correctness checks on NVIDIA Open driver 620.70.06. |
-| GPU benchmark package | Release candidate under review. Earlier GPU results apply to the package revisions listed in the [benchmark overview](NDX12_GPU_Benchmark/README.md). |
+| GPU benchmark package | The v0.1.0 candidate (v21 r9) completed a full RTX 4090 run on NVIDIA Open driver 620.70.06: 119 native and 70 Vulkan reference correctness checks passed. Publication checks are still in progress; see the [benchmark overview](NDX12_GPU_Benchmark/README.md). |
 | AMD Radeon | CPU-side development and checks underway; GPU testing is a next step. |
 | Intel Iris Xe | Used for early development and testing; further work is planned. |
 
@@ -64,7 +64,7 @@ Vulkan and CUDA appear as separate reference measurements, not a like-for-like r
 
 **[Native DirectX 12 Experimental Benchmark For Linux](NDX12_GPU_Benchmark/README.md)**
 
-See the benchmark overview for workloads, requirements and the full GPU list with hardware testing status. Recorded runs cover RTX 3090 and RTX 4090 on the package revisions identified there. The corrected release candidate is still under review; this page provides its description, not a package download.
+See the benchmark overview for workloads, requirements and the full GPU list with hardware testing status. Recorded runs cover RTX 3090 and RTX 4090 on the package revisions identified there. The v0.1.0 candidate has a recorded full RTX 4090 run. Publication checks are still in progress; this page provides its description, not a package download.
 
 ## Explore the project
 
