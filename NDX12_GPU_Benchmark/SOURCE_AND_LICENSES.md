@@ -1,8 +1,8 @@
-# Source and licenses — v0.1.0
+# Source and licenses — v0.1.2
 
 Project-owned material is licensed under **GPL-3.0-or-later**, with attribution **Andrew Kapica — GoblinFlash**. Third-party originals and adapted portions retain their incoming licenses and notices. The project license does not relicense those portions.
 
-Download the [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.0/ndx12-benchmark-v0.1.0-source.tar.gz) alongside the [runnable release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.0). Both are available from the same release page without a separate request.
+Download the [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.2/ndx12-benchmark-v0.1.2-source.tar.gz) alongside the [runnable release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.2). Both are available from the same release page without a separate request.
 
 | Component | Source / notice location in the companion |
 | --- | --- |
@@ -19,8 +19,8 @@ Download the [source companion](https://github.com/GoblinFlash/Native-DX12-Linux
 
 The runtime archive contains a native CPU helper and a separate Vulkan reference executable. It does not bundle Mesa or LLVM compiler libraries. The installed NVIDIA driver and Vulkan loader are external requirements. Precompiled GPU shaders are accompanied by their sources and build recipes in the source companion.
 
-All 20 D4/K/WaveForm architecture/program variants were rebuilt from HLSL on the CPU for this source delivery. Their 60 code, QMD and shader-info output files matched the tested runtime archive. This does not claim a fresh rebuild of every dependency or byte-identical reproduction of the CPU executables. The companion README describes build prerequisites and known source-build limitations.
+The 20-variant D4/K/WaveForm HLSL rebuild and 60-file code/QMD/shader-info match were recorded for v0.1.0. The shader recipes, inputs and runtime shader outputs are retained unchanged here; that build was not repeated for v0.1.2. This does not claim a fresh rebuild of every dependency or byte-identical reproduction of the CPU executables. The companion README describes build prerequisites and known source-build limitations.
 
 The custom compiler adapters reuse earlier project units and consult upstream APIs and implementations. This is not a clean-room claim. Original attributions are retained; no blanket claim of original authorship is made for third-party material.
 
-The runtime archive is unchanged from the tested v21 r9 package. Its embedded development metadata describes the status at build time; the release page and companion README describe the final source delivery and hardware validation scope.
+The v0.1.2 runtime archive is the v21 r12 package identified in the release notes. CPU runtime and shader bytes are unchanged from the preceding v0.1.1 archive; reporting tools and documentation changed. No new GPU execution was performed for v0.1.2. Saved RTX 4090 and 3090 result artifacts were re-exported offline using the updated reporter and checked; this is not a new GPU test. Embedded development metadata and version examples are historical; the v0.1.2 installer supplies the released identity through its checked receipt. The source snapshots omit the two prebuilt development executables `sm89/tools/vulkan_ref/ndx12_vulkan_ref` and `sm86/tools/vulkan_ref/ndx12_vulkan_ref`, which contained local build paths; their C++ source and the build command in the companion README remain.

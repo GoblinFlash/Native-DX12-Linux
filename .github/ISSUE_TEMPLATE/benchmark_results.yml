@@ -8,7 +8,7 @@ body:
         Thanks for testing! Give the GPU model, driver and benchmark version, then attach your results below.
 
         **This issue and its attachments are public and linked to your GitHub account.**
-        Inspect `share-results.tar.gz` before attaching it. Remove anything you do not want public, such as usernames, hostnames, IP addresses, serial numbers or personal paths. Mention any redaction without repeating the removed values.
+        Inspect `share-results-<release>.tar.gz` (older releases: `share-results.tar.gz`) before attaching it. Remove anything you do not want public, such as usernames, hostnames, IP addresses, serial numbers or personal paths. Mention any redaction without repeating the removed values.
         Do not upload the full raw evidence folder from `/var/tmp/ndx12-results/`. If you cannot safely share the bundle, describe the result instead.
   - type: input
     id: version
@@ -56,8 +56,8 @@ body:
     id: results
     attributes:
       label: Results attachment or summary
-      description: Drag share-results.tar.gz into this field and wait for the upload to finish. If it is unavailable or cannot be shared safely, describe the result or error instead. Checked charts may also be attached.
-      placeholder: "Attach the inspected share-results.tar.gz here, or describe why no bundle is available."
+      description: Drag share-results-<release>.tar.gz (older releases use share-results.tar.gz) into this field and wait for the upload to finish. If it is unavailable or cannot be shared safely, describe the result or error instead. Checked charts may also be attached.
+      placeholder: "Attach the inspected share-results-<release>.tar.gz (older releases use share-results.tar.gz) here, or describe why no bundle is available."
     validations:
       required: true
   - type: textarea

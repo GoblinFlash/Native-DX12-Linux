@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -I
-"""Installer of the Native DX12 NVIDIA benchmark v21 r12 (release archive 845cb9a3, external starter 8cd0ca34).
+"""Installer of the Native DX12 NVIDIA benchmark v21 r12 (release archive e8073d51, external starter 8cd0ca34).
 
 Put this file in one folder with the two release files it names (ARCHIVE and STARTER below) and run, from anywhere:
 
@@ -42,16 +42,16 @@ import tarfile  # noqa: E402
 import tempfile  # noqa: E402
 import time  # noqa: E402
 
-PUBLIC_VERSION = 'v0.1.1'        # proposal for the owner's decision (v0.1.0 is the published r9 release)
+PUBLIC_VERSION = 'v0.1.2'        # v0.1.0 (r9) and v0.1.1 (r12 845cb9a3) are published releases
 PACKAGE_ID = 'v21-r12'           # the package revision; tools/nvidia_desktop.py PACKAGE_ID must be the same
 NAME = 'ndx12-native-benchmark-v21-615.78.08-620.70.06'
 ARCHIVE = NAME + '.tar.gz'
-ARCHIVE_SHA256 = '845cb9a3c2847438953c3db376811897bfe20b2fe7c6e80cc25edade3588852f'
-ARCHIVE_BYTES = 2532955
+ARCHIVE_SHA256 = 'e8073d51d834820e04907f4ab774686a988995a99e11bc381d509044c1f4bb80'
+ARCHIVE_BYTES = 2534378
 STARTER = 'ndx12_start.py'
 STARTER_SHA256 = '8cd0ca349f4535741ae8a673b3aa10de4a0b5f953c283543a453a850337aced5'
 STARTER_BYTES = 10958
-MANIFEST_SHA256 = '0985df2e38963a6fe7ee02e36bf4eb51672f130c838c05a3de3b45e798d4ef72'
+MANIFEST_SHA256 = 'ea1df965833b44eb74e62dd3e08e9abc105336f85c13417de6c8007a4246a28e'
 
 OPT, PACKAGE = '/opt/ndx12', '/opt/ndx12/' + NAME
 LIBEXEC, STARTER_PATH = '/usr/local/libexec', '/usr/local/libexec/ndx12_start.py'
