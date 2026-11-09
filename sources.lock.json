@@ -6,14 +6,29 @@
       "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
     },
     {
-      "bytes": 3824,
       "path": "NDX12_GPU_Benchmark/HOW_TO_RUN.md",
-      "sha256": "8a29e8bd8641727547aa4a5d52cfe53a6fb7a7853a60072473f8eba932c2ecb2"
+      "bytes": 7690,
+      "sha256": "f0a5cd59df34050242b7b37331b498d275cc8cf17b855c6580e589db9d9120c5"
     },
     {
-      "bytes": 6255,
       "path": "NDX12_GPU_Benchmark/README.md",
-      "sha256": "2378a2d731f634d6307edc6c9c30c8778480614a69f5c247a6057ab2406be9d1"
+      "bytes": 6956,
+      "sha256": "263bd4533578db0086762fe458fd834b2275149e6e70d4b236d809e418e14d60"
+    },
+    {
+      "path": "NDX12_GPU_Benchmark/RELEASE-v0.1.0.md",
+      "bytes": 3698,
+      "sha256": "a500ba0a688a0f624f4775c04b7446ed7a4d8d50bf0a8526e88aed9c3a8a87bc"
+    },
+    {
+      "path": "NDX12_GPU_Benchmark/SOURCE_AND_LICENSES.md",
+      "bytes": 3061,
+      "sha256": "954e3af39cc384f9b18396246f1ca663a0480369874ca615e0c261f67bd4fa6e"
+    },
+    {
+      "path": "NDX12_GPU_Benchmark/ndx12-install.py",
+      "bytes": 18475,
+      "sha256": "7bec0ee218c29fa390c6f1be3e7ba0eaefd18f9bb0050ee8acfd61531df66421"
     },
     {
       "bytes": 88231,
@@ -21,9 +36,9 @@
       "sha256": "628287074ae0d429ebe8eaf4c4a41668fb87cf7cfdc22381db0290ef06752e7c"
     },
     {
-      "bytes": 4635,
       "path": "README.md",
-      "sha256": "9b9349cee61a43ba0592b0f799b3d70e2ff5bc605438c76b358f65bcdc73003d"
+      "bytes": 4750,
+      "sha256": "673431b450501d0aea5041d553ae7222cf1b0fc174506d8277f21e6a1ad3435d"
     },
     {
       "bytes": 6750,
