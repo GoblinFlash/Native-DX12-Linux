@@ -35,7 +35,7 @@ These are the model names admitted by the package's GPU tables. All models below
 | --- | --- |
 | RTX 3050 | Not yet tested on real hardware |
 | RTX 3050 OEM | Not yet tested on real hardware |
-| RTX 3060 | Not yet tested on real hardware |
+| RTX 3060 | Tested on real hardware |
 | RTX 3060 Ti | Not yet tested on real hardware |
 | RTX 3070 | Not yet tested on real hardware |
 | RTX 3070 Ti | Not yet tested on real hardware |
@@ -74,8 +74,15 @@ RTX 3050 A Laptop GPU and RTX 4060 Laptop GPU use the SM89 runtime; the other li
 | RTX 4090 | v17, full run recorded on 7 November 2026 | 615.78.08 | Full run completed: 119 native and 70 Vulkan reference processes passed correctness checks |
 | RTX 3090 | v19, archive SHA-256 beginning `e61a1372` | 620.70.06 | Full run completed: 119 native and 70 Vulkan reference processes passed correctness checks |
 | RTX 4090 | Earlier D4/A benchmark package, archive SHA-256 beginning `99963342` | 620.70.06 | Full run completed: 119 native processes passed correctness checks; Vulkan was not run in this recorded run |
+| RTX 3060 (`10de:2503`) | Manual v21-r12 extraction; no install receipt[^manual-r12-3060] | 620.70.06 | Shared summary reports FULL / COMPLETE; 189/189 VERIFIED (119 native, 70 Vulkan). Tick-to-ns QUALIFIED in all four suites |
+| RTX 3090 (`10de:2204`) | Manual v21-r12 extraction; no install receipt[^manual-r12-3090] | 620.70.06 | Shared summary reports FULL / COMPLETE; 189/189 VERIFIED (119 native, 70 Vulkan). Tick-to-ns NOT_QUALIFIED: HOST_TIMESTAMP_BRACKET in all four suites; no cross-API timing percentages |
 
-These results were recorded on physical GPUs assigned to Linux VMs. They establish hardware execution, not bare-metal testing. The v0.1.0 candidate (v21 r9, archive SHA-256 beginning `d7eeb415`) completed its full RTX 4090 run on 9 November 2026 using NVIDIA Open driver 620.70.06. The same release was installed and started on RTX 3090; its compute suite completed and D4 was interrupted at the maintainer’s request. K and WaveForm were not run in that session. Earlier package revisions also ran on RTX 4090 with driver 615.78.08 and on RTX 3090 with driver 620.70.06; those earlier results do not validate the changed bytes of v0.1.0.
+The two manual v21-r12 entries are based on shared result summaries supplied by the owner. Their `run.json` records identify Ubuntu 26.04.1 LTS. Both summaries report 933 matching entries for `MANIFEST.sha256` with SHA-256 `ea1df965833b44eb74e62dd3e08e9abc105336f85c13417de6c8007a4246a28e`. No install receipt was present; these submissions do not establish verified-installer use or the identity of release v0.1.2. The counts and clock qualification are reported by the shared archives. Raw per-process receipts were not reviewed, and these GPU runs were not independently reproduced.
+
+[^manual-r12-3060]: Submitted share archive SHA-256: `1eeb87bfcb6c098684999922d4c213e5eab157001c26c68d06aecd3f92f23f8a`.
+[^manual-r12-3090]: Submitted share archive SHA-256: `34c36ba4217f6f8ee040e576399d0e8ba5923f772b0634d18c4177fc9e02bc17`.
+
+The earlier maintainer-recorded runs above were recorded on physical GPUs assigned to Linux VMs. They establish hardware execution, not bare-metal testing. The v0.1.0 candidate (v21 r9, archive SHA-256 beginning `d7eeb415`) completed its full RTX 4090 run on 9 November 2026 using NVIDIA Open driver 620.70.06. The same release was installed and started on RTX 3090; its compute suite completed and D4 was interrupted at the maintainer’s request. K and WaveForm were not run in that session. Earlier package revisions also ran on RTX 4090 with driver 615.78.08 and on RTX 3090 with driver 620.70.06; those earlier results do not validate the changed bytes of v0.1.0.
 
 Linux x86-64, a working systemd service manager, standard CPython 3.13 or newer with the GIL enabled, sudo and NVIDIA UVM are required. The optional Vulkan reference also needs the Vulkan loader, NVIDIA Vulkan driver and glibc 2.38 or newer. No local shader compiler or CUDA installation is needed.
 
