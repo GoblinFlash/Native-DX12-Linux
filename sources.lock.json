@@ -7,8 +7,8 @@
     },
     {
       "path": "NDX12_GPU_Benchmark/HOW_TO_RUN.md",
-      "bytes": 7690,
-      "sha256": "f0a5cd59df34050242b7b37331b498d275cc8cf17b855c6580e589db9d9120c5"
+      "bytes": 8514,
+      "sha256": "206b7daec5db88934db0a599e93c580b4d9aafe6c9258ec8d9e04321fa88c79f"
     },
     {
       "path": "NDX12_GPU_Benchmark/README.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "NDX12_GPU_Benchmark/RELEASE-v0.1.0.md",
-      "bytes": 3698,
-      "sha256": "a500ba0a688a0f624f4775c04b7446ed7a4d8d50bf0a8526e88aed9c3a8a87bc"
+      "bytes": 3696,
+      "sha256": "f560a54af5faf53517cb87eeb76e35d76c656c4323c0ab17e496852dddf97f72"
     },
     {
       "path": "NDX12_GPU_Benchmark/SOURCE_AND_LICENSES.md",

@@ -2,7 +2,7 @@
 
 The first public, experimental benchmark release. Native compute runs on Linux through the NVIDIA driver, with a separate Vulkan reference, correctness checks and charts. Native data buffers use **system memory (SYSMEM)**; the separate VRAM experiment is not included.
 
-**[How to run](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.0/NDX12_GPU_Benchmark/HOW_TO_RUN.md)** — download the installer, benchmark archive and starter; install once, then use `ndx12-benchmark`.
+**[How to run](https://github.com/GoblinFlash/Native-DX12-Linux/blob/main/NDX12_GPU_Benchmark/HOW_TO_RUN.md)** — download the installer, benchmark archive and starter; install once, then use `ndx12-benchmark`.
 
 ## Hardware validation
 

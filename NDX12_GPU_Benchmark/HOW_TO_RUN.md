@@ -1,5 +1,19 @@
 # How to run
 
+## Download v0.1.0
+
+**[Open the latest release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/latest)**
+
+Download these **three files into the same new folder**:
+
+1. **[Installer — ndx12-install.py](https://raw.githubusercontent.com/GoblinFlash/Native-DX12-Linux/v0.1.0/NDX12_GPU_Benchmark/ndx12-install.py)** — save the linked file if your browser displays its contents.
+2. **[Benchmark archive — .tar.gz](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.0/ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz)**
+3. **[Starter — ndx12_start.py](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.0/ndx12_start.py)**
+
+The source archives are for developers; you do not need them to run the benchmark. Follow the installation steps below.
+
+## Install and run
+
 These instructions are for release v0.1.0 of the benchmark. Its package keeps its internal name, `ndx12-native-benchmark-v21-615.78.08-620.70.06`. Running `git clone` downloads the source repository; it does not install the benchmark.
 
 1. **Prepare the machine.** Save your work and close games and other GPU-heavy programs; a driver fault may freeze the display. Do not change your driver just for this test. `/usr/bin/python3` must be standard CPython 3.13 or newer with the GIL enabled; the installer checks it. To start the benchmark from your normal account, `/usr/bin/sudo` must be available.
