@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -I
-"""Installer of the Native DX12 NVIDIA benchmark v21 (release archive d7eeb415, external starter 8cd0ca34).
+"""Installer of the Native DX12 NVIDIA benchmark v21 r12 (release archive 845cb9a3, external starter 8cd0ca34).
 
 Put this file in one folder with the two release files it names (ARCHIVE and STARTER below) and run, from anywhere:
 
@@ -17,6 +17,8 @@ Installed (the same layout as the manual steps in the package README):
     /usr/local/libexec/ndx12_start.py     the external starter that verifies the package before every start
     /etc/ndx12/v21.manifest.sha256        the trusted MANIFEST.sha256 value the starter checks against
     /usr/local/bin/ndx12-benchmark        the start command: ndx12-benchmark (menu) or ndx12-benchmark --check
+    /etc/ndx12/<NAME>.install.json        the install receipt: release name, package revision and the SHA-256 values
+                                          checked here; the benchmark names its release in the share file from it
 
 Trust: this file is the trust anchor. Its pins are only as trustworthy as the place this file came from (see
 HOW_TO_RUN.md); a checksum downloaded next to the archive or computed from the download adds nothing.
@@ -31,6 +33,7 @@ if not sys.flags.isolated:
 
 import hashlib  # noqa: E402
 import io  # noqa: E402
+import json  # noqa: E402
 import os  # noqa: E402
 import shutil  # noqa: E402
 import stat  # noqa: E402
@@ -39,18 +42,22 @@ import tarfile  # noqa: E402
 import tempfile  # noqa: E402
 import time  # noqa: E402
 
+PUBLIC_VERSION = 'v0.1.1'        # proposal for the owner's decision (v0.1.0 is the published r9 release)
+PACKAGE_ID = 'v21-r12'           # the package revision; tools/nvidia_desktop.py PACKAGE_ID must be the same
 NAME = 'ndx12-native-benchmark-v21-615.78.08-620.70.06'
 ARCHIVE = NAME + '.tar.gz'
-ARCHIVE_SHA256 = 'd7eeb41588d041c88d1c7c06eee508e109c61da1afffecdef16de1d45d0c0eb2'
-ARCHIVE_BYTES = 2517024
+ARCHIVE_SHA256 = '845cb9a3c2847438953c3db376811897bfe20b2fe7c6e80cc25edade3588852f'
+ARCHIVE_BYTES = 2532955
 STARTER = 'ndx12_start.py'
 STARTER_SHA256 = '8cd0ca349f4535741ae8a673b3aa10de4a0b5f953c283543a453a850337aced5'
 STARTER_BYTES = 10958
-MANIFEST_SHA256 = '697f31fd2b020534577ac7e0bbbf80de1a117b0033a2d797f1e3a72de2761ce3'
+MANIFEST_SHA256 = '0985df2e38963a6fe7ee02e36bf4eb51672f130c838c05a3de3b45e798d4ef72'
 
 OPT, PACKAGE = '/opt/ndx12', '/opt/ndx12/' + NAME
 LIBEXEC, STARTER_PATH = '/usr/local/libexec', '/usr/local/libexec/ndx12_start.py'
 ETC, TRUST = '/etc/ndx12', '/etc/ndx12/v21.manifest.sha256'
+RECEIPT = '/etc/ndx12/%s.install.json' % NAME     # read by the benchmark (tools/nvidia_desktop.py install_receipt)
+RECEIPT_SCHEMA = 'ndx12-install-receipt.v1'
 BIN, COMMAND = '/usr/local/bin', '/usr/local/bin/ndx12-benchmark'
 RESULTS = '/var/tmp/ndx12-results'
 PYTHON = '/usr/bin/python3'
@@ -194,7 +201,8 @@ def check_folders():
         problem = folder_problem(path, info)
         if problem:
             problems.append(problem)
-    for path, kind in ((PACKAGE, 'folder'), (STARTER_PATH, 'file'), (TRUST, 'file'), (COMMAND, 'file')):
+    for path, kind in ((PACKAGE, 'folder'), (STARTER_PATH, 'file'), (TRUST, 'file'), (COMMAND, 'file'),
+                       (RECEIPT, 'file')):
         info = lstat(path)
         if info is None:
             continue
@@ -287,10 +295,40 @@ def sync_folder(path):
         os.close(fd)
 
 
+def receipt_text(installer_sha256):
+    """The install receipt (JSON, one object): what this installer checked and installed. The archive SHA-256 is the
+    pin of this installer, which the downloaded archive matched; an archive cannot carry its own SHA-256, so the
+    benchmark takes it from here. installer_sha256: the SHA-256 of this installer file as it was read at the start."""
+    return (json.dumps(dict(schema=RECEIPT_SCHEMA, public_version=PUBLIC_VERSION, package_id=PACKAGE_ID, package=NAME,
+                            archive=ARCHIVE, archive_sha256=ARCHIVE_SHA256, archive_bytes=ARCHIVE_BYTES,
+                            starter_sha256=STARTER_SHA256, manifest_sha256=MANIFEST_SHA256,
+                            installer_sha256=installer_sha256, trust_name=os.path.basename(TRUST)),
+                       indent=1, sort_keys=True) + '\n').encode()
+
+
+def own_sha256():
+    """SHA-256 of this installer file (recorded in the receipt; this file is the trust anchor, it cannot pin itself)."""
+    path = os.path.abspath(__file__)
+    try:
+        fd = os.open(path, OPEN_FLAGS)
+    except OSError as error:
+        raise Blocked('the installer cannot read its own file %s (%s).' % (path, error.strerror or error)) from None
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise Blocked('%s is not a regular file.' % path)
+        digest = hashlib.sha256()
+        for chunk in iter(lambda: os.read(fd, 1 << 20), b''):
+            digest.update(chunk)
+    finally:
+        os.close(fd)
+    return digest.hexdigest()
+
+
 def install(folder):
     check_requirements()
     os.umask(0o022)      # tar creates implicit parent folders with the process umask; root's may be 0002
-    say('Native DX12 NVIDIA benchmark installer: %s' % NAME)
+    say('Native DX12 NVIDIA benchmark installer: %s %s (package %s)' % (PUBLIC_VERSION, NAME, PACKAGE_ID))
+    receipt = receipt_text(own_sha256())
     archive = read_download(folder, ARCHIVE, ARCHIVE_BYTES, ARCHIVE_SHA256, 'the benchmark archive')
     starter = read_download(folder, STARTER, STARTER_BYTES, STARTER_SHA256, 'the starter')
     say('  downloaded files match this installer (archive %s..., starter %s...)' % (ARCHIVE_SHA256[:12], STARTER_SHA256[:12]))
@@ -307,10 +345,11 @@ def install(folder):
         staging = tempfile.mkdtemp(prefix='.install-', dir=OPT)
         package = unpack(archive, staging)
         new_starter, new_trust, new_command = STARTER_PATH + '.new', TRUST + '.new', COMMAND + '.new'
-        for path in (new_starter, new_trust, new_command):
+        new_receipt = RECEIPT + '.new'
+        for path in (new_starter, new_trust, new_command, new_receipt):
             remove_stale(path)
         for path, data, mode in ((new_starter, starter, 0o755), (new_trust, (MANIFEST_SHA256 + '\n').encode(), 0o644),
-                                 (new_command, COMMAND_TEXT.encode(), 0o755)):
+                                 (new_command, COMMAND_TEXT.encode(), 0o755), (new_receipt, receipt, 0o644)):
             try:
                 write_new(path, data, mode)
             except OSError as error:
@@ -341,7 +380,10 @@ def install(folder):
             committed = True
             if aside:
                 say('  the installed package did not verify (%s); it was moved to %s' % (message, aside))
-        for new, final in ((new_starter, STARTER_PATH), (new_trust, TRUST), (new_command, COMMAND)):
+        # The receipt goes last: after an interruption before it, the benchmark finds no receipt or the receipt of
+        # an earlier installation, whose MANIFEST value is not this package's, and reports the release as unknown.
+        for new, final in ((new_starter, STARTER_PATH), (new_trust, TRUST), (new_command, COMMAND),
+                           (new_receipt, RECEIPT)):
             os.replace(new, final)
             staged.remove(new)
             committed = True
@@ -369,7 +411,7 @@ def install(folder):
     ok, message = starter_check(STARTER_PATH, PACKAGE, TRUST)
     if not ok:
         raise Blocked('the installed files did not verify: %s' % message, changed=True)
-    say('  installed: %s, %s, %s, %s' % (PACKAGE, STARTER_PATH, TRUST, COMMAND))
+    say('  installed: %s, %s, %s, %s, %s' % (PACKAGE, STARTER_PATH, TRUST, COMMAND, RECEIPT))
     say('READY. Start the benchmark with:  ndx12-benchmark')
     say('  (it asks for your password through sudo; ndx12-benchmark --check verifies the installation only)')
 
