@@ -66,6 +66,9 @@ Vulkan and CUDA appear as separate reference measurements, not a like-for-like r
 
 See the benchmark overview for workloads, requirements and the full GPU list with hardware testing status. Recorded runs cover RTX 3090 and RTX 4090 on the package revisions identified there. [Download v0.1.0](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.0), then follow [How to run](NDX12_GPU_Benchmark/HOW_TO_RUN.md). The release includes a separate source archive with build recipes and third-party notices.
 
+<img width="1915" height="832" alt="image" src="https://github.com/user-attachments/assets/69512ea7-9325-4aad-96f7-de53bc47017c" />
+
+
 ## Explore the project
 
 - **[Experiment Results](Experiment%20Results/README.md)** — NVIDIA, AMD and Intel results, organized by GPU vendor.
