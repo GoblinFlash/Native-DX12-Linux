@@ -18,7 +18,7 @@ These instructions are for release v0.1.1 of the benchmark. Its package keeps it
 
 1. **Prepare the machine.** Save your work and close games and other GPU-heavy programs; a driver fault may freeze the display. Do not change your driver just for this test. `/usr/bin/python3` must be standard CPython 3.13 or newer with the GIL enabled; the installer checks it. To start the benchmark from your normal account, `/usr/bin/sudo` must be available.
 
-2. **Download three files into one new folder.**
+2. **Download three files into new folder.**
    - `ndx12-install.py`: the installer, from the `NDX12_GPU_Benchmark` folder of this repository at tag `v0.1.1`.
    - `ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz`: the benchmark archive, from release v0.1.1.
    - `ndx12_start.py`: the starter, from release v0.1.1.
