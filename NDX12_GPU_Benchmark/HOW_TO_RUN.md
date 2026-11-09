@@ -1,7 +1,5 @@
 # How to run
 
-**Candidate documentation:** v0.1.1 has not been published. The download links below become usable after that release is published.
-
 ## Download v0.1.1
 
 **[Open release v0.1.1](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.1)**
