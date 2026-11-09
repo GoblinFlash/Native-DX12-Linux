@@ -43,6 +43,8 @@ These are the model names admitted by the package's GPU tables. All models below
 | RTX 3080 Ti | Not yet tested on real hardware |
 | RTX 3090 | Tested on real hardware |
 | RTX 3090 Ti | Not yet tested on real hardware |
+| RTX 4060 | Not yet tested on real hardware |
+| RTX 4060 Ti | Not yet tested on real hardware |
 | RTX 4090 | Tested on real hardware |
 
 #### Laptop GPUs
@@ -59,8 +61,9 @@ These are the model names admitted by the package's GPU tables. All models below
 | RTX 3080 Laptop GPU | Not yet tested on real hardware |
 | RTX 3080 Ti Laptop GPU | Not yet tested on real hardware |
 | RTX 3050 A Laptop GPU | Not yet tested on real hardware |
+| RTX 4060 Laptop GPU | Not yet tested on real hardware |
 
-RTX 3050 A Laptop GPU uses the SM89 runtime; the other listed laptop models use SM86. The RTX 4090 entry above is the desktop model. RTX 40 series Laptop GPUs are not included in this list.
+RTX 3050 A Laptop GPU and RTX 4060 Laptop GPU use the SM89 runtime; the other listed laptop models use SM86. The desktop RTX 4060, RTX 4060 Ti and RTX 4090 also use SM89. The RTX 4060 family was added in v0.1.3. Other RTX 40 series GPUs, including the RTX 4090 Laptop GPU, are not included in this list.
 
 #### Recorded hardware validation
 
@@ -78,9 +81,9 @@ Linux x86-64, a working systemd service manager, standard CPython 3.13 or newer 
 
 ## Getting started
 
-**[Download v0.1.2](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.2)** and follow [How to run](HOW_TO_RUN.md). After installation, start it with `ndx12-benchmark`.
+**[Download v0.1.3](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.3)** and follow [How to run](HOW_TO_RUN.md). After installation, start it with `ndx12-benchmark`.
 
-The release also includes a [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.2/ndx12-benchmark-v0.1.2-source.tar.gz). See [Source and licenses](SOURCE_AND_LICENSES.md) for contents and build scope.
+The release also includes a [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.3/ndx12-benchmark-v0.1.3-source.tar.gz). See [Source and licenses](SOURCE_AND_LICENSES.md) for contents and build scope.
 
 ## Reading and sharing results
 
@@ -90,6 +93,6 @@ The current package uses system-memory data buffers. The experimental VRAM candi
 
 The package includes system RAM telemetry and process snapshots alongside GPU telemetry. RAM usage describes the whole host. Hardware results are tied to the package revisions in the validation table above.
 
-The launcher produces a combined charts page and a `share-results-v0.1.2.tar.gz` bundle (`share-results-release-unknown.tar.gz` without a verified install receipt; older releases use `share-results.tar.gz`). From v0.1.2 a bundle with at least one chart also contains `charts.html`, the charts page made from those chart images. **[Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml)** using the short form; completed, partial and failed runs are welcome. Inspect the bundle and remove private information before attaching it. GitHub issues and attachments are public and linked to your account. Keep the full raw evidence folder private because it contains machine identifiers.
+The launcher produces a combined charts page and a `share-results-v0.1.3.tar.gz` bundle (`share-results-release-unknown.tar.gz` without a verified install receipt; older releases use `share-results.tar.gz`). From v0.1.2 a bundle with at least one chart also contains `charts.html`, the charts page made from those chart images. **[Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml)** using the short form; completed, partial and failed runs are welcome. Inspect the bundle and remove private information before attaching it. GitHub issues and attachments are public and linked to your account. Keep the full raw evidence folder private because it contains machine identifiers.
 
-**v0.1.2 validation: CPU checks only. No new GPU execution was performed for v0.1.2. Saved RTX 4090 and 3090 result artifacts were re-exported offline using the updated reporter and checked; this is not a new GPU test.** The hardware results above belong to their named historical revisions. See [v0.1.2 release notes](RELEASE-v0.1.2.md).
+**v0.1.3 validation: CPU checks only. No new GPU execution was performed for v0.1.3, and no RTX 4060 family card has run the benchmark yet.** The hardware results above belong to their named historical revisions. See [v0.1.3 release notes](RELEASE-v0.1.3.md).
