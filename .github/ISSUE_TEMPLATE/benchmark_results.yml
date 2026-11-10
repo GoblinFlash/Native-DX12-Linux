@@ -5,11 +5,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for testing! Give the GPU model, driver and benchmark version, then attach your results below.
+        Thanks for testing! Give the exact GPU model, driver and benchmark version, then attach your results below.
+
+        New submissions are public GitHub Issues. Supported GPU models receive a category label automatically; unknown models stay unclassified until reviewed. Labels do **not** mean that a result is verified. Only checked, approved summaries may later appear in the per-GPU community results folders.
 
         **This issue and its attachments are public and linked to your GitHub account.**
         Inspect `share-results-<release>.tar.gz` (older releases: `share-results.tar.gz`) before attaching it. Remove anything you do not want public, such as usernames, hostnames, IP addresses, serial numbers or personal paths. Mention any redaction without repeating the removed values.
-        Do not upload the full raw evidence folder from `/var/tmp/ndx12-results/`. If you cannot safely share the bundle, describe the result instead.
+        Do not upload an unfiltered raw benchmark evidence directory. If you cannot safely share the bundle, describe the result instead.
   - type: input
     id: version
     attributes:
@@ -22,16 +24,16 @@ body:
     id: gpu
     attributes:
       label: GPU model
-      description: Include Laptop GPU if applicable. No serial number or machine identifier is needed.
+      description: Exact model, including Laptop GPU, Ti, Super or D suffix where applicable. Do not include serial numbers or machine identifiers.
       placeholder: "NVIDIA GeForce RTX 3090"
     validations:
       required: true
   - type: input
     id: driver
     attributes:
-      label: NVIDIA driver version
-      description: Exact version and Open or proprietary kernel module if known. Write unknown if necessary.
-      placeholder: "620.70.06, Open kernel module"
+      label: GPU driver version
+      description: Exact driver version and stack (e.g. NVIDIA Open or proprietary, AMD Mesa, Intel Mesa) if known. Write unknown if necessary.
+      placeholder: "620.70.06, NVIDIA Open kernel module"
     validations:
       required: true
   - type: input

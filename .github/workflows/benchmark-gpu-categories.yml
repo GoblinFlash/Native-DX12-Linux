@@ -1,0 +1,129 @@
+# Categories only. Never fetch user attachments, execute user text, or commit results.
+name: Categorize GPU benchmark submissions
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+# Runs for the same Issue cannot mutate its labels at the same time.
+# GitHub does not guarantee event ordering: fetch the CURRENT Issue during each run.
+concurrency:
+  group: benchmark-gpu-categories-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+permissions:
+  issues: write
+
+jobs:
+  gpu-category:
+    if: github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reconcile managed GPU category labels
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8, Node.js 24
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.issue.number;
+
+            // Use GitHub's latest state, never the potentially stale event snapshot.
+            const { data: issue } = await github.rest.issues.get({
+              owner, repo, issue_number
+            });
+            const lines = (issue.body || '').split(/\r?\n/);
+            const current = new Set((issue.labels || []).map(label =>
+              typeof label === 'string' ? label : label.name
+            ));
+
+            function readField(name) {
+              const header = '### ' + name;
+              const index = lines.findIndex(line => line.trim() === header);
+              if (index === -1) return null;
+              for (let i = index + 1; i < lines.length; i++) {
+                const value = lines[i].trim();
+                if (value.startsWith('### ')) break;
+                if (value && value !== '_No response_') return value;
+              }
+              return null;
+            }
+
+            // Keep closely related GPU models separate (Laptop, Ti, Super, D).
+            const known = [
+              ['gpu:rtx-4090-laptop', /^(?:nvidia )?(?:geforce )?rtx 4090 laptop(?: gpu)?$/],
+              ['gpu:rtx-4090',        /^(?:nvidia )?(?:geforce )?rtx 4090(?: gpu)?$/],
+              ['gpu:rtx-3090-ti',     /^(?:nvidia )?(?:geforce )?rtx 3090 ti(?: gpu)?$/],
+              ['gpu:rtx-3090',        /^(?:nvidia )?(?:geforce )?rtx 3090(?: gpu)?$/],
+              ['gpu:rtx-3080-ti',     /^(?:nvidia )?(?:geforce )?rtx 3080 ti(?: gpu)?$/],
+              ['gpu:rtx-3080',        /^(?:nvidia )?(?:geforce )?rtx 3080(?: gpu)?$/],
+              ['gpu:rtx-4080-super',  /^(?:nvidia )?(?:geforce )?rtx 4080 super(?: gpu)?$/],
+              ['gpu:rtx-4080',        /^(?:nvidia )?(?:geforce )?rtx 4080(?: gpu)?$/],
+              ['gpu:rtx-5080',        /^(?:nvidia )?(?:geforce )?rtx 5080(?: gpu)?$/],
+              ['gpu:rtx-5090',        /^(?:nvidia )?(?:geforce )?rtx 5090(?: gpu)?$/],
+              ['gpu:amd-rx-7900-xtx',/^(?:amd )?(?:radeon )?rx 7900 xtx(?: gpu)?$/],
+              ['gpu:intel-arc-a770', /^(?:intel )?arc a770(?: graphics)?$/]
+            ];
+
+            // Strict ownership: never remove unrelated/manual gpu:* labels.
+            const managed = new Set([
+              'benchmark:submission', 'gpu:unclassified',
+              ...known.map(([label]) => label)
+            ]);
+
+            const desired = new Set();
+            const eligible = issue.title.startsWith('[Results]') &&
+              readField('GPU model') && readField('Benchmark version');
+
+            if (eligible) {
+              const model = readField('GPU model')
+                .toLowerCase().replace(/[\s\u00a0-]+/g, ' ').trim();
+              const match = known.find(([, regex]) => regex.test(model));
+              desired.add('benchmark:submission');
+              desired.add(match ? match[0] : 'gpu:unclassified');
+            }
+
+            for (const name of desired) {
+              // Auto-create only the fixed allowlisted labels.
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                try {
+                  await github.rest.issues.createLabel({
+                    owner, repo, name,
+                    color: name === 'gpu:unclassified' ? 'd4c5f9' : '1d76db',
+                    description: name === 'benchmark:submission'
+                      ? 'Community submission, not automatically verified'
+                      : 'GPU model category; not a validated benchmark'
+                  });
+                } catch (createError) {
+                  if (createError.status !== 422) throw createError;
+                  // Only tolerate an existing label after a concurrent create.
+                  await github.rest.issues.getLabel({ owner, repo, name });
+                }
+              }
+            }
+
+            const missing = [...desired].filter(name => !current.has(name));
+            if (missing.length) {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number, labels: missing
+              });
+            }
+
+            const stale = [...current].filter(name =>
+              managed.has(name) && !desired.has(name)
+            );
+            for (const name of stale) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner, repo, issue_number, name
+                });
+              } catch (error) {
+                // Another actor may have removed this label since the GET.
+                if (error.status !== 404) throw error;
+              }
+            }
+
+            core.info('Issue #' + issue_number + ': ' +
+              (eligible ? [...desired].join(', ') : 'no active benchmark category') +
+              '; no correctness or performance verification performed.');
