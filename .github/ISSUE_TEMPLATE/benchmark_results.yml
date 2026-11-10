@@ -24,7 +24,7 @@ body:
     id: gpu
     attributes:
       label: GPU model
-      description: Exact model, including Laptop GPU, Ti, Super or D suffix where applicable. Do not include serial numbers or machine identifiers.
+      description: Copy the exact model from the exported run.json or summary.txt. Include Laptop GPU, Ti, Super or D suffixes; if your title and archive disagree, explain before submitting. No serial numbers or host identifiers.
       placeholder: "NVIDIA GeForce RTX 3090"
     validations:
       required: true
