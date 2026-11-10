@@ -6,6 +6,12 @@ This package brings that work into a runnable benchmark. It includes the native 
 
 The goal is to make the work testable on more machines and collect reproducible results.
 
+## Getting started
+
+**[Download v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4)** and follow [How to run](HOW_TO_RUN.md). After installation, start it with `ndx12-benchmark`.
+
+The release also includes a [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.4/ndx12-benchmark-v0.1.4-source.tar.gz). See [Source and licenses](SOURCE_AND_LICENSES.md) for contents and build scope.
+
 ## What it tests
 
 | Test | Workload |
@@ -97,12 +103,6 @@ The two manual v21-r12 entries are based on shared result summaries supplied by 
 The earlier maintainer-recorded runs above were recorded on physical GPUs assigned to Linux VMs. They establish hardware execution, not bare-metal testing. The v0.1.0 candidate (v21 r9, archive SHA-256 beginning `d7eeb415`) completed its full RTX 4090 run on 9 November 2026 using NVIDIA Open driver 620.70.06. The same release was installed and started on RTX 3090; its compute suite completed and D4 was interrupted at the maintainer’s request. K and WaveForm were not run in that session. Earlier package revisions also ran on RTX 4090 with driver 615.78.08 and on RTX 3090 with driver 620.70.06; those earlier results do not validate the changed bytes of v0.1.0.
 
 Linux x86-64, a working systemd service manager, standard CPython 3.13 or newer with the GIL enabled, sudo and NVIDIA UVM are required. The optional Vulkan reference also needs the Vulkan loader, NVIDIA Vulkan driver and glibc 2.38 or newer. No local shader compiler or CUDA installation is needed.
-
-## Getting started
-
-**[Download v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4)** and follow [How to run](HOW_TO_RUN.md). After installation, start it with `ndx12-benchmark`.
-
-The release also includes a [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.4/ndx12-benchmark-v0.1.4-source.tar.gz). See [Source and licenses](SOURCE_AND_LICENSES.md) for contents and build scope.
 
 ## Reading and sharing results
 
