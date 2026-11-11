@@ -373,9 +373,14 @@ def install(folder):
                 os.rename(PACKAGE, aside)
             try:
                 os.rename(package, PACKAGE)
-            except OSError:
+            except OSError as error:
                 if aside:
-                    os.rename(aside, PACKAGE)
+                    try:
+                        os.rename(aside, PACKAGE)
+                    except OSError as restore_error:
+                        raise Blocked('the new package could not be installed (%s); the previous package could not '
+                                      'be restored (%s) and remains at %s.' % (error, restore_error, aside),
+                                      changed=True) from None
                 raise
             committed = True
             if aside:
@@ -390,7 +395,7 @@ def install(folder):
         for path in (OPT, LIBEXEC, ETC, BIN):
             sync_folder(path)
     except Blocked as reason:
-        raise Blocked(str(reason), changed=committed) from None
+        raise Blocked(str(reason), changed=committed or reason.changed) from None
     except OSError as error:
         raise Blocked('a file operation failed: %s' % error, changed=committed) from None
     finally:
