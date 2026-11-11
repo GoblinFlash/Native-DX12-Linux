@@ -1,9 +1,13 @@
 # NVIDIA GeForce RTX 3060 — community results
 
-**Review status: HOLD — no curated RTX 3060 entry approved.**
+**Review status: reporter clarification received; final maintainer acceptance pending.**
 
-[Issue #4](https://github.com/GoblinFlash/Native-DX12-Linux/issues/4) is titled RTX 3060 Ti, but its attached v0.1.4 archive records **NVIDIA GeForce RTX 3060 (PCI 10de:2503)**. Its exported `processes.csv` also has one `kernel_records=1` row, despite a reported total of 189/189 VERIFIED outputs. The kernel message is not included in the public share archive; this count alone does not establish a GPU failure.
+[Issue #4](https://github.com/GoblinFlash/Native-DX12-Linux/issues/4) was originally submitted as RTX 3060 Ti, but the v0.1.4 archive identifies **NVIDIA GeForce RTX 3060 (PCI `10de:2503`)**. The reporter subsequently checked the physical card and confirmed that it is the regular RTX 3060.
 
-The maintainer requested clarification of the GPU model and kernel record in Issue #4. Do not present it as an RTX 3060 Ti result or as an independently qualified RTX 3060 performance result until resolved.
+The attached export reports **189/189 VERIFIED** process statuses, including 119 native and 70 Vulkan reference processes. All four conditional native tick-to-nanosecond checks are reported QUALIFIED. These are exported statuses, not independently repeated GPU execution.
+
+One exported row has `kernel_records=1` (compute / affine515 / native / repeat 4). The reporter identified it as an `hrtimer` interrupt-latency message, unrelated to GPU faults, and reported no Xid/ECC/NVRM errors. The original kernel log line is not included in the shared archive; the explanation is **reporter-provided**, not independently verified.
+
+**[Read the extracted v0.1.4 measurements](../../v0.1.4-submitted-data.md#rtx-3060--issue-4)**. Publishing these submitted values does not mean the run has been accepted as an independently qualified performance baseline.
 
 [All community GPU results](../../README.md)

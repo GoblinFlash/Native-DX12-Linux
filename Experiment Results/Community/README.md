@@ -1,23 +1,27 @@
 # Community benchmark results
 
-Community submissions are collected as public [Benchmark Results issues](https://github.com/GoblinFlash/Native-DX12-Linux/issues?q=is%3Aissue+label%3Abenchmark%3Asubmission). A GitHub Actions workflow adds a GPU-model label for supported exact model names. A label is **categorization only**, not a correctness or performance endorsement.
+Community submissions are collected as public [Benchmark Results issues](https://github.com/GoblinFlash/Native-DX12-Linux/issues?q=is%3Aissue+label%3Abenchmark%3Asubmission). A GitHub Actions workflow labels recognized GPU models. **Labels categorize submissions; they do not approve correctness or performance claims.**
 
-## Curated GPU folders
+## Latest submitted data
 
-- [NVIDIA RTX 4090](NVIDIA/RTX_4090/README.md)
-- [NVIDIA RTX 3090](NVIDIA/RTX_3090/README.md) — issue #5, clock qualification unavailable
-- [NVIDIA RTX 3060 Ti](NVIDIA/RTX_3060_Ti/README.md) — issue #3, background GPU contention disclosed
-- [NVIDIA RTX 3060](NVIDIA/RTX_3060/README.md) — issue #4 on hold: submitted model disagrees with attachment
-- [NVIDIA RTX 4060 Laptop GPU](NVIDIA/RTX_4060_Laptop_GPU/README.md) — issue #2
+**[Benchmark v0.1.4 — charts and extracted results for RTX 3060, RTX 3060 Ti, RTX 3090 and RTX 4060 Laptop GPU](v0.1.4-submitted-data.md)**
 
-Additional models, including other Laptop GPU, Ti, Super, D, AMD, and Intel variants, must receive **separate folders** when a submission is approved. An unrecognized model receives the label **gpu:unclassified** and remains visible in Issues. It must not be silently grouped with a similar card.
+This report contains GPU-specific charts and median values recalculated from the four attached `share-results-v0.1.4.tar.gz` archives. The separate Native (GPU ticks) and Vulkan (nanoseconds) columns preserve the units, including the RTX 3090 run where conversion was **NOT_QUALIFIED**. Charts show four selected workloads per GPU; full numeric variants remain in the tables.
 
-## Review before inclusion
+## GPU-specific folders and review status
 
-A maintainer checks the submitted benchmark version and source/archive identity, exact GPU model and driver, actual GPU submission/completion, output correctness, run status, workload and timing method, and any failures or limitations. Check privacy and remove sensitive information from the proposed public summary. Keep failed and partial runs accurately described; do not promote them to a performance PASS.
+- [NVIDIA RTX 4090](NVIDIA/RTX_4090/README.md) — reserved for approved community submissions; maintainer-recorded experiments are [separate](../NVIDIA/README.md).
+- [NVIDIA RTX 3090](NVIDIA/RTX_3090/README.md) — [Issue #5](NVIDIA/RTX_3090/issue-5.md), archive-consistency reviewed; all four timestamp checks NOT_QUALIFIED.
+- [NVIDIA RTX 3060 Ti](NVIDIA/RTX_3060_Ti/README.md) — [Issue #3](NVIDIA/RTX_3060_Ti/issue-3.md), archive-consistency reviewed; concurrent ONNX GPU usage disclosed.
+- [NVIDIA RTX 3060](NVIDIA/RTX_3060/README.md) — Issue #4 model and kernel-message explanation received from reporter; **maintainer acceptance pending**.
+- [NVIDIA RTX 4060 Laptop GPU](NVIDIA/RTX_4060_Laptop_GPU/README.md) — [Issue #2](NVIDIA/RTX_4060_Laptop_GPU/issue-2.md), archive-consistency reviewed.
 
-The linked issue-specific pages below are reviews of exported archive consistency, **not independent GPU reruns**. Only after explicit maintainer approval may a short, attributed, reviewed summary be published under the corresponding GPU folder, for example **NVIDIA/RTX_4090/issue-123.md**. Link to the original public Issue, identify the reviewed source version and evidence scope, and avoid copying untrusted archives or raw logs into the repository. No workflow automatically downloads attachments, commits files, or publishes results.
+The issue-specific reviews cover exported archive consistency, **not independent GPU reruns**. A new model needs its own GPU folder and must not be combined with a similar GPU name.
 
-Measurements from different GPU models, drivers, clocks, memory placements, workloads, and benchmark versions must not be merged into one performance comparison without a matching measurement protocol.
+## Review before approval
+
+Before approval, inspect the benchmark and archive identity, exact GPU and driver, reported GPU submission/completion, output correctness, run status, timing model, failures, and privacy. Keep raw evidence and machine identifiers out of public summaries. Failed, partial and unqualified runs remain visible with their actual limitations.
+
+No workflow automatically downloads submissions, commits benchmark data or approves the results. A folder or Issue link is not itself a maintainer performance endorsement.
 
 [All experiment results](../README.md)

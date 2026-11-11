@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1120" viewBox="0 0 1000 1120" role="img" aria-labelledby="title desc">
+<title id="title">RTX 3090 v0.1.4 community benchmark; independent Native GPU ticks and Vulkan nanoseconds charts</title>
+<desc id="desc">Clock qualification failed for all suites. Native GPU timer ticks and Vulkan reference nanoseconds are shown on separate scales with no performance ratio.</desc>
+<style>
+text{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;fill:#182b3b}
+.head{font-size:39px;font-weight:750}
+.sub{font-size:19px;fill:#526477}
+.panel{font-size:27px;font-weight:730}
+.workload{font-size:19px;fill:#405369;font-weight:620}
+.value{font-size:19px;font-weight:730;font-variant-numeric:tabular-nums}
+.axis{font-size:16px;fill:#718193}
+.warning{font-size:19px;font-weight:700;fill:#9a4506}
+.foot{font-size:18px;fill:#405369}
+</style>
+<rect width="1000" height="1120" fill="#f4f7fa"/>
+<text x="35" y="64" class="head">RTX 3090</text>
+<text x="35" y="99" class="sub">Community benchmark v0.1.4 · selected medians · Issue #5</text>
+<rect x="35" y="120" width="930" height="83" rx="13" fill="#fff3df" stroke="#f2c57e"/>
+<text x="55" y="149" class="warning">CLOCK: NOT QUALIFIED (0/4)</text>
+<text x="55" y="178" class="sub">Incompatible clock domains · do not compare Native and Vulkan values</text>
+<rect x="35" y="224" width="930" height="385" rx="17" fill="#ffffff" stroke="#dce5e9"/>
+   <text x="62" y="263" class="panel">Native · GPU timer ticks</text>
+   <text x="62" y="291" class="sub">Independent horizontal scale · units: GPU ticks</text>
+   <text x="65" y="319" class="workload">Compute · Affine</text>
+    <rect x="350" y="299" width="73" height="25" rx="5" fill="#147d63"/>
+    <text x="892" y="320" class="value" text-anchor="end">23,488</text>
+<text x="65" y="381" class="workload">D4 · 128 × 128</text>
+    <rect x="350" y="361" width="51" height="25" rx="5" fill="#147d63"/>
+    <text x="892" y="382" class="value" text-anchor="end">16,416</text>
+<text x="65" y="443" class="workload">K · uint4 · 64 × 64</text>
+    <rect x="350" y="423" width="420" height="25" rx="5" fill="#147d63"/>
+    <text x="892" y="444" class="value" text-anchor="end">134,576</text>
+<text x="65" y="505" class="workload">WaveForm · uint4 · 64 × 64</text>
+    <rect x="350" y="485" width="183" height="25" rx="5" fill="#147d63"/>
+    <text x="892" y="506" class="value" text-anchor="end">58,528</text>
+   <text x="350" y="582" class="axis">0</text><text x="770" y="582" class="axis" text-anchor="end">Max 134,576 GPU ticks</text>
+<rect x="35" y="628" width="930" height="385" rx="17" fill="#ffffff" stroke="#dce5e9"/>
+   <text x="62" y="667" class="panel">Vulkan reference · nanoseconds</text>
+   <text x="62" y="695" class="sub">Independent horizontal scale · units: ns</text>
+   <text x="65" y="723" class="workload">Compute · Affine</text>
+    <rect x="350" y="703" width="48" height="25" rx="5" fill="#4f709d"/>
+    <text x="892" y="724" class="value" text-anchor="end">11,648</text>
+<text x="65" y="785" class="workload">D4 · 128 × 128</text>
+    <rect x="350" y="765" width="40" height="25" rx="5" fill="#4f709d"/>
+    <text x="892" y="786" class="value" text-anchor="end">9,744</text>
+<text x="65" y="847" class="workload">K · uint4 · 64 × 64</text>
+    <rect x="350" y="827" width="420" height="25" rx="5" fill="#4f709d"/>
+    <text x="892" y="848" class="value" text-anchor="end">101,936</text>
+<text x="65" y="909" class="workload">WaveForm · uint4 · 64 × 64</text>
+    <rect x="350" y="889" width="51" height="25" rx="5" fill="#4f709d"/>
+    <text x="892" y="910" class="value" text-anchor="end">12,480</text>
+   <text x="350" y="986" class="axis">0</text><text x="770" y="986" class="axis" text-anchor="end">Max 101,936 ns</text>
+<text x="35" y="1053" class="foot">Each chart has its own scale and unit; the bars do not form paired comparisons.</text>
+<text x="35" y="1079" class="foot">No conversion, speedup percentage or cross-GPU ranking is valid for this run.</text>
+<text x="35" y="1105" class="axis">Source: submitted public share-results archive · NVIDIA Open 620.70.06 · 189/189 exported VERIFIED statuses</text>
+</svg>

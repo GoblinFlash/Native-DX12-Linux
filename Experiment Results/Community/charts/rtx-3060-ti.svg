@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1040" viewBox="0 0 1000 1040" role="img" aria-labelledby="title desc">
+<title id="title">RTX 3060 Ti v0.1.4 selected community benchmark medians</title>
+<desc id="desc">Four independent panels show approximate Native GPU tick-derived microseconds and reported Vulkan reference microseconds for Affine, D4, K and WaveForm. Per-panel scale changes. Clock model qualified conditionally, no speedup claim.</desc>
+<style>
+text{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;fill:#182b3b}
+.head{font-size:38px;font-weight:750;letter-spacing:-1px}
+.sub{font-size:20px;fill:#526477}
+.status{font-size:18px;font-weight:650;fill:#08775c}
+.workload{font-size:25px;font-weight:700}
+.label{font-size:20px;fill:#405369;font-weight:600}
+.value{font-size:22px;font-weight:750;font-variant-numeric:tabular-nums}
+.axis{font-size:14px;fill:#718193}
+.foot{font-size:17px;fill:#405369}
+</style>
+<rect width="1000" height="1040" fill="#f4f7fa"/>
+<text x="34" y="65" class="head">RTX 3060 Ti</text>
+<text x="34" y="100" class="sub">Community benchmark v0.1.4 · selected workload medians · Issue #3</text>
+<rect x="34" y="123" width="270" height="36" rx="18" fill="#dbf3e9"/>
+<text x="49" y="148" class="status">CLOCK: QUALIFIED (4/4)</text>
+<circle cx="658" cy="144" r="7" fill="#147d63"/><text x="672" y="151" class="sub">Native*</text>
+<circle cx="794" cy="144" r="7" fill="#4f709d"/><text x="809" y="151" class="sub">Vulkan reference</text>
+<text x="34" y="185" class="sub">Concurrent ONNX GPU workload · not an idle baseline</text>
+<rect x="32" y="204" width="936" height="160" rx="14" fill="#ffffff" stroke="#dce5e9"/>
+ <text x="54" y="238" class="workload">Compute · Affine</text>
+ <text x="54" y="278" class="label">Native*</text>
+ <rect x="182" y="258" width="358" height="25" rx="5" fill="#147d63"/>
+ <text x="754" y="279" class="value">~6.72 µs</text>
+ <text x="54" y="322" class="label">Vulkan</text>
+ <rect x="182" y="302" width="550" height="25" rx="5" fill="#4f709d"/>
+ <text x="754" y="323" class="value">10.34 µs</text>
+ <text x="182" y="349" class="axis">0</text>
+ <text x="732" y="349" text-anchor="end" class="axis">Local scale · max 10.34 µs</text>
+<rect x="32" y="383" width="936" height="160" rx="14" fill="#ffffff" stroke="#dce5e9"/>
+ <text x="54" y="417" class="workload">D4 · 128 × 128</text>
+ <text x="54" y="457" class="label">Native*</text>
+ <rect x="182" y="437" width="397" height="25" rx="5" fill="#147d63"/>
+ <text x="754" y="458" class="value">~5.73 µs</text>
+ <text x="54" y="501" class="label">Vulkan</text>
+ <rect x="182" y="481" width="550" height="25" rx="5" fill="#4f709d"/>
+ <text x="754" y="502" class="value">7.94 µs</text>
+ <text x="182" y="528" class="axis">0</text>
+ <text x="732" y="528" text-anchor="end" class="axis">Local scale · max 7.94 µs</text>
+<rect x="32" y="562" width="936" height="160" rx="14" fill="#ffffff" stroke="#dce5e9"/>
+ <text x="54" y="596" class="workload">K · uint4 · 64 × 64</text>
+ <text x="54" y="636" class="label">Native*</text>
+ <rect x="182" y="616" width="550" height="25" rx="5" fill="#147d63"/>
+ <text x="754" y="637" class="value">~27.63 µs</text>
+ <text x="54" y="680" class="label">Vulkan</text>
+ <rect x="182" y="660" width="337" height="25" rx="5" fill="#4f709d"/>
+ <text x="754" y="681" class="value">16.91 µs</text>
+ <text x="182" y="707" class="axis">0</text>
+ <text x="732" y="707" text-anchor="end" class="axis">Local scale · max 27.63 µs</text>
+<rect x="32" y="741" width="936" height="160" rx="14" fill="#ffffff" stroke="#dce5e9"/>
+ <text x="54" y="775" class="workload">WaveForm · uint4 · 64 × 64</text>
+ <text x="54" y="815" class="label">Native*</text>
+ <rect x="182" y="795" width="550" height="25" rx="5" fill="#147d63"/>
+ <text x="754" y="816" class="value">~22.10 µs</text>
+ <text x="54" y="859" class="label">Vulkan</text>
+ <rect x="182" y="839" width="264" height="25" rx="5" fill="#4f709d"/>
+ <text x="754" y="860" class="value">10.62 µs</text>
+ <text x="182" y="886" class="axis">0</text>
+ <text x="732" y="886" text-anchor="end" class="axis">Local scale · max 22.10 µs</text>
+<text x="34" y="947" class="foot">* Native ticks are shown as approximate µs using a conditional ~1 ns/tick model.</text>
+<text x="34" y="972" class="foot">Vulkan values are measured ns displayed in µs. Every panel resets its horizontal scale.</text>
+<text x="34" y="997" class="foot">No cross-GPU ranking, ratio or speedup is inferred from these median values.</text>
+<text x="34" y="1022" class="axis">Source: submitted public share-results archive · NVIDIA Open 620.70.06 · 189/189 exported VERIFIED statuses</text>
+</svg>

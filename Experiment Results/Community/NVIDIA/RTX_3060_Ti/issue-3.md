@@ -27,6 +27,6 @@ Representative medians from the exported tables (native results are **GPU ticks*
 
 **Important limitation:** The reporter states that an always-on ONNX object-detection process was using the same GPU throughout the run. These times therefore include potential GPU contention, and they must not be pooled with idle-GPU benchmarks or promoted as a universal performance ranking. A conditional tick-to-nanosecond model and 7 paired samples per comparison do not eliminate that limitation.
 
-The archive's GPU identity agrees with the Issue's model. Issue #4 mentions RTX 3060 Ti in its title, but its **attached archive** instead reports RTX 3060; it is excluded pending clarification.
+The archive's GPU identity agrees with Issue #3. Issue #4 was initially misidentified as RTX 3060 Ti, but its reporter later confirmed the tested model is a regular RTX 3060; it is documented [separately](../RTX_3060/README.md) with its own acceptance status.
 
-[Community GPU index](../../README.md)
+[Complete extracted v0.1.4 data](../../v0.1.4-submitted-data.md) · [Community GPU index](../../README.md)
