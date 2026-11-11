@@ -1,87 +1,73 @@
 # Native DX12 Linux
 
-**Direct3D 12 on Linux — without Vulkan or VKD3D translation.**
+**Experimental native Direct3D 12 on Linux — without Vulkan or VKD3D translation.**
 
-**Created by Andrew Kapica — GoblinFlash**
+Andrew Kapica — GoblinFlash
 
-## Download the benchmark
+<p>
+  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.4" height="54"></a>
+  <a href="NDX12_GPU_Benchmark/HOW_TO_RUN.md"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
+  <a href="Experiment%20Results/README.md"><img src=".github/readme-assets/button-results.svg" alt="Results" height="54"></a>
+</p>
 
-**[Download v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4)** · [How to run](NDX12_GPU_Benchmark/HOW_TO_RUN.md) · [Benchmark details](NDX12_GPU_Benchmark/README.md)
+<picture>
+  <source media="(max-width: 650px)" srcset=".github/readme-assets/about-mobile.svg">
+  <img src=".github/readme-assets/about-desktop.svg" alt="About the project: native D3D12 exploration, NVIDIA compute execution demonstrated, full applications and games not supported" width="950">
+</picture>
 
-Native DX12 Linux is an open-source project that aims to run Direct3D 12 natively
-on Linux. So far it includes an experimental D3D12 frontend, a shader compiler for
-NVIDIA GPUs, and a separate test path that has already run compute work directly
-on an RTX 4090.
+## Current Progress
 
-It cannot run games or full Direct3D 12 applications yet.
+<picture>
+  <source media="(max-width: 650px)" srcset=".github/readme-assets/progress-mobile.svg">
+  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.4 available; community submissions underway" width="950">
+</picture>
 
-NVIDIA comes first, followed by AMD and Intel. Early development was tested on
-Intel Iris Xe.
+## Current Work
 
-## What works so far?
+**DEVELOPMENT ACTIVE**
 
-- **Native GPU execution on Linux**, without going through Vulkan.
-- **Successful RTX 4090 tests**, with results checked for correctness.
-- **Measured performance improvements** in GPU calculations.
+<picture>
+  <source media="(max-width: 650px)" srcset=".github/readme-assets/nvidia-mobile.svg">
+  <img src=".github/readme-assets/nvidia-desktop.svg" alt="NVIDIA RTX active: native GPU optimization, command submission, shader scheduling and performance experiments" width="950">
+</picture>
 
-## RTX 4090 — measured improvements
+<picture>
+  <source media="(max-width: 650px)" srcset=".github/readme-assets/goal-mobile.svg">
+  <img src=".github/readme-assets/goal-desktop.svg" alt="Goal: reduce unnecessary work, improve GPU execution efficiency and performance while preserving correct results" width="950">
+</picture>
 
-### Test 1: Faster histogram calculations
+<picture>
+  <source media="(max-width: 650px)" srcset=".github/readme-assets/benchmark-mobile.svg">
+  <img src=".github/readme-assets/benchmark-desktop.svg" alt="Benchmark and community testing: collecting submissions and expanding hardware coverage" width="950">
+</picture>
 
-**What does it do?** The GPU counts how often different values appear in a set of data. This is called a **histogram** — the same kind of calculation used to analyse brightness and contrast in images.
+<picture>
+  <source media="(max-width: 650px)" srcset=".github/readme-assets/frontend-mobile.svg">
+  <img src=".github/readme-assets/frontend-desktop.svg" alt="D3D12 frontend: expanding the experimental native implementation and GPU integration" width="950">
+</picture>
 
-The test uses **16,384 generated values from 0 to 255**, similar to grayscale pixel brightness. The **128×128, 32×512 and 16×1024** labels show different arrangements of that same amount of data.
+## Hardware Roadmap
 
-**What improved?** Four repeated operations were grouped together. The GPU completed the same task in **up to 44.22% less time**, with the same checked result.
+<picture>
+  <source media="(max-width: 650px)" srcset=".github/readme-assets/roadmap-mobile.svg">
+  <img src=".github/readme-assets/roadmap-desktop.svg" alt="Roadmap: NVIDIA RTX active development; AMD Radeon CPU-side development; Intel Iris Xe early testbed. No completion percentages." width="950">
+</picture>
 
-![RTX 4090 D4 experiment: before and after GPU interval](Experiment%20Results/NVIDIA/rtx4090-d4-original.png)
+This roadmap shows **development focus**, not a percentage of Direct3D 12 completion. No delivery dates or full application compatibility are implied.
 
-**Why is it important?** Faster histograms mean less time spent on this part of image processing.
+## Explore the Project
 
-### Test 2: Faster data processing across four GPU programs
+- [Benchmark details and supported hardware](NDX12_GPU_Benchmark/README.md) — workloads, requirements and hardware-specific validation records.
+- [Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml) — community submissions, including partial or failed runs.
+- [Experiment Results](Experiment%20Results/README.md) — technical measurements, comparisons and recorded outcomes.
+- [Build the source](container/README.md) — CPU-side build instructions; a successful build is not a GPU test.
+- [Native pipeline overview](docs/native_dx12_linux_pipeline.svg) — experimental NVIDIA execution path.
+- [NVIDIA Developer Forums discussion](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938) — public progress and feedback.
 
-**What does it do?** The GPU runs four connected programs: one prepares the data, two build counts of the values, and the last combines those counts. This is similar to image-processing tasks where the result of one step is used by the next.
+The documented build environment is Ubuntu 26.04 x86-64. Hardware results belong to their recorded package revisions. **The v0.1.4 release has CPU-side validation; it is not a new GPU qualification of every listed card.**
 
-The **64×64** and **127×65** labels on the chart refer to the dimensions of the generated test data.
-
-**What improved?** The last program now reads four histogram values together instead of one by one. The **whole four-program task finished about 5–6% faster**, with the same checked result.
-
-![RTX 4090 four-program pipeline and reference implementations](Experiment%20Results/NVIDIA/rtx4090-fullbench-original.png)
-
-**Why is it important?** The improvement made the **complete sequence faster**, not just one isolated operation.
-
-Vulkan and CUDA appear as separate reference measurements, not a like-for-like ranking.
-
-[Measurement details](Experiment%20Results/NVIDIA/measurement-details.md)
-
-## Current project status
-
-| Area | Status |
-| --- | --- |
-| NVIDIA RTX 4090 | Recorded GPU runs passed correctness checks on NVIDIA Open drivers 615.78.08 and 620.70.06. |
-| NVIDIA RTX 3090 | Recorded GPU runs passed correctness checks on NVIDIA Open driver 620.70.06. |
-| GPU benchmark package | [Latest release: v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4). See the [benchmark overview](NDX12_GPU_Benchmark/README.md) for recorded GPU runs and their versions. |
-| AMD Radeon | CPU-side development and checks underway; GPU testing is a next step. |
-| Intel Iris Xe | Used for early development and testing; further work is planned. |
-
-## GPU Benchmarking
-
-**[Native DirectX 12 Experimental Benchmark For Linux](NDX12_GPU_Benchmark/README.md)**
-
-See the benchmark overview for workloads, requirements and supported GPUs. [Download v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4), then follow [How to run](NDX12_GPU_Benchmark/HOW_TO_RUN.md). The release includes a separate source archive with build recipes and third-party notices.
-
-<img width="1915" height="832" alt="image" src="https://github.com/user-attachments/assets/69512ea7-9325-4aad-96f7-de53bc47017c" />
-
-
-## Explore the project
-
-- **[Experiment Results](Experiment%20Results/README.md)** — NVIDIA, AMD and Intel results, organized by GPU vendor.
-- **[Build the source](container/README.md)** — instructions for compiling on the CPU; no GPU test is launched.
-- **[How it works](docs/native_dx12_linux_pipeline.svg)** — an overview of the experimental NVIDIA path.
-- **[NVIDIA Developer Forums discussion](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938)** — progress and community feedback.
-
-The documented build environment is Ubuntu 26.04 x86-64.
-
-## License and credits
+## License and Credits
 
 Created by **Andrew Kapica — GoblinFlash**. Project-owned material is licensed under **GPL-3.0-or-later**. Third-party components retain their original licenses; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+<sub>Experimental project · Native compute subset only · Status updated 11 November 2026</sub>
