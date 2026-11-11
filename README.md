@@ -5,7 +5,7 @@
 Andrew Kapica — GoblinFlash
 
 <p>
-  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.4" height="54"></a>
+  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.5" height="54"></a>
   <a href="NDX12_GPU_Benchmark/HOW_TO_RUN.md"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
   <a href="Experiment%20Results/README.md"><img src=".github/readme-assets/button-results.svg" alt="Results" height="54"></a>
 </p>
@@ -19,7 +19,7 @@ Andrew Kapica — GoblinFlash
 
 <picture>
   <source media="(max-width: 650px)" srcset=".github/readme-assets/progress-mobile.svg">
-  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.4 available; community submissions underway" width="950">
+  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.5 available; community submissions underway" width="950">
 </picture>
 
 ## Current Work
@@ -64,7 +64,7 @@ This roadmap shows **development focus**, not a percentage of Direct3D 12 comple
 - [Native pipeline overview](docs/native_dx12_linux_pipeline.svg) — experimental NVIDIA execution path.
 - [NVIDIA Developer Forums discussion](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938) — public progress and feedback.
 
-The documented build environment is Ubuntu 26.04 x86-64. Hardware results belong to their recorded package revisions. **The v0.1.4 release has CPU-side validation; it is not a new GPU qualification of every listed card.**
+The documented build environment is Ubuntu 26.04 x86-64. Hardware results belong to their recorded package revisions. **The v0.1.5 release has CPU-side validation; it is not a new GPU qualification of every listed card.**
 
 ## License and Credits
 
