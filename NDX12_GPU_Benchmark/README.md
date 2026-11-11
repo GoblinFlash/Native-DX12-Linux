@@ -8,9 +8,11 @@ The goal is to make the work testable on more machines and collect reproducible 
 
 ## Getting started
 
-**[Download v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4)** and follow [How to run](HOW_TO_RUN.md). After installation, start it with `ndx12-benchmark`.
+**[Download v0.1.5](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5)** and follow [How to run](HOW_TO_RUN.md). After installation, start it with `ndx12-benchmark`.
 
-The release also includes a [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.4/ndx12-benchmark-v0.1.4-source.tar.gz). See [Source and licenses](SOURCE_AND_LICENSES.md) for contents and build scope.
+The release also includes a [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12-benchmark-v0.1.5-source.tar.gz). See [Source and licenses](SOURCE_AND_LICENSES.md) for contents and build scope.
+
+The links above require the matching tag and release assets. If they are not available, use the [v0.1.4 release and its tagged instructions](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/HOW_TO_RUN.md). Do not mix files from different releases.
 
 ## What it tests
 
@@ -112,6 +114,6 @@ The current package uses system-memory data buffers. The experimental VRAM candi
 
 The package includes system RAM telemetry and process snapshots alongside GPU telemetry. RAM usage describes the whole host. Hardware results are tied to the package revisions in the validation table above.
 
-The launcher produces a combined charts page and a `share-results-v0.1.4.tar.gz` bundle (`share-results-release-unknown.tar.gz` without a verified install receipt; older releases use `share-results.tar.gz`). From v0.1.2 a bundle with at least one chart also contains `charts.html`, the charts page made from those chart images. **[Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml)** using the short form; completed, partial and failed runs are welcome. Inspect the bundle and remove private information before attaching it. GitHub issues and attachments are public and linked to your account. Keep the full raw evidence folder private because it contains machine identifiers.
+The launcher produces a combined charts page and a `share-results-v0.1.5.tar.gz` bundle (`share-results-release-unknown.tar.gz` without a verified install receipt; older releases use `share-results.tar.gz`). From v0.1.2 a bundle with at least one chart also contains `charts.html`, the charts page made from those chart images. **[Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml)** using the short form; completed, partial and failed runs are welcome. Inspect the bundle and remove private information before attaching it. GitHub issues and attachments are public and linked to your account. Keep the full raw evidence folder private because it contains machine identifiers.
 
-**v0.1.4 validation: CPU checks only. No new GPU execution was performed for v0.1.4. Apart from the RTX 4090, no RTX 40 card has completed the benchmark yet.** The hardware results above belong to their named historical revisions. See [v0.1.4 release notes](RELEASE-v0.1.4.md).
+**v0.1.5 validation: CPU checks only. No new GPU execution or real-host installation was performed for the r16 package. SM120 and RTX 50 support are not included.** The hardware results above belong to their named historical revisions and do not validate these package bytes. v0.1.5 improves preload checks, installer rollback diagnostics and kernel-event handling, and its source builder rejects ambiguous PATH entries and keeps offline probes inside its execution boundary; see [v0.1.5 release notes](RELEASE-v0.1.5.md) for the exact changes and validation limits.
