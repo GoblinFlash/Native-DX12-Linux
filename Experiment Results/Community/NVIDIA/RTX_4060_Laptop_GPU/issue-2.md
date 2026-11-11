@@ -1,5 +1,7 @@
 # Issue #2 — RTX 4060 Laptop GPU, benchmark v0.1.4
 
+**Existing v0.1.4 results — Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM).** This is the documented backing of the release artifact, not independent observation of the submitted host. Vulkan memory backing: **NOT_RECORDED**; do not infer it from Native DX12. [Release evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111). The experimental VRAM candidate is separate.
+
 **Source:** [Community Issue #2](https://github.com/GoblinFlash/Native-DX12-Linux/issues/2) (reporter: `chinese-wzq`), with its attached `share-results-v0.1.4.tar.gz`.
 
 **Review scope:** Original submitted archive downloaded and inspected without executing code. Its `run.json`, `summary.txt` and exported CSV files agree on the GPU identity, completeness and result statuses. The raw per-process GPU receipts are **not** part of the share archive. This is **archive-consistency review**, not independent GPU execution or broad hardware qualification.
@@ -17,7 +19,7 @@
 
 Representative medians from the exported tables (native results are **GPU ticks**, Vulkan results are **nanoseconds**; not raw shader-only timing):
 
-| Workload | Native median GPU ticks | Vulkan reference median ns |
+| Workload | Native SYSMEM median GPU ticks | Vulkan reference median ns |
 | --- | ---: | ---: |
 | Affine | 15,776 | 10,112 |
 | ParallelSort N515 | 2,517,184 | 191,008 |

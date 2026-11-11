@@ -247,7 +247,7 @@ class IntakeTests(unittest.TestCase):
                 self.assertEqual(len(core.summaries(p)), 27)
                 self.assertEqual(core.summaries(p)[0]['n'], 7)
                 outputs = core.render(p)
-                self.assertEqual(len(outputs), 6)
+                self.assertEqual(len(outputs), 7)
                 self.assertTrue(all('/NVIDIA/RTX_3090/'+version+'/issue-12/' in path for path in outputs))
 
     def test_deterministic_bytes(self):
@@ -310,7 +310,7 @@ class IntakeTests(unittest.TestCase):
         self.assertEqual(p['state'], 'MANUAL_REVIEW')
         self.assertEqual(p['measurements'], [])
         self.assertIn('/Pending_Classification/v0.1.5/', core.record_folder(p))
-        self.assertEqual(len(core.render(p)), 2)
+        self.assertEqual(len(core.render(p)), 3)
 
     def test_version_identity_driver_mismatches(self):
         """Reject mismatched release identity, catalogue fields and Issue/archive driver values."""
@@ -1194,7 +1194,7 @@ class PublisherTests(unittest.TestCase):
         p = core.prepare(api.issue, bundle())
         result = writer.publish(p, api, 12)
         self.assertTrue(all('/Pending_Classification/v0.1.5/' in name for name in result['files']))
-        self.assertEqual(len(result['files']), 2)
+        self.assertEqual(len(result['files']), 3)
 
 
 class WorkflowTests(unittest.TestCase):

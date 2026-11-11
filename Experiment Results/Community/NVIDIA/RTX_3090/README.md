@@ -1,5 +1,7 @@
 # NVIDIA GeForce RTX 3090 — community results
 
+**Existing v0.1.4 results — Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM).** This is the documented backing of the release artifact, not independent observation of the submitted host. Vulkan memory backing: **NOT_RECORDED**; do not infer it from Native DX12. [Release evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111). The experimental VRAM candidate is separate.
+
 This folder is reserved for **reviewed community submissions** using the NVIDIA GeForce RTX 3090. RTX 3090 Ti requires a separate category and folder.
 
 One community submission has an archive-consistency review: [Issue #5 — v0.1.4](issue-5.md). Its native timestamp calibration is **NOT_QUALIFIED in all four suites**; no native-vs-Vulkan performance comparison is justified by the exported clock model. This does not represent independent GPU replay or universal hardware qualification.

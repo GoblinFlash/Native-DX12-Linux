@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="972pt" height="615.6pt" viewBox="0 0 972 615.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="972pt" height="659.6pt" viewBox="0 0 972 659.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
@@ -18,6 +18,9 @@
  <defs>
   <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
  </defs>
+ <metadata id="native-memory-backing">{&quot;native_dx12&quot;: {&quot;backing&quot;: &quot;SYSMEM&quot;, &quot;basis&quot;: &quot;RELEASE_ARTIFACT_DOCUMENTATION&quot;, &quot;evidence_url&quot;: &quot;https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111&quot;, &quot;release&quot;: &quot;v0.1.4&quot;, &quot;release_artifact_sha256&quot;: &quot;a4d707dd50fa9fa22d554732d4e97dfbb54c5ab4ce6fee225c7d554afd1f399a&quot;, &quot;scope&quot;: &quot;data_buffers&quot;}, &quot;vulkan&quot;: {&quot;backing&quot;: &quot;NOT_RECORDED&quot;, &quot;basis&quot;: &quot;NOT_INFERRED_FROM_NATIVE&quot;}}</metadata>
+ <g id="memory-backing-label"><rect width="972" height="44" fill="white"/><text x="12" y="16" font-family="DejaVu Sans" font-size="12">Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)</text><text x="12" y="33" font-family="DejaVu Sans" font-size="10">Vulkan memory backing: NOT_RECORDED (not inferred from Native DX12).</text></g>
+ <g id="memory-label-offset" transform="translate(0 44)">
  <g id="figure_1">
   <g id="patch_1">
    <path d="M 0 615.6 
@@ -40,7 +43,7 @@ z
     <g id="xtick_1">
      <g id="line2d_1"/>
      <g id="text_1">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="256.229778" transform="rotate(-0 193.4685 256.229778)">Native*</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="256.229778" transform="rotate(-0 193.4685 256.229778)">Native* (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_2">
@@ -154,7 +157,7 @@ z
     <g id="xtick_3">
      <g id="line2d_13"/>
      <g id="text_12">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="256.229778" transform="rotate(-0 663.9165 256.229778)">Native*</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="256.229778" transform="rotate(-0 663.9165 256.229778)">Native* (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_4">
@@ -268,7 +271,7 @@ z
     <g id="xtick_5">
      <g id="line2d_25"/>
      <g id="text_23">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="407.667378" transform="rotate(-0 193.4685 407.667378)">Native*</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="407.667378" transform="rotate(-0 193.4685 407.667378)">Native* (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_6">
@@ -382,7 +385,7 @@ z
     <g id="xtick_7">
      <g id="line2d_37"/>
      <g id="text_34">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="407.667378" transform="rotate(-0 663.9165 407.667378)">Native*</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="407.667378" transform="rotate(-0 663.9165 407.667378)">Native* (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_8">
@@ -576,4 +579,5 @@ z
    <rect x="559.872" y="297.3348" width="356.724" height="95.418"/>
   </clipPath>
  </defs>
+</g>
 </svg>
