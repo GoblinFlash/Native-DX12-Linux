@@ -374,6 +374,7 @@ def cmd_verify(args):
 
 class Runner:
     def __init__(self, root, jobs, offline, extra_path=()):
+        need(all(os.pathsep not in directory for directory in extra_path), 'EXTRA_PATH_SEPARATOR')
         self.root = root
         self.jobs = jobs
         self.offline = offline
@@ -384,7 +385,7 @@ class Runner:
         tmp = root / 'tmp'
         home.mkdir(exist_ok=True)
         tmp.mkdir(exist_ok=True)
-        self.env = {'PATH': ':'.join([*extra_path, SAFE_PATH]), 'HOME': str(home), 'TMPDIR': str(tmp), 'LANG': 'C.UTF-8',
+        self.env = {'PATH': os.pathsep.join([*extra_path, SAFE_PATH]), 'HOME': str(home), 'TMPDIR': str(tmp), 'LANG': 'C.UTF-8',
                     'LC_ALL': 'C.UTF-8', 'CC': 'gcc-15', 'CXX': 'g++-15',
                     'CARGO_HOME': str(home / 'cargo'), 'XDG_CACHE_HOME': str(home / 'cache'),
                     'SOURCE_DATE_EPOCH': '0'}
@@ -422,6 +423,7 @@ def toolchain(env):
         if not path:
             missing.append(name)
             continue
+        path = os.path.abspath(path)
         real = Path(path).resolve()
         version = subprocess.run([path, '--version'], env=env, capture_output=True, text=True)
         found[key] = {'name': name, 'path': path, 'resolved': str(real), 'sha256': sha256_file(real),

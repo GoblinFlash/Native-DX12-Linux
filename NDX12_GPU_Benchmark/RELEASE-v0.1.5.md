@@ -6,6 +6,8 @@ This is a separate release identity. Existing tags and assets, including v0.1.4,
 
 ## What changed
 
+- **Source-build PATH handling:** explicit tool directories containing the PATH separator are refused before any tool probe. Executables selected for version checks are invoked by absolute path. The repair is present in the public builder and both companion snapshots. It changes the source companion only; the runtime archive and starter are unchanged.
+
 - **Kernel-event handling:** a workqueue CPU-time warning of the form `workqueue: <function> hogged CPU for >...` no longer stops a run solely because the function contains `drm`. NVIDIA-driver events, integrity/lockup events, critical kernel priorities and other warning forms keep their stop rules. The observed warning remains in the evidence.
 - **Native-library preload check:** a matching path or inode is refused, including an alias whose btrfs device field differs from `stat()`. An inode collision on another filesystem is also refused conservatively. The post-load check retains the v0.1.4 btrfs fix.
 - **Interpreter admission:** the native binding keeps its strict GIL-enabled interpreter checks and CPU controls.
@@ -27,16 +29,16 @@ An older package that does not match this manifest is moved aside before replace
 | --- | --- | ---: |
 | `ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz` | `eed38c254c8e8cc8310c8fc84fbca6081696f114aadcb63cc584cb2828b448a5` | 2506060 |
 | `ndx12_start.py` | `8cd0ca349f4535741ae8a673b3aa10de4a0b5f953c283543a453a850337aced5` | 10958 |
-| `ndx12-benchmark-v0.1.5-source.tar.gz` | `fc5d6a444af1c930c20ee21a8ed74d0d87e38344b67a85d6f6b572da5259a388` | 4199515 |
+| `ndx12-benchmark-v0.1.5-source.tar.gz` | `1061469e9cf78fe49d28e2d1fc6741e04f506c005e7ae473dfb2a5f3c3d9ca99` | 4202528 |
 | `ndx12-install.py` (repository file) | `e5ab43e95dde9d347ed66e4daed0811005bb00a37cdc0cc44b56372790fa3f4d` | 21597 |
 
-The runtime's `MANIFEST.sha256` has SHA-256 `c6bd8d3575a63304783cb412bafa38d31f2de4eeedfc8d9f9e276fbd0e48c56d` and covers 933 files. The source companion manifest covers 669 files. Hashes identify bytes; they do not prove GPU execution.
+The runtime's `MANIFEST.sha256` has SHA-256 `c6bd8d3575a63304783cb412bafa38d31f2de4eeedfc8d9f9e276fbd0e48c56d` and covers 933 files. The source companion manifest covers 671 files. Hashes identify bytes; they do not prove GPU execution.
 
 ## Validation scope
 
 Saved final-r16 CPU evidence covers four focused runs of 89 test methods (SM86/SM89, normal and optimized Python), eight methods against the actual packaged Vulkan tool, 36 installer tests in each Python mode, and 34 named installation cases across 35 user-namespace runs. The Vulkan process/service controls use CPU models; their filesystem and pipe/parser operations are real.
 
-The eight earlier full suites of 591 tests each belong to predecessor source identities. They were not rerun for the final tool changes. The current release preparation ran 39 installer tests in normal Python and 39 with `-O`: 31 existing unit tests, five filesystem/starter rollback controls and the three public rollback regressions from PR #7. These tests loaded the new release installer and checked its pins against the retained package; predecessor installer hashes were not treated as validation of the new file.
+The eight earlier full suites of 591 tests each belong to predecessor source identities. They were not rerun for the final tool changes. The current release preparation ran 39 installer tests in normal Python and 39 with `-O`: 31 existing unit tests, five filesystem/starter rollback controls and the three public rollback regressions from PR #7. These tests loaded the new release installer and checked its pins against the retained package; predecessor installer hashes were not treated as validation of the new file. The dependency-builder repair adds five tests, including two separator subcases. They fail on the old builders for the intended guard failure and pass normally and with `-O` on the public builder and both source snapshots; the final companion builder/test paths were exercised after extraction. No dependency build was run.
 
 CodeRabbit CLI completed reviews of the selected final r16 files, with exact-byte coverage and retained triage. The final five-file review reported two findings, dismissed using controls for the pinned build recipe and starter; this was not a zero-finding whole-package review. GitHub review of the release PR covers the public PR files, not the private runtime/source archives.
 
@@ -46,6 +48,6 @@ A pre-existing reporting limitation remains in direct command-line Vulkan auto m
 
 ## Sources and licenses
 
-The source companion provides the SM86/SM89 snapshots, tests, shader sources and pinned build recipes matching this runtime package. It omits the two prebuilt development Vulkan-reference executables; their C++ source and build command remain. The companion does not contain the separately distributed top-level release installer or its GitHub regression-test file; those have public repository history.
+The source companion provides the SM86/SM89 snapshots, tests, shader sources and pinned build recipes for this runtime package, plus the later source-only dependency-builder repair. Only the builder, its new test, affected source locks, companion README and companion manifest change in this source-only successor. It omits the two prebuilt development Vulkan-reference executables; their C++ source and build command remain. The companion does not contain the separately distributed top-level release installer or its GitHub regression-test file; those have public repository history.
 
 Project-owned material remains GPL-3.0-or-later. Retained third-party terms and notices are unchanged; there is no clean-room or blanket original-authorship claim. `LICENSE` and `NOTICE` are unchanged in both archives. See [Source and licenses](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.5/NDX12_GPU_Benchmark/SOURCE_AND_LICENSES.md) and the companion README for provenance, build prerequisites and historical rebuild limits.
