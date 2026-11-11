@@ -74,11 +74,11 @@ class ExtraPathTests(unittest.TestCase):
                 name = 'build-' + str(index)
                 rc, stdout, stderr = self.run_build([selected], name)
                 self.assertEqual(rc, 1)
-                self.assertIn('EXTRA_PATH_SEPARATOR', stderr)
-                self.assertEqual(json.loads(stderr)['status'], 'FAIL:EXTRA_PATH_SEPARATOR')
-                self.assertEqual(stdout, '')
+                self.assertEqual(stderr, '')
+                self.assertEqual(json.loads(stdout)['status'], 'FAIL:EXTRA_PATH_SEPARATOR')
                 self.assertFalse(marker.exists())
-                self.assertFalse((self.root / name / 'deps.json').exists())
+                receipt = json.loads((self.root / name / 'deps.json').read_text())
+                self.assertEqual(receipt['status'], 'FAIL:EXTRA_PATH_SEPARATOR')
 
     def test_legal_directory_with_spaces_runs_only_the_selected_tool(self):
         selected = self.root / 'selected tools'

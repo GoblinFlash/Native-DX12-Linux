@@ -378,6 +378,11 @@ class Runner:
         self.root = root
         self.jobs = jobs
         self.offline = offline
+        self.unshare = None
+        if offline:
+            launcher = shutil.which('unshare', path=SAFE_PATH)
+            need(launcher, 'UNSHARE_MISSING')
+            self.unshare = str(Path(launcher).resolve(strict=True))
         self.logs = root / 'logs'
         self.logs.mkdir(parents=True, exist_ok=True)
         self.records = []
@@ -390,16 +395,21 @@ class Runner:
                     'CARGO_HOME': str(home / 'cargo'), 'XDG_CACHE_HOME': str(home / 'cache'),
                     'SOURCE_DATE_EPOCH': '0'}
 
+    def execute(self, argv, **kwargs):
+        """Run tools and builds through the same trusted offline boundary."""
+        argv = [str(item) for item in argv]
+        full = ([self.unshare, '-rn', '--'] if self.offline else []) + argv
+        return subprocess.run(full, **kwargs)
+
     def run(self, phase, argv, cwd=None, extra_env=None, capture=False):
         env = dict(self.env)
         env.update(extra_env or {})
         argv = [str(item) for item in argv]
-        full = (['unshare', '-rn', '--'] if self.offline else []) + argv
         log_path = self.logs / (phase + '.log')
         started = time.time()
         with open(log_path, 'wb') as log:
-            result = subprocess.run(full, cwd=cwd, env=env, stdout=subprocess.PIPE if capture else log,
-                                    stderr=log)
+            result = self.execute(argv, cwd=cwd, env=env, stdout=subprocess.PIPE if capture else log,
+                                  stderr=log)
         record = {'phase': phase, 'argv': argv, 'cwd': str(cwd) if cwd else None, 'rc': result.returncode,
                   'seconds': round(time.time() - started, 1), 'log': str(log_path),
                   'network_namespace': 'isolated' if self.offline else 'host'}
@@ -416,16 +426,17 @@ TOOLS = [('cc', 'gcc-15'), ('cxx', 'g++-15'), ('rustc', 'rustc'), ('bindgen', 'b
          ('git', 'git'), ('unshare', 'unshare'), ('nm', 'nm'), ('ar', 'ar')]
 
 
-def toolchain(env):
+def toolchain(runner):
     found, missing = {}, []
     for key, name in TOOLS:
-        path = shutil.which(name, path=env['PATH'])
+        path = runner.unshare if key == 'unshare' and runner.offline else shutil.which(name, path=runner.env['PATH'])
         if not path:
             missing.append(name)
             continue
         path = os.path.abspath(path)
         real = Path(path).resolve()
-        version = subprocess.run([path, '--version'], env=env, capture_output=True, text=True)
+        version = runner.execute([path, '--version'], env=runner.env, capture_output=True, text=True)
+        need(version.returncode == 0, 'TOOL_VERSION_FAILED:' + name)
         found[key] = {'name': name, 'path': path, 'resolved': str(real), 'sha256': sha256_file(real),
                       'bytes': real.stat().st_size,
                       'version': (version.stdout or version.stderr).strip().splitlines()[0:1]}
@@ -541,15 +552,13 @@ def cmd_build(args):
     need(not out.is_relative_to(package_root) and not package_root.is_relative_to(out), 'BUILD_ROOT_OVERLAP')
     extra_path = [str(Path(p)) for p in (args.extra_path or [])]
     need(all(Path(p).is_absolute() and Path(p).is_dir() for p in extra_path), 'EXTRA_PATH')
-    runner = Runner(out, args.jobs, args.offline, extra_path)
-    if args.offline:
-        need(shutil.which('unshare', path=SAFE_PATH), 'UNSHARE_MISSING')
     result = {'schema': RESULT_SCHEMA, 'status': 'IN_PROGRESS', 'lock_sha256': lock_sha, 'targets': list(targets),
               'jobs': args.jobs, 'offline': args.offline, 'package_root': str(package_root),
               'build_root': str(out), 'cache': str(cache), 'extra_path': extra_path}
     started = time.time()
     try:
-        tools, missing = toolchain(runner.env)
+        runner = Runner(out, args.jobs, args.offline, extra_path)
+        tools, missing = toolchain(runner)
         result['toolchain'] = tools
         result['apt'] = apt_report(lock)
         need(not missing, 'TOOLS_MISSING:' + ','.join(missing))
@@ -698,7 +707,7 @@ def main(argv=None):
     build.add_argument('--build-root', required=True)
     build.add_argument('--jobs', type=int, default=2)
     build.add_argument('--targets', default='intel,rtx,amd')
-    build.add_argument('--offline', action='store_true', help='run every build command in a new network namespace')
+    build.add_argument('--offline', action='store_true', help='run tool version probes and build commands in a new network namespace')
     build.add_argument('--extra-path', action='append', metavar='DIR',
                        help='explicit tool directory searched before /usr/bin (for example an unpacked cbindgen .deb)')
     manifest = sub.add_parser('manifest', help='print a tree manifest')
