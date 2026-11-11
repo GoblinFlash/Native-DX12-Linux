@@ -1,57 +1,398 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1120" viewBox="0 0 1000 1120" role="img" aria-labelledby="title desc">
-<title id="title">RTX 3090 v0.1.4 community benchmark; independent Native GPU ticks and Vulkan nanoseconds charts</title>
-<desc id="desc">Clock qualification failed for all suites. Native GPU timer ticks and Vulkan reference nanoseconds are shown on separate scales with no performance ratio.</desc>
-<style>
-text{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;fill:#182b3b}
-.head{font-size:39px;font-weight:750}
-.sub{font-size:19px;fill:#526477}
-.panel{font-size:27px;font-weight:730}
-.workload{font-size:19px;fill:#405369;font-weight:620}
-.value{font-size:19px;font-weight:730;font-variant-numeric:tabular-nums}
-.axis{font-size:16px;fill:#718193}
-.warning{font-size:19px;font-weight:700;fill:#9a4506}
-.foot{font-size:18px;fill:#405369}
-</style>
-<rect width="1000" height="1120" fill="#f4f7fa"/>
-<text x="35" y="64" class="head">RTX 3090</text>
-<text x="35" y="99" class="sub">Community benchmark v0.1.4 · selected medians · Issue #5</text>
-<rect x="35" y="120" width="930" height="83" rx="13" fill="#fff3df" stroke="#f2c57e"/>
-<text x="55" y="149" class="warning">CLOCK: NOT QUALIFIED (0/4)</text>
-<text x="55" y="178" class="sub">Incompatible clock domains · do not compare Native and Vulkan values</text>
-<rect x="35" y="224" width="930" height="385" rx="17" fill="#ffffff" stroke="#dce5e9"/>
-   <text x="62" y="263" class="panel">Native · GPU timer ticks</text>
-   <text x="62" y="291" class="sub">Independent horizontal scale · units: GPU ticks</text>
-   <text x="65" y="319" class="workload">Compute · Affine</text>
-    <rect x="350" y="299" width="73" height="25" rx="5" fill="#147d63"/>
-    <text x="892" y="320" class="value" text-anchor="end">23,488</text>
-<text x="65" y="381" class="workload">D4 · 128 × 128</text>
-    <rect x="350" y="361" width="51" height="25" rx="5" fill="#147d63"/>
-    <text x="892" y="382" class="value" text-anchor="end">16,416</text>
-<text x="65" y="443" class="workload">K · uint4 · 64 × 64</text>
-    <rect x="350" y="423" width="420" height="25" rx="5" fill="#147d63"/>
-    <text x="892" y="444" class="value" text-anchor="end">134,576</text>
-<text x="65" y="505" class="workload">WaveForm · uint4 · 64 × 64</text>
-    <rect x="350" y="485" width="183" height="25" rx="5" fill="#147d63"/>
-    <text x="892" y="506" class="value" text-anchor="end">58,528</text>
-   <text x="350" y="582" class="axis">0</text><text x="770" y="582" class="axis" text-anchor="end">Max 134,576 GPU ticks</text>
-<rect x="35" y="628" width="930" height="385" rx="17" fill="#ffffff" stroke="#dce5e9"/>
-   <text x="62" y="667" class="panel">Vulkan reference · nanoseconds</text>
-   <text x="62" y="695" class="sub">Independent horizontal scale · units: ns</text>
-   <text x="65" y="723" class="workload">Compute · Affine</text>
-    <rect x="350" y="703" width="48" height="25" rx="5" fill="#4f709d"/>
-    <text x="892" y="724" class="value" text-anchor="end">11,648</text>
-<text x="65" y="785" class="workload">D4 · 128 × 128</text>
-    <rect x="350" y="765" width="40" height="25" rx="5" fill="#4f709d"/>
-    <text x="892" y="786" class="value" text-anchor="end">9,744</text>
-<text x="65" y="847" class="workload">K · uint4 · 64 × 64</text>
-    <rect x="350" y="827" width="420" height="25" rx="5" fill="#4f709d"/>
-    <text x="892" y="848" class="value" text-anchor="end">101,936</text>
-<text x="65" y="909" class="workload">WaveForm · uint4 · 64 × 64</text>
-    <rect x="350" y="889" width="51" height="25" rx="5" fill="#4f709d"/>
-    <text x="892" y="910" class="value" text-anchor="end">12,480</text>
-   <text x="350" y="986" class="axis">0</text><text x="770" y="986" class="axis" text-anchor="end">Max 101,936 ns</text>
-<text x="35" y="1053" class="foot">Each chart has its own scale and unit; the bars do not form paired comparisons.</text>
-<text x="35" y="1079" class="foot">No conversion, speedup percentage or cross-GPU ranking is valid for this run.</text>
-<text x="35" y="1105" class="axis">Source: submitted public share-results archive · NVIDIA Open 620.70.06 · 189/189 exported VERIFIED statuses</text>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="972pt" height="615.6pt" viewBox="0 0 972 615.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.8, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 615.6 
+L 972 615.6 
+L 972 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 82.62 386.5968 
+L 456.84 386.5968 
+L 456.84 161.2872 
+L 82.62 161.2872 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="142.155" y="401.511378" transform="rotate(-0 142.155 401.511378)">Affine</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(220.806562 401.511378)">D4</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(206.022617 411.701388)">128×128</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(309.271195 401.511378)">K</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(296.862492 411.701388)">64×64</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4"/>
+     <g id="text_4">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(384.81525 401.511378)">Wave</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(381.912492 411.701388)">64×64</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_5">
+      <path d="M 82.62 386.5968 
+L 456.84 386.5968 
+" clip-path="url(#p2c30ba668f)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6"/>
+     <g id="text_5">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="76.62" y="390.054089" transform="rotate(-0 76.62 390.054089)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_7">
+      <path d="M 82.62 331.704397 
+L 456.84 331.704397 
+" clip-path="url(#p2c30ba668f)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8"/>
+     <g id="text_6">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="76.62" y="335.161686" transform="rotate(-0 76.62 335.161686)">40000</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_9">
+      <path d="M 82.62 276.811994 
+L 456.84 276.811994 
+" clip-path="url(#p2c30ba668f)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10"/>
+     <g id="text_7">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="76.62" y="280.269283" transform="rotate(-0 76.62 280.269283)">80000</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_11">
+      <path d="M 82.62 221.919592 
+L 456.84 221.919592 
+" clip-path="url(#p2c30ba668f)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_12"/>
+     <g id="text_8">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="76.62" y="225.376881" transform="rotate(-0 76.62 225.376881)">120000</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_13">
+      <path d="M 82.62 167.027189 
+L 456.84 167.027189 
+" clip-path="url(#p2c30ba668f)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_14"/>
+     <g id="text_9">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="76.62" y="170.484478" transform="rotate(-0 76.62 170.484478)">160000</text>
+     </g>
+    </g>
+    <g id="text_10">
+     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="33.717875" y="273.942" transform="rotate(-90 33.717875 273.942)">GPU ticks</text>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 82.62 386.5968 
+L 456.84 386.5968 
+" style="fill: none; stroke: #b7c9d7; stroke-width: 0.7; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 114.51375 386.5968 
+L 169.79625 386.5968 
+L 169.79625 354.363981 
+L 114.51375 354.363981 
+z
+" clip-path="url(#p2c30ba668f)" style="fill: #0c80bd"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 199.56375 386.5968 
+L 254.84625 386.5968 
+L 254.84625 364.068958 
+L 199.56375 364.068958 
+z
+" clip-path="url(#p2c30ba668f)" style="fill: #0c80bd"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 284.61375 386.5968 
+L 339.89625 386.5968 
+L 339.89625 201.9168 
+L 284.61375 201.9168 
+z
+" clip-path="url(#p2c30ba668f)" style="fill: #0c80bd"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 369.66375 386.5968 
+L 424.94625 386.5968 
+L 424.94625 306.278236 
+L 369.66375 306.278236 
+z
+" clip-path="url(#p2c30ba668f)" style="fill: #0c80bd"/>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="142.155" y="347.771278" transform="rotate(-0 142.155 347.771278)">23,488</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="227.205" y="357.476255" transform="rotate(-0 227.205 357.476255)">16,416</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="312.255" y="195.324097" transform="rotate(-0 312.255 195.324097)">134,576</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="397.305" y="299.685533" transform="rotate(-0 397.305 299.685533)">58,528</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 13.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="269.73" y="139.2872" transform="rotate(-0 269.73 139.2872)">Native — GPU timer ticks</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_8">
+    <path d="M 554.04 386.5968 
+L 928.26 386.5968 
+L 928.26 161.2872 
+L 554.04 161.2872 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_5">
+     <g id="line2d_15"/>
+     <g id="text_16">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="613.575" y="401.511378" transform="rotate(-0 613.575 401.511378)">Affine</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_16"/>
+     <g id="text_17">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(692.226562 401.511378)">D4</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(677.442617 411.701388)">128×128</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_17"/>
+     <g id="text_18">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(780.691195 401.511378)">K</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(768.282492 411.701388)">64×64</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_18"/>
+     <g id="text_19">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(856.23525 401.511378)">Wave</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; fill: #152e4c" transform="translate(853.332492 411.701388)">64×64</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_6">
+     <g id="line2d_19">
+      <path d="M 554.04 386.5968 
+L 928.26 386.5968 
+" clip-path="url(#pa50dc43d43)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_20"/>
+     <g id="text_20">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="548.04" y="390.054089" transform="rotate(-0 548.04 390.054089)">0</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_21">
+      <path d="M 554.04 341.303675 
+L 928.26 341.303675 
+" clip-path="url(#pa50dc43d43)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_22"/>
+     <g id="text_21">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="548.04" y="344.760964" transform="rotate(-0 548.04 344.760964)">25000</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_23">
+      <path d="M 554.04 296.01055 
+L 928.26 296.01055 
+" clip-path="url(#pa50dc43d43)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_24"/>
+     <g id="text_22">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="548.04" y="299.467839" transform="rotate(-0 548.04 299.467839)">50000</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_25">
+      <path d="M 554.04 250.717425 
+L 928.26 250.717425 
+" clip-path="url(#pa50dc43d43)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_26"/>
+     <g id="text_23">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="548.04" y="254.174714" transform="rotate(-0 548.04 254.174714)">75000</text>
+     </g>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_27">
+      <path d="M 554.04 205.4243 
+L 928.26 205.4243 
+" clip-path="url(#pa50dc43d43)" style="fill: none; stroke: #d1deea; stroke-width: 0.82; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_28"/>
+     <g id="text_24">
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="548.04" y="208.881589" transform="rotate(-0 548.04 208.881589)">100000</text>
+     </g>
+    </g>
+    <g id="text_25">
+     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="505.137875" y="273.942" transform="rotate(-90 505.137875 273.942)">ns</text>
+    </g>
+   </g>
+   <g id="patch_9">
+    <path d="M 554.04 386.5968 
+L 928.26 386.5968 
+" style="fill: none; stroke: #b7c9d7; stroke-width: 0.7; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 585.93375 386.5968 
+L 641.21625 386.5968 
+L 641.21625 365.493827 
+L 585.93375 365.493827 
+z
+" clip-path="url(#pa50dc43d43)" style="fill: #ef7100"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 670.98375 386.5968 
+L 726.26625 386.5968 
+L 726.26625 368.943352 
+L 670.98375 368.943352 
+z
+" clip-path="url(#pa50dc43d43)" style="fill: #ef7100"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 756.03375 386.5968 
+L 811.31625 386.5968 
+L 811.31625 201.9168 
+L 756.03375 201.9168 
+z
+" clip-path="url(#pa50dc43d43)" style="fill: #ef7100"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 841.08375 386.5968 
+L 896.36625 386.5968 
+L 896.36625 363.986472 
+L 841.08375 363.986472 
+z
+" clip-path="url(#pa50dc43d43)" style="fill: #ef7100"/>
+   </g>
+   <g id="text_26">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="613.575" y="358.901124" transform="rotate(-0 613.575 358.901124)">11,648</text>
+   </g>
+   <g id="text_27">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="698.625" y="362.350648" transform="rotate(-0 698.625 362.350648)">9,744</text>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="783.675" y="195.324097" transform="rotate(-0 783.675 195.324097)">101,936</text>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 9.5px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="868.725" y="357.393769" transform="rotate(-0 868.725 357.393769)">12,480</text>
+   </g>
+   <g id="text_30">
+    <text style="font-weight: 700; font-size: 13.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="741.15" y="139.2872" transform="rotate(-0 741.15 139.2872)">Vulkan reference — nanoseconds</text>
+   </g>
+  </g>
+  <g id="line2d_29">
+   <path d="M 59.292 86.7996 
+L 912.708 86.7996 
+" style="fill: none; stroke: #d1deea; stroke-width: 1.15; stroke-linecap: square"/>
+  </g>
+  <g id="line2d_30">
+   <path d="M 59.292 431.5356 
+L 912.708 431.5356 
+" style="fill: none; stroke: #d1deea; stroke-width: 1.15; stroke-linecap: square"/>
+  </g>
+  <g id="line2d_31">
+   <path d="M 59.292 569.43 
+L 912.708 569.43 
+" style="fill: none; stroke: #d1deea; stroke-width: 1.15; stroke-linecap: square"/>
+  </g>
+  <g id="text_31">
+   <text style="font-weight: 700; font-size: 25.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="30.78" transform="rotate(-0 59.292 30.78)">Community Benchmark — RTX 3090</text>
+  </g>
+  <g id="text_32">
+   <text style="font-size: 14.8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="56.0196" transform="rotate(-0 59.292 56.0196)">Whole-workload measurements — selected v0.1.4 medians</text>
+  </g>
+  <g id="text_33">
+   <text style="font-size: 9.9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="76.95" transform="rotate(-0 59.292 76.95)">NVIDIA Open 620.70.06  |  v21-r14  |  Four submitted suites  |  Lower is better within a workload</text>
+  </g>
+  <g id="text_34">
+   <text style="font-weight: 700; font-size: 11.2px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #a34a00" x="59.292" y="110.1924" transform="rotate(-0 59.292 110.1924)">CLOCK NOT QUALIFIED 0/4 — incompatible timer units</text>
+  </g>
+  <g id="text_35">
+   <text style="font-size: 10.2px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #a34a00" x="913.68" y="110.1924" transform="rotate(-0 913.68 110.1924)">Do not compare these panels</text>
+  </g>
+  <g id="text_36">
+   <text style="font-weight: 700; font-size: 11.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="446.9256" transform="rotate(-0 59.292 446.9256)">What is being compared?</text>
+  </g>
+  <g id="text_37">
+   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="462.3156" transform="rotate(-0 59.292 462.3156)">Native GPU ticks (left) and Vulkan nanoseconds (right) are separate data sets on independent units and scales.</text>
+  </g>
+  <g id="text_38">
+   <text style="font-weight: 700; font-size: 11.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="484.4772" transform="rotate(-0 59.292 484.4772)">Measured data and correctness</text>
+  </g>
+  <g id="text_39">
+   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="499.8672" transform="rotate(-0 59.292 499.8672)">Seven exported values per median; 189/189 process statuses VERIFIED in the share archive. Original GPU receipts unavailable.</text>
+  </g>
+  <g id="text_40">
+   <text style="font-weight: 700; font-size: 11.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="522.0288" transform="rotate(-0 59.292 522.0288)">Scope and limitations</text>
+  </g>
+  <g id="text_41">
+   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="537.4188" transform="rotate(-0 59.292 537.4188)">Timer model NOT_QUALIFIED for all four suites. No tick conversion, relative performance ratio or cross-GPU ranking is valid.</text>
+  </g>
+  <g id="text_42">
+   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="555.8868" transform="rotate(-0 59.292 555.8868)">Clock conversion NOT_QUALIFIED for all four suites.</text>
+  </g>
+  <g id="text_43">
+   <text style="font-size: 8.2px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="584.82" transform="rotate(-0 59.292 584.82)">TERMS  ·  Native = GPU timer ticks; Vulkan = elapsed nanoseconds; D4 / K / WaveForm are distinct workloads.</text>
+  </g>
+  <g id="text_44">
+   <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #3f5875" x="912.708" y="600.8256" transform="rotate(-0 912.708 600.8256)">DATA: ISSUE #5 · SUBMITTED CSV · PREVIEW</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p2c30ba668f">
+   <rect x="82.62" y="161.2872" width="374.22" height="225.3096"/>
+  </clipPath>
+  <clipPath id="pa50dc43d43">
+   <rect x="554.04" y="161.2872" width="374.22" height="225.3096"/>
+  </clipPath>
+ </defs>
 </svg>
