@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -I
-"""Installer of the Native DX12 NVIDIA benchmark v21 r16 (release archive eed38c25, external starter 8cd0ca34).
+"""Installer of the Native DX12 NVIDIA benchmark v21 r14 (release archive a4d707dd, external starter 8cd0ca34).
 
 Put this file in one folder with the two release files it names (ARCHIVE and STARTER below) and run, from anywhere:
 
@@ -42,16 +42,16 @@ import tarfile  # noqa: E402
 import tempfile  # noqa: E402
 import time  # noqa: E402
 
-PUBLIC_VERSION = 'v0.1.5'        # v0.1.0 (r9), v0.1.1 (r12 845cb9a3), v0.1.2 (r12 e8073d51) and v0.1.3 (r13 6fbf42ac) are published
-PACKAGE_ID = 'v21-r16'           # the package revision; tools/nvidia_desktop.py PACKAGE_ID must be the same
+PUBLIC_VERSION = 'v0.1.4'        # v0.1.0 (r9), v0.1.1 (r12 845cb9a3), v0.1.2 (r12 e8073d51) and v0.1.3 (r13 6fbf42ac) are published
+PACKAGE_ID = 'v21-r14'           # the package revision; tools/nvidia_desktop.py PACKAGE_ID must be the same
 NAME = 'ndx12-native-benchmark-v21-615.78.08-620.70.06'
 ARCHIVE = NAME + '.tar.gz'
-ARCHIVE_SHA256 = 'eed38c254c8e8cc8310c8fc84fbca6081696f114aadcb63cc584cb2828b448a5'
-ARCHIVE_BYTES = 2506060
+ARCHIVE_SHA256 = 'a4d707dd50fa9fa22d554732d4e97dfbb54c5ab4ce6fee225c7d554afd1f399a'
+ARCHIVE_BYTES = 2535982
 STARTER = 'ndx12_start.py'
 STARTER_SHA256 = '8cd0ca349f4535741ae8a673b3aa10de4a0b5f953c283543a453a850337aced5'
 STARTER_BYTES = 10958
-MANIFEST_SHA256 = 'c6bd8d3575a63304783cb412bafa38d31f2de4eeedfc8d9f9e276fbd0e48c56d'
+MANIFEST_SHA256 = 'b00bf06c49c64fcd9ae87e12c208cad14a99d4f251b2c44aaef3246e9ac07c5e'
 
 OPT, PACKAGE = '/opt/ndx12', '/opt/ndx12/' + NAME
 LIBEXEC, STARTER_PATH = '/usr/local/libexec', '/usr/local/libexec/ndx12_start.py'
@@ -371,17 +371,16 @@ def install(folder):
             if lstat(PACKAGE) is not None:
                 aside = '%s.replaced-%s' % (PACKAGE, time.strftime('%Y%m%dT%H%M%SZ', time.gmtime()))
                 os.rename(PACKAGE, aside)
-                committed = True      # moving the old package is already an installed-state change
             try:
                 os.rename(package, PACKAGE)
-            except OSError:
+            except OSError as error:
                 if aside:
                     try:
                         os.rename(aside, PACKAGE)
-                    except OSError as error:
-                        raise Blocked('the old package remains at %s; restoring it to %s failed (%s).'
-                                      % (aside, PACKAGE, error)) from None
-                    committed = False      # a successful rollback restored the original installation
+                    except OSError as restore_error:
+                        raise Blocked('the new package could not be installed (%s); the previous package could not '
+                                      'be restored (%s) and remains at %s.' % (error, restore_error, aside),
+                                      changed=True) from None
                 raise
             committed = True
             if aside:
@@ -396,7 +395,7 @@ def install(folder):
         for path in (OPT, LIBEXEC, ETC, BIN):
             sync_folder(path)
     except Blocked as reason:
-        raise Blocked(str(reason), changed=committed) from None
+        raise Blocked(str(reason), changed=committed or reason.changed) from None
     except OSError as error:
         raise Blocked('a file operation failed: %s' % error, changed=committed) from None
     finally:
