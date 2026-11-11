@@ -70,4 +70,8 @@ The documented build environment is Ubuntu 26.04 x86-64. Hardware results belong
 
 Created by **Andrew Kapica — GoblinFlash**. Project-owned material is licensed under **GPL-3.0-or-later**. Third-party components retain their original licenses; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
+### Community Contributors
+
+- [Hyrules](https://github.com/Hyrules) — Benchmark testing, bug reports and valuable feedback.
+
 <sub>Experimental project · Native compute subset only · Status updated 11 November 2026</sub>
