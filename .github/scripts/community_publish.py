@@ -14,15 +14,18 @@ _spec.loader.exec_module(intake)
 
 
 def git_blob(data):
+    """Return the Git SHA-1 object ID for the supplied blob bytes, without storing them."""
     return hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
 
 
 def sha(value):
+    """Require and return a lowercase 40-hex Git object ID, or raise API_SHA."""
     intake.need(type(value) is str and re.fullmatch('[0-9a-f]{40}', value), 'API_SHA')
     return value
 
 
 def get_optional(api, endpoint):
+    """Return an API GET result, treating only API_404 as an absent resource."""
     try:
         return api.get(endpoint)
     except intake.Refused as error:
@@ -32,6 +35,7 @@ def get_optional(api, endpoint):
 
 
 def tree_entries(api, tree_sha):
+    """Read one recursive Git tree and refuse truncated, malformed or oversized listings."""
     result = api.get('git/trees/' + sha(tree_sha) + '?recursive=1')
     intake.need(result.get('truncated') is False and type(result.get('tree')) is list and
                 len(result['tree']) <= 10000, 'TREE_LIMIT')
@@ -39,13 +43,19 @@ def tree_entries(api, tree_sha):
 
 
 def existing_issue(entries, issue_number):
+    """Report whether tree entries contain an existing legacy or versioned Issue record."""
     pattern = re.compile(r'^Experiment Results/Community/(?:[^/]+/)*issue-' + str(issue_number) +
                          r'(?:-submission)?(?:\.md|/(?:README\.md|record\.json))$')
     return any(type(row.get('path')) is str and pattern.fullmatch(row['path']) for row in entries)
 
 
 def check_current_source(api, proposal, manual):
-    """Hard gate before new refs, and before recovering an existing orphan."""
+    """Read the current Issue and require eligibility plus the prepared content revision.
+
+    Return the matching fingerprint. A change/read/eligibility refusal stops
+    new-ref publication or strict orphan recovery; this GET is not an atomic
+    lock on future Issue edits and performs no writes.
+    """
     current = api.get('issues/' + str(proposal['issue']))
     intake.eligible(current, manual)
     revision = intake.issue_fingerprint(current)
@@ -54,7 +64,13 @@ def check_current_source(api, proposal, manual):
 
 
 def observe_after_new_ref(api, proposal, manual):
-    """Annotate the already-created snapshot; late changes cannot strand its PR."""
+    """Return a source/eligibility observation for an already-created new ref.
+
+    A later edit or revoked eligibility becomes STALE; unreadable/malformed
+    observations become UNKNOWN without copying raw errors. This annotation
+    does not block the draft attempt or replace its pinned data. Subsequent
+    PR API failures can still leave an orphan requiring separate recovery.
+    """
     try:
         current = api.get('issues/' + str(proposal['issue']))
         revision = intake.issue_fingerprint(current)
@@ -74,7 +90,15 @@ def observe_after_new_ref(api, proposal, manual):
 
 
 def publish(proposal, api, expected_issue, manual=False):
-    """All writes are bounded additions on a new branch; existing bytes never change."""
+    """Propose validated result files on a fixed branch and create only an UNVERIFIED draft PR.
+
+    proposal is revalidated before any api call. Existing records/PRs return
+    idempotent statuses; unchanged orphan recovery checks exact bytes/history
+    and fresh source permission. New branches recheck the Issue immediately
+    before refs, then annotate later source changes in the pinned draft body.
+    Return a status mapping or raise Refused/API errors. Partial failures may
+    leave objects/refs; no force-update, merge, approval or Issue close occurs.
+    """
     intake.validate_proposal(proposal)
     intake.need(proposal['issue'] == expected_issue, 'ISSUE_NUMBER_MISMATCH')
     check_current_source(api, proposal, manual)
@@ -169,6 +193,13 @@ def publish(proposal, api, expected_issue, manual=False):
 
 
 def main(argv=None):
+    """Run the workflow publisher only with --apply and the fixed repository identity.
+
+    Read bounded event/proposal files, revalidate them and construct a writable
+    API client before publish. Print its status JSON and return zero; refusals
+    propagate to the sanitized command error handler. --apply is a capability
+    switch, not a replacement for deployment/owner approval.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--event', type=Path, required=True)
     parser.add_argument('--proposal', type=Path, required=True)
