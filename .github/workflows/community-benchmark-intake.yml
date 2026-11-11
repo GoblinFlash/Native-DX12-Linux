@@ -1,0 +1,78 @@
+# Draft proposals only. No GPU result, correctness or performance is accepted here.
+name: Propose community benchmark records
+
+on:
+  issues:
+    types: [opened, reopened, edited, labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Existing benchmark Issue number (digits only)
+        required: true
+        type: string
+
+concurrency:
+  group: community-benchmark-intake-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  prepare:
+    if: github.repository == 'GoblinFlash/Native-DX12-Linux' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      issues: read
+    outputs:
+      ready: ${{ steps.prepare.outputs.ready }}
+      artifact_name: community-intake-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Read current Issue and sanitize bounded attachment
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 -I -B .github/scripts/community_intake.py
+          --event "$GITHUB_EVENT_PATH"
+          --output "$RUNNER_TEMP/community-intake/proposal.json"
+      - name: Carry typed data only, never source archives or uploaded code
+        if: steps.prepare.outputs.ready == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: community-intake-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/community-intake/proposal.json
+          if-no-files-found: error
+          retention-days: 3
+
+  propose:
+    needs: prepare
+    if: needs.prepare.outputs.ready == 'true' && github.repository == 'GoblinFlash/Native-DX12-Linux' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.prepare.outputs.artifact_name }}
+          path: ${{ runner.temp }}/community-proposal
+      - name: Revalidate typed data and propose a draft for owner review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 -I -B .github/scripts/community_publish.py
+          --event "$GITHUB_EVENT_PATH"
+          --proposal "$RUNNER_TEMP/community-proposal/proposal.json"
+          --apply

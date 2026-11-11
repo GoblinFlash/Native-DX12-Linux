@@ -1,0 +1,24 @@
+{
+  "v0.1.4": {
+    "archive": "ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz",
+    "archive_bytes": 2535982,
+    "archive_sha256": "a4d707dd50fa9fa22d554732d4e97dfbb54c5ab4ce6fee225c7d554afd1f399a",
+    "manifest_files": 933,
+    "manifest_sha256": "b00bf06c49c64fcd9ae87e12c208cad14a99d4f251b2c44aaef3246e9ac07c5e",
+    "package_id": "v21-r14",
+    "public_version": "v0.1.4",
+    "installer_sha256": "2a0d6f0daa0948d4de84f29b066f0a7f3cd4f281d567b349ccdade5748010dd3",
+    "starter_sha256": "8cd0ca349f4535741ae8a673b3aa10de4a0b5f953c283543a453a850337aced5"
+  },
+  "v0.1.5": {
+    "archive": "ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz",
+    "archive_bytes": 2506060,
+    "archive_sha256": "eed38c254c8e8cc8310c8fc84fbca6081696f114aadcb63cc584cb2828b448a5",
+    "manifest_files": 933,
+    "manifest_sha256": "c6bd8d3575a63304783cb412bafa38d31f2de4eeedfc8d9f9e276fbd0e48c56d",
+    "package_id": "v21-r16",
+    "public_version": "v0.1.5",
+    "installer_sha256": "e5ab43e95dde9d347ed66e4daed0811005bb00a37cdc0cc44b56372790fa3f4d",
+    "starter_sha256": "8cd0ca349f4535741ae8a673b3aa10de4a0b5f953c283543a453a850337aced5"
+  }
+}

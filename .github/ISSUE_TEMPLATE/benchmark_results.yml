@@ -1,13 +1,16 @@
 name: Benchmark results / Test submission
 description: Share a benchmark run from your GPU, including completed, partial or failed runs.
 title: "[Results] "
+labels: ["benchmark:submission"]
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for testing! Give the exact GPU model, driver and benchmark version, then attach your results below.
 
-        New submissions are public GitHub Issues. Supported GPU models receive a category label automatically; unknown models stay unclassified until reviewed. Labels do **not** mean that a result is verified. Only checked, approved summaries may later appear in the per-GPU community results folders.
+        New submissions are public GitHub Issues. Supported GPU models receive a category label automatically; unknown models stay unclassified until reviewed. Labels do **not** mean that a result is verified.
+
+        When enabled, intake automation can read selected numeric fields from a supported bundle and propose an UNVERIFIED draft PR in a separate exact-GPU/release folder. An outside contributor first needs maintainer intake authorization. Unknown models, unsupported files and conflicting identities require manual review. Only a maintainer review and explicit owner approval can accept results; intake never merges or closes your Issue. Later edits do not silently overwrite an existing draft.
 
         **This issue and its attachments are public and linked to your GitHub account.**
         Inspect `share-results-<release>.tar.gz` (older releases: `share-results.tar.gz`) before attaching it. Remove anything you do not want public, such as usernames, hostnames, IP addresses, serial numbers or personal paths. Mention any redaction without repeating the removed values.
@@ -17,7 +20,7 @@ body:
     attributes:
       label: Benchmark version
       description: Release version; add the archive SHA-256 if known. Write unknown if you cannot identify it.
-      placeholder: "v0.1.0"
+      placeholder: "v0.1.5 (package v21-r16), benchmark archive SHA-256 if known"
     validations:
       required: true
   - type: input
@@ -66,4 +69,4 @@ body:
     id: context
     attributes:
       label: Additional details (optional)
-      description: Selected tests, whether Vulkan ran, current or locked clocks, bare metal or VM, interruptions, or redactions. No host identifiers or private paths are needed.
+      description: Selected tests, whether Vulkan ran, clock qualification, current or locked clocks, background GPU/ONNX activity, bare metal or VM, interruptions, provenance limitations or redactions. A 189/189 count alone is not qualification. No host identifiers or private paths are needed.
