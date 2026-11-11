@@ -1,35 +1,37 @@
 # How to run
 
-## Download v0.1.4
+## Download v0.1.5
 
-**[Open release v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.4)**
+**[Open release v0.1.5](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5)**
 
 Download these **three files into the same new folder**:
 
-1. **[Installer — ndx12-install.py](https://raw.githubusercontent.com/GoblinFlash/Native-DX12-Linux/v0.1.4/NDX12_GPU_Benchmark/ndx12-install.py)** — save the linked file if your browser displays its contents.
-2. **[Benchmark archive — .tar.gz](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.4/ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz)**
-3. **[Starter — ndx12_start.py](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.4/ndx12_start.py)**
+1. **[Installer — ndx12-install.py](https://raw.githubusercontent.com/GoblinFlash/Native-DX12-Linux/v0.1.5/NDX12_GPU_Benchmark/ndx12-install.py)** — save the linked file if your browser displays its contents.
+2. **[Benchmark archive — .tar.gz](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz)**
+3. **[Starter — ndx12_start.py](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12_start.py)**
 
 The source archives are for developers; you do not need them to run the benchmark. Follow the installation steps below.
 
+These links require the matching tag and release assets. If they are not available, use [v0.1.4 and its tagged instructions](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/HOW_TO_RUN.md). Do not mix files from different releases.
+
 ## Install and run
 
-These instructions are for release v0.1.4 of the benchmark. Its package keeps its internal name, `ndx12-native-benchmark-v21-615.78.08-620.70.06`. Running `git clone` downloads the source repository; it does not install the benchmark.
+These instructions are for release v0.1.5 of the benchmark. Its package keeps its internal name, `ndx12-native-benchmark-v21-615.78.08-620.70.06`. Running `git clone` downloads the source repository; it does not install the benchmark.
 
 1. **Prepare the machine.** Save your work and close games and other GPU-heavy programs; a driver fault may freeze the display. Do not change your driver just for this test. `/usr/bin/python3` must be standard CPython 3.13 or newer with the GIL enabled; the installer checks it. To start the benchmark from your normal account, `/usr/bin/sudo` must be available.
 
 2. **Download three files into new folder.**
-   - `ndx12-install.py`: the installer, from the `NDX12_GPU_Benchmark` folder of this repository at tag `v0.1.4`.
-   - `ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz`: the benchmark archive, from release v0.1.4.
-   - `ndx12_start.py`: the starter, from release v0.1.4.
+   - `ndx12-install.py`: the installer, from the `NDX12_GPU_Benchmark` folder of this repository at tag `v0.1.5`.
+   - `ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz`: the benchmark archive, from release v0.1.5.
+   - `ndx12_start.py`: the starter, from release v0.1.5.
 
    You can use your browser. If you have `curl`, this downloads all three files into a new folder:
 
    ```sh
-   mkdir ndx12-v0.1.4 && cd ndx12-v0.1.4 &&
-   curl -fLO https://raw.githubusercontent.com/GoblinFlash/Native-DX12-Linux/v0.1.4/NDX12_GPU_Benchmark/ndx12-install.py &&
-   curl -fLO https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.4/ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz &&
-   curl -fLO https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.4/ndx12_start.py
+   mkdir ndx12-v0.1.5 && cd ndx12-v0.1.5 &&
+   curl -fLO https://raw.githubusercontent.com/GoblinFlash/Native-DX12-Linux/v0.1.5/NDX12_GPU_Benchmark/ndx12-install.py &&
+   curl -fLO https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz &&
+   curl -fLO https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12_start.py
    ```
 
    You do not need to copy any checksum. See [Where the trust comes from](#where-the-trust-comes-from).
@@ -56,12 +58,12 @@ These instructions are for release v0.1.4 of the benchmark. Its package keeps it
 
    It has the starter verify the package, and finishes with **READY**.
 
-   If it prints **NOT INSTALLED**, it says what blocks the installation and what to change. A refusal leaves an installed copy as it was. Fix the problem and run the same command again. If a failure happens while installed files are being replaced, it says that the installation is incomplete; running it again completes it.
+   If it prints **NOT INSTALLED**, it says what blocks the installation and what to change. A refusal before replacement leaves an installed copy as it was. If replacement and restoration both fail, it reports an incomplete installation and the exact folder where the previous package remains. Keep that folder; a later successful installation does not delete it. Resolve the reported file-operation error before retrying.
 
    You can run the installer again at any time:
    - An installed package that still verifies is kept, together with its saved settings.
    - A copy that no longer verifies is moved aside to `/opt/ndx12/ndx12-native-benchmark-v21-615.78.08-620.70.06.replaced-<time>`. You can remove it once you no longer need it.
-   - Releases v0.1.0 to v0.1.3 use the same package folder. Their packages do not verify against this release's manifest value, so they are moved aside in the same way.
+   - Releases v0.1.0 to v0.1.4 use the same package folder. Their packages do not verify against this release's manifest value, so they are moved aside in the same way.
 
    The installer never starts the benchmark or any GPU work.
 
@@ -93,7 +95,7 @@ These instructions are for release v0.1.4 of the benchmark. Its package keeps it
 
 8. **Open the results.** When the run finishes, open the `charts.html` path printed under **CHARTS**.
 
-9. **Share your results.** [Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml) using the short form. Include your benchmark version, GPU model, NVIDIA driver version and whether the run completed. The launcher also prepares `share-results-v0.1.4.tar.gz`, which holds the results intended for sharing. Its name says which release made it (`share-results-release-unknown.tar.gz` when the install receipt could not be checked). **SEND THIS FILE** is the terminal label identifying that archive; nothing is sent automatically. Inspect the bundle before attaching it and remove private information. Issues and attachments are public and linked to your GitHub account.
+9. **Share your results.** [Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml) using the short form. Include your benchmark version, GPU model, NVIDIA driver version and whether the run completed. The launcher also prepares `share-results-v0.1.5.tar.gz`, which holds the results intended for sharing. Its name says which release made it (`share-results-release-unknown.tar.gz` when the install receipt could not be checked). **SEND THIS FILE** is the terminal label identifying that archive; nothing is sent automatically. Inspect the bundle before attaching it and remove private information. Issues and attachments are public and linked to your GitHub account.
 
    When at least one chart is in the file, it also holds `charts.html`, the charts page made from those chart images; open it in a browser. A file without a chart has no `charts.html`. The header of every chart names the release, the OS, the GPU model and the driver. The `summary.txt` in the bundle names the release, the GPU model and driver, and the result of every process, and says whether the GPU timer ticks could be read as nanoseconds in your run. It contains no computer name, user name, IP address, GPU serial number or GPU UUID. Look inside before you post it.
 
@@ -118,7 +120,7 @@ The full raw evidence stays in `/var/tmp/ndx12-results/`. **It contains machine 
 
 A checksum file downloaded next to the archive, or a checksum you calculate from your own download, is not an independent check. The installer does not use either.
 
-**One installer per release.** This installer installs only release v0.1.4, which is the package `ndx12-native-benchmark-v21-615.78.08-620.70.06` (revision v21-r14). A new release comes with a new installer.
+**One installer per release.** This installer installs only release v0.1.5, which is the package `ndx12-native-benchmark-v21-615.78.08-620.70.06` (revision v21-r16). A new release comes with a new installer.
 
 ## Without the installer
 
