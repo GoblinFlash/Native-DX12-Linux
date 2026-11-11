@@ -906,6 +906,44 @@ def summaries(proposal):
             for key, values in sorted(groups.items())]
 
 
+MEMORY_EVIDENCE = {
+    'v0.1.4': ('b47a4aab73ca4f54028b7e6c7dd4da0d9015b9fc46274a2a8df802211f671ca1',
+               'fbd3fd01968c60ed67cb6c492be63bbc9dbd598f', 111),
+    'v0.1.5': ('c448a959d9f08328a0b210f8be58a650e5e906088947856c4dbdf55523c9848e',
+               '4a5a6001db6001db508224e4cf16b50289ac5a7a', 113),
+}
+
+
+def memory_backing(proposal):
+    """Derive release-documented Native placement for a validated proposal.
+
+    The full catalogue identity must match separately verified release evidence.
+    Neither Issue prose nor arbitrary archive fields select placement. This is
+    a release-documentation classification, not an observed allocation check;
+    unknown/refused identities stay UNKNOWN and Vulkan is never inferred.
+    """
+    native = {'backing': 'UNKNOWN', 'scope': 'data_buffers', 'basis': 'NOT_RECORDED'}
+    version = proposal['archive_version']
+    evidence = MEMORY_EVIDENCE.get(version)
+    identity = catalog().get(version)
+    if proposal['state'] == 'DATA_READY' and evidence and identity and digest(json_bytes(identity)) == evidence[0]:
+        native = {'backing': 'SYSMEM', 'scope': 'data_buffers',
+                  'basis': 'RELEASE_ARTIFACT_DOCUMENTATION', 'release': version,
+                  'release_artifact_sha256': identity['archive_sha256'],
+                  'documentation_git_blob': evidence[1],
+                  'evidence_url': 'https://github.com/' + REPOSITORY + '/blob/' + version +
+                                  '/NDX12_GPU_Benchmark/README.md#L' + str(evidence[2])}
+    return {'schema': 'ndx12.community-memory.v1', 'native_dx12': native,
+            'vulkan': {'backing': 'NOT_RECORDED', 'basis': 'NOT_INFERRED_FROM_NATIVE'}}
+
+
+def memory_label(context):
+    """Return a fixed Native-only label from derived backing metadata."""
+    if context['native_dx12']['backing'] == 'SYSMEM':
+        return 'Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)'
+    return 'Native DX12 memory backing: UNKNOWN (release evidence NOT_RECORDED)'
+
+
 def chart(proposal, rows):
     """Render fresh UTF-8 SVG bytes from validated proposal and summary rows.
 
@@ -913,13 +951,17 @@ def chart(proposal, rows):
     scales. Only bar geometry uses floating-point scaling. Uploaded graphics
     are never reused; this helper does not write any file.
     """
-    height = 150 + len(rows) * 25
+    context = memory_backing(proposal)
+    height = 190 + len(rows) * 25
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="{height}" viewBox="0 0 1280 {height}">',
+        '<metadata id="memory-backing">' + html.escape(json_bytes(context).decode()) + '</metadata>',
         '<rect width="100%" height="100%" fill="white"/>',
         '<g font-family="DejaVu Sans, sans-serif" font-size="12" fill="#18222c">',
         f'<text x="16" y="24">UNVERIFIED Issue #{proposal["issue"]}: exported numeric summaries only</text>',
-        '<text x="16" y="44">Separate scales and units; no cross-API speedup or GPU qualification is established.</text>']
-    y = 68
+        '<text x="16" y="44">' + memory_label(context) + '</text>',
+        '<text x="16" y="64">Vulkan memory backing: NOT_RECORDED (not inferred from Native DX12).</text>',
+        '<text x="16" y="84">Separate scales and units; no cross-API speedup or GPU qualification is established.</text>']
+    y = 108
     for path, unit in [('native', 'GPU_TICKS'), ('vulkan', 'NS')]:
         subset = [r for r in rows if r['path'] == path]
         parts.append(f'<text x="16" y="{y}">{path}: {unit} — independent scale</text>')
@@ -937,18 +979,22 @@ def chart(proposal, rows):
 def render(proposal):
     """Return fixed output paths and bytes for a revalidated proposal.
 
-    DATA_READY produces six sanitized files; MANUAL_REVIEW produces only its
-    record and caveated README. Charts/tables are generated from typed data,
+    DATA_READY produces seven sanitized files, including derived memory metadata;
+    MANUAL_REVIEW produces its record, backing metadata and caveated README. Charts/tables are generated from typed data,
     never uploaded prose or graphics. This function performs no filesystem
     or network writes, and all result claims remain UNVERIFIED.
     """
     validate_proposal(proposal)
     folder = record_folder(proposal)
+    context = memory_backing(proposal)
     issue = proposal['issue']
     url = 'https://github.com/' + REPOSITORY + '/issues/' + str(issue)
     lines = [f'# Community submission — Issue #{issue}', '',
         '**UNVERIFIED — draft for maintainer/owner review; no acceptance or performance endorsement.**', '',
         f'Source: [Issue #{issue}]({url})', '',
+        '**' + memory_label(context) + '**',
+        'Vulkan memory backing: NOT_RECORDED; Native placement is not attributed to the reference.',
+        'Backing is classified from documented release identity, not independently observed host allocations.', '',
         '| Field | Intake observation |', '| --- | --- |',
         '| State | ' + proposal['state'] + ' |', '| Reason | ' + proposal['reason'] + ' |',
         '| Claimed GPU | ' + (proposal['claimed_gpu'] or 'Pending classification') + ' |',
@@ -961,7 +1007,8 @@ def render(proposal):
         'Review background contention and all reporter notes in the Issue; they are not copied here.',
         'Actual per-dispatch clocks are not proven. Native GPU ticks and Vulkan nanoseconds stay separate.',
         'A reported 189/189 VERIFIED count is not independent GPU qualification.', '']
-    public = {folder+'/record.json': json_bytes(proposal)}
+    public = {folder+'/record.json': json_bytes(proposal),
+              folder+'/memory-backing.json': json_bytes(context)}
     if proposal['state'] == 'DATA_READY':
         lines += ['Reported overall state: `' + proposal['run']['overall'] + '`; failure marker present: `' +
                   str(proposal['run']['failure_reported']).lower() + '`.', '',

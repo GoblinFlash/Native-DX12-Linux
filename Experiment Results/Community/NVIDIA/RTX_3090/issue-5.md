@@ -1,5 +1,7 @@
 # Issue #5 — RTX 3090, benchmark v0.1.4
 
+**Existing v0.1.4 results — Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM).** This is the documented backing of the release artifact, not independent observation of the submitted host. Vulkan memory backing: **NOT_RECORDED**; do not infer it from Native DX12. [Release evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111). The experimental VRAM candidate is separate.
+
 **Source:** [Community Issue #5](https://github.com/GoblinFlash/Native-DX12-Linux/issues/5) (reporter: `Hyrules`), with attached `share-results-v0.1.4.tar.gz`.
 
 **Review scope:** The submitted `run.json`, `summary.txt`, and exported CSVs agree on device, workload completeness and statuses. The original per-process GPU receipts are not included. This is **archive-consistency review**, not an independent GPU rerun or a performance qualification.
@@ -17,7 +19,7 @@
 
 Representative medians from the exported tables. **Do not compare the two columns as performance ratios:** the native GPU tick duration was not qualified as nanoseconds.
 
-| Workload | Native median GPU ticks (uncalibrated) | Vulkan reference median ns |
+| Workload | Native SYSMEM median GPU ticks (uncalibrated) | Vulkan reference median ns |
 | --- | ---: | ---: |
 | Affine | 23,488 | 11,648 |
 | ParallelSort N515 | 1,497,600 | 201,888 |

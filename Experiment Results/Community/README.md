@@ -1,5 +1,7 @@
 # Community benchmark results
 
+**Release-specific memory backing:** existing v0.1.4 results use **Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)**. The documented v0.1.5 release also uses SYSMEM; future releases require separate artifact-bound evidence. Vulkan memory backing is NOT_RECORDED and is not inferred from Native DX12. The experimental VRAM candidate is separate. [v0.1.4 evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111) · [v0.1.5 evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.5/NDX12_GPU_Benchmark/README.md#L113).
+
 Community submissions are collected as public [Benchmark Results issues](https://github.com/GoblinFlash/Native-DX12-Linux/issues?q=is%3Aissue+label%3Abenchmark%3Asubmission). A GitHub Actions workflow labels recognized GPU models. **Labels categorize submissions; they do not approve correctness or performance claims.**
 
 ## Latest submitted data

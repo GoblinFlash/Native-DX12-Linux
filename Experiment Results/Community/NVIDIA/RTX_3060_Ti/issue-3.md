@@ -1,5 +1,7 @@
 # Issue #3 — RTX 3060 Ti, benchmark v0.1.4
 
+**Existing v0.1.4 results — Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM).** This is the documented backing of the release artifact, not independent observation of the submitted host. Vulkan memory backing: **NOT_RECORDED**; do not infer it from Native DX12. [Release evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111). The experimental VRAM candidate is separate.
+
 **Source:** [Community Issue #3](https://github.com/GoblinFlash/Native-DX12-Linux/issues/3) (reporter: `labj1987`), with attached `share-results-v0.1.4.tar.gz`.
 
 **Review scope:** The submitted `run.json`, `summary.txt` and all exported CSVs were checked for internal consistency, with no archive members executed. The original per-process GPU receipts are **not** included; this review does not independently reproduce GPU work or validate every GPU runtime claim.
@@ -17,7 +19,7 @@
 
 Representative medians from the exported tables (native results are **GPU ticks**, Vulkan results are **nanoseconds**; whole-work measurements, not shader-only):
 
-| Workload | Native median GPU ticks | Vulkan reference median ns |
+| Workload | Native SYSMEM median GPU ticks | Vulkan reference median ns |
 | --- | ---: | ---: |
 | Affine | 6,720 | 10,336 |
 | ParallelSort N515 | 477,184 | 194,560 |
