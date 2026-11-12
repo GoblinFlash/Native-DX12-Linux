@@ -136,7 +136,7 @@ def render(proposal, rows, context, package_id):
         value = text.text or ''
         value = value.replace('RTX 3060' if qualified else 'RTX 3090', gpu)
         value = value.replace('v0.1.4', version).replace('v21-r14', package_id)
-        value = value.replace('NVIDIA Open 620.70.06', 'NVIDIA Open ' + proposal['driver'])
+        value = value.replace('NVIDIA Open 620.70.06', 'NVIDIA driver ' + proposal['driver'])
         value = value.replace('ISSUE #4' if qualified else 'ISSUE #5', 'ISSUE #' + str(issue))
         value = value.replace('SYSMEM', backing)
         if value.startswith('Native DX12 memory backing:'):
@@ -148,7 +148,7 @@ def render(proposal, rows, context, package_id):
                      'Clock conversion NOT_QUALIFIED for all four suites.'):
             value = 'Reported ' + proposal['run']['overall'] + '; see source Issue for context. No independent GPU rerun.'
         if not qualified and value.startswith('CLOCK NOT QUALIFIED'):
-            value = f'CLOCK: {qualified_count}/4 reported QUALIFIED — separate timer units'
+            value = f'CLOCK: {qualified_count}/{len(steps)} reported QUALIFIED — separate timer units'
         if not qualified and value.startswith('Timer model NOT_QUALIFIED'):
             value = 'Raw units and independent scales; no conversion, cross-API ratio or cross-GPU ranking. Missing values are not zero.'
         text.text = value

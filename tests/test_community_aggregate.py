@@ -1,5 +1,7 @@
 """CPU-only integration checks for aggregate refresh in the existing draft writer."""
 import copy
+import csv
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -36,6 +38,40 @@ def draft_files(api):
 
 
 class AggregateTests(unittest.TestCase):
+    def test_matching_exports_without_measurements_are_not_counted_as_measured(self):
+        """A validated failed-to-start export reaches the writer without invented samples."""
+        for empty in (False, True):
+            with self.subTest(empty=empty):
+                files = raw_files()
+                source = issue()
+                if empty:
+                    run = json.loads(files['run.json'])
+                    run['run'].update(overall='FAILED', completed=[], not_started=list(core.SUITES),
+                                      failed={'reason': 'Synthetic failed start'})
+                    for counts in [run['totals']] + [step['counts'] for step in run['steps']]:
+                        counts.update(completed=0, verified=0, not_run=counts['expected'])
+                    for step in run['steps']:
+                        step['status'] = 'NOT_RUN'
+                    rows = list(csv.DictReader(io.StringIO(files['processes.csv'].decode())))
+                    for row in rows:
+                        row.update(status='NOT_RUN', submission='NOT_RUN', completion='NOT_RUN',
+                                   correctness='NOT_RUN', timing='NOT_RUN')
+                    files['run.json'] = core.json_bytes(run)
+                    files['processes.csv'] = core.csv_text(rows, core.PROCESS_COLUMNS)
+                    for name in list(files):
+                        if name.endswith('.csv') and name != 'processes.csv':
+                            del files[name]
+                    source['body'] = source['body'].replace('Full test completed', 'Failed or refused to start')
+                proposal = core.validate_proposal(core.prepare(source, bundle(files)))
+                self.assertEqual(proposal['state'], 'DATA_READY')
+                self.assertEqual(bool(proposal['measurements']), not empty)
+                api = FakeAPI(current=source)
+                self.assertEqual(writer.publish(proposal, api, 12)['status'], 'DRAFT_PR_CREATED')
+                outputs = draft_files(api)
+                for name in writer.INDEXES:
+                    self.assertIn(f'{0 if empty else 1} matching exports have measurements'.encode(),
+                                  outputs[name])
+
     def test_new_record_and_its_version_report_are_in_the_same_draft(self):
         """A successful draft must include the new record, overview table and release report."""
         api = FakeAPI()
@@ -218,6 +254,32 @@ class AggregateTests(unittest.TestCase):
         with self.assertRaisesRegex(core.Refused, '^EXISTING_BRANCH_CHANGED$'):
             writer.publish(ready(), api, 12)
         self.assertEqual(len(api.writes), old_writes)
+
+    def test_orphan_recovery_requires_unchanged_managed_index_blobs(self):
+        """An unrelated main change is legal; either edited index prevents stale recovery."""
+        for changed_index in (None, *writer.INDEXES):
+            with self.subTest(changed_index=changed_index):
+                api = seeded();api.fail_pr_once = True
+                proposal = ready()
+                with self.assertRaisesRegex(core.Refused, '^API_403$'):
+                    writer.publish(proposal, api, 12)
+                api.entries = copy.deepcopy(api.entries)
+                if changed_index is None:
+                    put(api, 'docs/unrelated-owner-note.md', b'# Unrelated owner note\n')
+                else:
+                    row = next(r for r in api.entries if r['path'] == changed_index)
+                    put(api, changed_index, api.blobs[row['sha']] + '\nOwner note added on main.\n')
+                api.base, api.base_tree = 'e' * 40, 'f' * 40
+                api.trees[api.base_tree] = api.entries
+                before = len(api.writes)
+                if changed_index is None:
+                    self.assertEqual(writer.publish(proposal, api, 12)['status'], 'DRAFT_PR_CREATED')
+                    self.assertEqual([name for name, _ in api.writes[before:]], ['pulls'])
+                else:
+                    with self.assertRaisesRegex(core.Refused, '^EXISTING_BRANCH_CHANGED$'):
+                        writer.publish(proposal, api, 12)
+                    self.assertEqual(len(api.writes), before)
+                    self.assertEqual(api.prs, [])
 
     def test_local_check_detects_stale_concurrent_merge_without_writes(self):
         """Two snapshot-valid drafts can combine into a stale aggregate; the verifier rejects it."""

@@ -1254,7 +1254,7 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(len(api.writes), before)
 
     def test_orphan_recovery_ancestor_and_exact_bytes(self):
-        """Allow advanced-main ancestry but reject foreign history or altered orphan bytes/modes/diff."""
+        """Allow unrelated main changes but reject foreign history or altered orphan bytes/modes/diff."""
         for mode in ('advanced-main', 'foreign-history', 'changed-blob', 'changed-mode', 'changed-diff'):
             api = FakeAPI();api.fail_pr_once = True
             with self.assertRaises(core.Refused):writer.publish(ready(), api, 12)
@@ -1265,14 +1265,14 @@ class PublisherTests(unittest.TestCase):
                 api.base = 'e'*40
                 api.base_tree = '7'*40
                 api.entries = copy.deepcopy(api.entries)
-                for row in api.entries:
-                    if row['path'] in writer.INDEXES:
-                        content = api.blobs[row['sha']] + '\nEditorial update on advanced main.\n'
-                        row['sha'] = writer.git_blob(content.encode())
-                        api.blobs[row['sha']] = content
+                content = '# Unrelated editorial update on advanced main.\n'
+                editorial_blob = writer.git_blob(content.encode())
+                api.blobs[editorial_blob] = content
+                api.entries.append({'path': 'docs/editorial-note.md', 'type': 'blob',
+                                    'mode': '100644', 'sha': editorial_blob})
                 api.trees[api.base_tree] = api.entries
                 self.assertNotEqual(api.base_tree, initial_tree)
-                self.assertTrue(all(row['sha'] != initial_indexes[row['path']]
+                self.assertTrue(all(row['sha'] == initial_indexes[row['path']]
                                     for row in api.entries if row['path'] in writer.INDEXES))
             if mode == 'changed-blob':api.trees['c'*40][0]['sha'] = 'f'*40
             if mode == 'changed-mode':api.trees['c'*40][0]['mode'] = '120000'
@@ -1294,9 +1294,7 @@ class PublisherTests(unittest.TestCase):
                     self.assertIn(('GET', 'git/trees/'+initial_tree+'?recursive=1'), reads)
                     for object_id in initial_indexes.values():
                         self.assertIn(('GET', 'git/blobs/'+object_id), reads)
-                    for row in api.entries:
-                        if row['path'] in writer.INDEXES:
-                            self.assertNotIn(('GET', 'git/blobs/'+row['sha']), reads)
+                    self.assertNotIn(('GET', 'git/blobs/'+editorial_blob), reads)
                 else:
                     with self.assertRaisesRegex(core.Refused, '^EXISTING_BRANCH_CHANGED$'):writer.publish(ready(), api, 12)
                     self.assertEqual(len(api.writes), before)

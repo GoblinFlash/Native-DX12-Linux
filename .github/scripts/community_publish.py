@@ -239,7 +239,10 @@ def publish(proposal, api, expected_issue, manual=False):
     else:
         source_entries = entries
     if previous:
-        intake.need(aggregate.source_signature(source_entries, proposal["claimed_version"], intake) ==
+        prior_indexes = {row['path']: row.get('sha') for row in source_entries if row['path'] in INDEXES}
+        current_indexes = {row['path']: row.get('sha') for row in entries if row['path'] in INDEXES}
+        intake.need(prior_indexes == current_indexes and
+                    aggregate.source_signature(source_entries, proposal["claimed_version"], intake) ==
                     aggregate.source_signature(entries, proposal["claimed_version"], intake),
                     "EXISTING_BRANCH_CHANGED")
     files, modified = indexed_files(proposal, api, source_entries)

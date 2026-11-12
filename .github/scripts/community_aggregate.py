@@ -141,13 +141,14 @@ def overview(version, proposals, prefix, core):
     report.core = core
     proposals = sorted(proposals, key=lambda p: (report.gpu_name(p), p['issue']))
     ready = sum(p['state'] == 'DATA_READY' for p in proposals)
+    measured = sum(p['state'] == 'DATA_READY' and bool(p['measurements']) for p in proposals)
     contexts = [core.memory_backing(p)['native_dx12']['backing']
                 for p in proposals if p['state'] == 'DATA_READY']
     backing = ('SYSMEM (system-memory buffers, not VRAM)' if contexts and
                all(x == 'SYSMEM' for x in contexts) else 'UNKNOWN (release evidence NOT_RECORDED)')
     table = report.overview(version, proposals, prefix).replace(version + '-submitted-data.md', basename(version))
     return (f'{len(proposals)} submissions checked for **{version} / {core.catalog()[version]["package_id"]}**. '
-            f'{ready} matching exports have measurements; refused submissions contribute no numeric results.\n\n' +
+            f'{measured} matching exports have measurements; refused submissions contribute no numeric results.\n\n' +
             table + '\n\n**[View charts and extracted benchmark measurements](' + prefix + basename(version) +
             f')** — {ready} submission-specific charts and complete available median tables, with sources and caveats.\n\n' +
             'These are **reported export statuses**, not independently repeated GPU qualifications. '

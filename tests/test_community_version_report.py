@@ -1,4 +1,6 @@
 """CPU regressions for release-separated reports using the published v0.1.4 chart layout."""
+import csv
+import io
 import json
 import importlib.util
 import unittest
@@ -41,6 +43,60 @@ class VersionReportTests(unittest.TestCase):
         for label in ('Compute · Affine', 'D4 · 128×128', 'K uint4 · 64×64',
                       'WaveForm uint4 · 64×64', 'What is being compared?', 'Scope and limitations'):
             self.assertIn(label, text)
+        self.assertIn('CLOCK QUALIFIED 4/4 · conditional tick-to-ns model', text)
+
+    def test_chart_driver_label_does_not_infer_driver_type(self):
+        """Both published layouts label numeric driver versions without asserting Open."""
+        for driver in ('615.78.08', '620.70.06'):
+            for qualified in (False, True):
+                with self.subTest(driver=driver, qualified=qualified):
+                    files = raw_files()
+                    run = json.loads(files['run.json'])
+                    run['gpu']['driver'] = driver
+                    if qualified:
+                        for step in run['steps']:
+                            step['clock_check'] = {'status': 'QUALIFIED', 'envelope_ns_per_tick': [0.98, 1.02]}
+                    files['run.json'] = core.json_bytes(run)
+                    source = issue();source['body'] = source['body'].replace('620.70.06', driver)
+                    proposal = core.validate_proposal(core.prepare(source, bundle(files)))
+                    output = core.render(proposal)
+                    svg = ET.fromstring(next(v for k, v in output.items() if k.endswith('/chart.svg')))
+                    text = ''.join(svg.itertext())
+                    self.assertIn('NVIDIA driver ' + driver, text)
+                    self.assertNotIn('NVIDIA Open', text)
+
+    def test_unqualified_clock_uses_actual_requested_step_count(self):
+        """Selected one-to-four-suite exports retain their actual clock denominator."""
+        for count in (1, 2, 3, 4):
+            with self.subTest(steps=count):
+                files = raw_files()
+                run = json.loads(files['run.json'])
+                requested = list(core.SUITES)[:count]
+                run['run'].update(requested=requested, completed=requested)
+                run['steps'] = [step for step in run['steps'] if step['suite'] in requested]
+                rows = [row for row in csv.DictReader(io.StringIO(files['processes.csv'].decode()))
+                        if row['suite'] in requested]
+                run['totals'].update(expected=len(rows), completed=len(rows), verified=len(rows))
+                files['processes.csv'] = core.csv_text(rows, core.PROCESS_COLUMNS)
+                files['run.json'] = core.json_bytes(run)
+                for suite, names in {
+                    'compute': ('samples.csv', 'compute-vulkan-samples.csv'),
+                    'd4': ('test1-d4-processes.csv', 'test1-d4-vulkan-processes.csv'),
+                    'k': ('test2-k-processes.csv', 'test2-k-vulkan-processes.csv'),
+                    'kw': ('test3-kw-processes.csv', 'test3-kw-vulkan-processes.csv'),
+                }.items():
+                    if suite not in requested:
+                        for name in names:
+                            del files[name]
+                source = issue()
+                source['body'] = source['body'].replace('Full test completed', 'Selected tests completed')
+                proposal = core.validate_proposal(core.prepare(source, bundle(files)))
+                self.assertEqual(proposal['state'], 'DATA_READY')
+                self.assertEqual(len(proposal['run']['steps']), count)
+                output = core.render(proposal)
+                svg = ET.fromstring(next(v for k, v in output.items() if k.endswith('/chart.svg')))
+                self.assertIn(f'CLOCK: 0/{count} reported QUALIFIED — separate timer units',
+                              ''.join(svg.itertext()))
 
     def test_report_refuses_mixed_versions_and_duplicate_issues(self):
         """A release page cannot silently import another release or duplicate a submission."""
