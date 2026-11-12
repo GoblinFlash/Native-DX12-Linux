@@ -1,4 +1,5 @@
 """Deterministic CPU tests. All API writes use a stateful fake, never GitHub."""
+import base64
 import copy
 import csv
 import gzip
@@ -60,7 +61,11 @@ def raw_files(version='v0.1.5', gpu='NVIDIA GeForce RTX 3090'):
                 'failed': 0, 'held': 0, 'not_run': 0, 'unknown': 0}
     run = {'schema': 'ndx12-share.v2', 'identity': dict(core.catalog()[version],
                 schema='ndx12-share.v2', status='VERIFIED'),
-        'gpu': {'model': gpu, 'driver': '620.70.06', 'pci': '10de:2204', 'status': 'RECORDED'},
+        'gpu': {'model': gpu, 'driver': '620.70.06',
+                'pci': {'NVIDIA/RTX_3090': '10de:2204', 'NVIDIA/RTX_3060': '10de:2503',
+                        'NVIDIA/RTX_3060_Ti': '10de:2489', 'NVIDIA/RTX_4060': '10de:2882',
+                        'NVIDIA/RTX_4060_Laptop_GPU': '10de:28a0'}.get(core.gpu_category(gpu), '10de:ffff'),
+                'status': 'RECORDED'},
         'run': {'requested': list(core.SUITES), 'completed': list(core.SUITES),
                 'not_started': [], 'failed': None, 'clocks': 'unchanged', 'overall': 'COMPLETE'},
         'totals': counts(processes), 'steps': [dict(suite=s, status='COMPLETE',
@@ -152,6 +157,16 @@ def ready(number=12):
     return p
 
 
+INDEX_FIXTURES = Path(__file__).resolve().parent / 'fixtures'
+
+
+def index_fixture(path):
+    """Read a fixed post-migration index scenario independent of live community content."""
+    names = {'Experiment Results/README.md': 'index-results.md',
+             'Experiment Results/Community/README.md': 'index-community.md'}
+    return (INDEX_FIXTURES/names[path]).read_bytes()
+
+
 class FakeAPI:
     """Enforces the Git/PR protocol and keeps failure/retry state."""
     def __init__(self, current=None, existing=None):
@@ -159,8 +174,17 @@ class FakeAPI:
         self.issue = current or issue()
         self.calls, self.writes, self.prs = [], [], []
         self.base, self.base_tree = 'a'*40, 'b'*40
-        self.entries = existing or []
-        self.blobs, self.trees, self.commits, self.refs = {}, {self.base_tree: self.entries}, {}, {}
+        self.initial_base = self.base
+        self.initial_tree = self.base_tree
+        self.entries = copy.deepcopy(existing or [])
+        self.blobs, self.trees, self.commits, self.refs = {}, {}, {}, {}
+        for path in writer.INDEXES:
+            if not any(row['path'] == path for row in self.entries):
+                content = index_fixture(path)
+                object_id = writer.git_blob(content)
+                self.blobs[object_id] = content.decode('utf-8')
+                self.entries.append({'path':path,'type':'blob','mode':'100644','sha':object_id})
+        self.trees[self.base_tree] = self.entries
         self.fail_pr_once = False
         self.edit_on_issue_read = None
         self.issue_reads = 0
@@ -177,8 +201,15 @@ class FakeAPI:
             return {'object': {'sha': self.base}}
         if endpoint == 'git/commits/'+self.base:
             return {'tree': {'sha': self.base_tree}}
+        if endpoint == 'git/commits/'+self.initial_base:
+            return {'tree': {'sha': self.initial_tree}}
         if endpoint.startswith('git/commits/'):
             return self.commits[endpoint.rsplit('/', 1)[1]]
+        if endpoint.startswith('git/blobs/'):
+            object_id = endpoint.rsplit('/', 1)[1]
+            content = self.blobs[object_id].encode('utf-8')
+            return {'encoding':'base64', 'size':len(content), 'sha':object_id,
+                    'content':base64.b64encode(content).decode('ascii')+'\n'}
         if endpoint.startswith('git/trees/'):
             key = endpoint.split('/')[2].split('?')[0]
             return {'truncated': False, 'tree': copy.deepcopy(self.trees[key])}
@@ -194,8 +225,12 @@ class FakeAPI:
             if head == self.base:
                 return {'merge_base_commit': {'sha': parent}, 'behind_by': 0}
             commit = self.commits[head]
-            return {'files': [{'filename': p['path'], 'status': 'added'}
-                for p in self.trees[commit['tree']['sha']] if p['path'] not in {x['path'] for x in self.entries}]}
+            parent_tree = self.initial_tree if parent == self.initial_base else self.base_tree
+            baseline = {x['path']: x['sha'] for x in self.trees[parent_tree] if 'sha' in x}
+            return {'files': [{'filename': row['path'],
+                               'status': 'modified' if row['path'] in baseline else 'added'}
+                for row in self.trees[commit['tree']['sha']]
+                if baseline.get(row['path']) != row['sha']]}
         raise AssertionError('unexpected GET '+endpoint)
 
     def post(self, endpoint, data):
@@ -208,7 +243,10 @@ class FakeAPI:
             return {'sha': key}
         if endpoint == 'git/trees':
             self.assert_data(data['base_tree'] == self.base_tree)
-            key = 'c'*40;self.trees[key] = self.entries + copy.deepcopy(data['tree'])
+            key = 'c'*40
+            combined = {row['path']:copy.deepcopy(row) for row in self.entries}
+            combined.update({row['path']:copy.deepcopy(row) for row in data['tree']})
+            self.trees[key] = list(combined.values())
             return {'sha': key}
         if endpoint == 'git/commits':
             self.assert_data(data['parents'] == [self.base])
@@ -908,7 +946,7 @@ class IntakeTests(unittest.TestCase):
             root = Path(tmp);i = root/'issue.json';i.write_bytes(core.json_bytes(issue()));b = root/'bundle.tar.gz';b.write_bytes(bundle())
             for folder in ('location-a', 'location with spaces'):
                 target = root/folder;target.mkdir()
-                for name in ('community_intake.py', 'community_releases.json'):
+                for name in ('community_intake.py', 'community_releases.json', 'community_gpu_pci.json'):
                     shutil.copyfile(SCRIPTS/name, target/name)
                 out = target/'proposal.json'
                 result = subprocess.run([sys.executable, '-I', '-B', str(target/'community_intake.py'),
@@ -928,6 +966,79 @@ class IntakeTests(unittest.TestCase):
 
 
 class PublisherTests(unittest.TestCase):
+    def test_issue_15_links_are_added_only_with_the_record(self):
+        """Issue15 is indexable once, and only as part of a real draft containing its record."""
+        submitted = issue(15, 'RTX 4060', 'v0.1.5')
+        p = core.prepare(submitted, bundle(raw_files('v0.1.5', 'NVIDIA GeForce RTX 4060')))
+        self.assertEqual(p['state'], 'DATA_READY')
+        for path, (anchor, prefix) in writer.INDEXES.items():
+            with self.subTest(path=path):
+                body = index_fixture(path)
+                self.assertNotIn(b'issue-15/README.md', body)
+                changed = writer.update_index(body, p, anchor, prefix)
+                self.assertIn(writer.index_entry(p, prefix).encode(), changed)
+                self.assertNotIn(b'RTX_4060_Laptop_GPU/v0.1.5/issue-15', changed)
+                with self.assertRaisesRegex(core.Refused, '^INDEX_DUPLICATE$'):
+                    writer.update_index(changed, p, anchor, prefix)
+
+    def test_index_drafts_keep_history_without_dangling_issue_15(self):
+        """New submissions prepend entries while preserving old curated text."""
+        api = FakeAPI()
+        p = ready()
+        result = writer.publish(p, api, 12)
+        self.assertEqual(len(result['files']), 9)
+        for path, (anchor, prefix) in writer.INDEXES.items():
+            with self.subTest(path=path):
+                baseline = index_fixture(path)
+                row = next(row for row in api.trees['c'*40] if row['path'] == path)
+                changed = api.blobs[row['sha']].encode()
+                self.assertEqual(changed, writer.update_index(baseline, p, anchor, prefix))
+                added = (writer.index_entry(p, prefix)+'\n').encode()
+                self.assertEqual(changed.count(added), 1)
+                self.assertEqual(changed.replace(added, b'', 1), baseline)
+                self.assertNotIn(b'issue-15/README.md', changed)
+                self.assertIn(b'v0.1.4', changed)
+
+    def test_index_bootstrap_from_preexisting_curated_readme(self):
+        """Only exact pre-migration blobs bootstrap, preserving all original curated prose."""
+        p = ready()
+        for path, (anchor, prefix) in writer.INDEXES.items():
+            with self.subTest(path=path):
+                name = 'results' if prefix else 'community'
+                prior = (ROOT/'tests/fixtures'/('pre-index-'+name+'.md')).read_bytes()
+                self.assertEqual(writer.git_blob(prior), writer.INDEX_BOOTSTRAP[prefix][0])
+                old_anchor = writer.INDEX_BOOTSTRAP[prefix][1]
+                start = prior.decode().index(old_anchor)
+                result = writer.update_index(prior, p, anchor, prefix).decode()
+                self.assertIn(writer.index_entry(p, prefix), result)
+                self.assertIn(writer.INDEX_NOTE, result)
+                self.assertEqual(result.replace(result[start:result.index(old_anchor, start)], ''), prior.decode())
+                with self.assertRaisesRegex(core.Refused, '^INDEX_FORMAT$'):
+                    writer.update_index(b'Edited\n'+prior, p, anchor, prefix)
+
+    def test_index_corruption_fails_before_any_api_write(self):
+        """Refuse missing, aliased, tampered or partially hand-edited indexes before Git writes."""
+        path = next(iter(writer.INDEXES))
+        for mode in ('missing-base', 'symlink-base', 'invalid-blob', 'half-marker'):
+            api = FakeAPI()
+            record = next(row for row in api.entries if row['path'] == path)
+            if mode == 'missing-base':
+                api.entries.remove(record)
+            if mode == 'symlink-base':
+                record['mode'] = '120000'
+            if mode == 'invalid-blob':
+                api.blobs[record['sha']] += 'TAMPER'
+            if mode == 'half-marker':
+                content = api.blobs[record['sha']].replace(writer.INDEX_END, '')
+                new_sha = writer.git_blob(content.encode())
+                api.blobs[new_sha] = content
+                record['sha'] = new_sha
+            reason = 'INDEX_BASE' if mode in ('missing-base', 'symlink-base') else (
+                'INDEX_BLOB' if mode == 'invalid-blob' else 'INDEX_FORMAT')
+            with self.subTest(mode=mode), self.assertRaisesRegex(core.Refused, '^'+reason+'$'):
+                writer.publish(ready(), api, 12)
+            self.assertEqual(api.writes, [])
+
     def test_comments_and_category_labels_do_not_invalidate_source(self):
         """Keep routine comments/category-label changes outside the content fingerprint."""
         p = ready();api = FakeAPI()
@@ -961,7 +1072,13 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(api.prs[0]['draft'], True)
         self.assertIn('UNVERIFIED', api.prs[0]['body'])
         self.assertEqual(set(x[0] for x in api.writes), {'git/blobs','git/trees','git/commits','git/refs','pulls'})
-        self.assertTrue(all(path.startswith(core.ROOT+'NVIDIA/RTX_3090/v0.1.5/issue-12/') for path in r['files']))
+        self.assertEqual(set(r['files']) - set(writer.INDEXES), set(core.render(p)))
+        for path in writer.INDEXES:
+            entry = next(row for row in api.trees['c'*40] if row['path'] == path)
+            text = api.blobs[entry['sha']]
+            self.assertIn('Issue #12', text)
+            self.assertIn('**UNVERIFIED**', text)
+            self.assertIn('v0.1.4', text)
 
     def test_duplicate_events_and_reopened_or_edited_issues(self):
         """Return an existing-PR status on repeated events without additional writes."""
@@ -1137,7 +1254,21 @@ class PublisherTests(unittest.TestCase):
             api = FakeAPI();api.fail_pr_once = True
             with self.assertRaises(core.Refused):writer.publish(ready(), api, 12)
             previous_get = api.get
-            if mode in ('advanced-main', 'foreign-history'):api.base = 'e'*40
+            initial_tree = api.base_tree
+            initial_indexes = {row['path']: row['sha'] for row in api.entries if row['path'] in writer.INDEXES}
+            if mode in ('advanced-main', 'foreign-history'):
+                api.base = 'e'*40
+                api.base_tree = '7'*40
+                api.entries = copy.deepcopy(api.entries)
+                for row in api.entries:
+                    if row['path'] in writer.INDEXES:
+                        content = api.blobs[row['sha']] + '\nEditorial update on advanced main.\n'
+                        row['sha'] = writer.git_blob(content.encode())
+                        api.blobs[row['sha']] = content
+                api.trees[api.base_tree] = api.entries
+                self.assertNotEqual(api.base_tree, initial_tree)
+                self.assertTrue(all(row['sha'] != initial_indexes[row['path']]
+                                    for row in api.entries if row['path'] in writer.INDEXES))
             if mode == 'changed-blob':api.trees['c'*40][0]['sha'] = 'f'*40
             if mode == 'changed-mode':api.trees['c'*40][0]['mode'] = '120000'
             def altered_get(endpoint):
@@ -1146,13 +1277,21 @@ class PublisherTests(unittest.TestCase):
                     return {'merge_base_commit': {'sha': 'f'*40}, 'behind_by': 1}
                 result = previous_get(endpoint)
                 if mode == 'changed-diff' and endpoint.startswith('compare/'):
-                    result['files'][0]['status'] = 'modified'
+                    result['files'][0]['status'] = 'removed'
                 return result
-            api.get = altered_get;before = len(api.writes)
+            api.get = altered_get;before = len(api.writes);before_reads = len(api.calls)
             with self.subTest(mode=mode):
                 if mode == 'advanced-main':
                     self.assertEqual(writer.publish(ready(), api, 12)['status'], 'DRAFT_PR_CREATED')
                     self.assertEqual([x[0] for x in api.writes[before:]], ['pulls'])
+                    reads = api.calls[before_reads:]
+                    self.assertIn(('GET', 'git/trees/'+api.base_tree+'?recursive=1'), reads)
+                    self.assertIn(('GET', 'git/trees/'+initial_tree+'?recursive=1'), reads)
+                    for object_id in initial_indexes.values():
+                        self.assertIn(('GET', 'git/blobs/'+object_id), reads)
+                    for row in api.entries:
+                        if row['path'] in writer.INDEXES:
+                            self.assertNotIn(('GET', 'git/blobs/'+row['sha']), reads)
                 else:
                     with self.assertRaisesRegex(core.Refused, '^EXISTING_BRANCH_CHANGED$'):writer.publish(ready(), api, 12)
                     self.assertEqual(len(api.writes), before)
@@ -1195,8 +1334,10 @@ class PublisherTests(unittest.TestCase):
         api = FakeAPI(issue(gpu='Unknown Model'))
         p = core.prepare(api.issue, bundle())
         result = writer.publish(p, api, 12)
-        self.assertTrue(all('/Pending_Classification/v0.1.5/' in name for name in result['files']))
-        self.assertEqual(len(result['files']), 3)  # metadata includes memory-backing
+        records = set(result['files']) - set(writer.INDEXES)
+        self.assertTrue(all('/Pending_Classification/v0.1.5/' in name for name in records))
+        self.assertEqual(len(records), 3)  # metadata includes memory-backing
+        self.assertEqual(len(result['files']), 5)  # plus two clearly UNVERIFIED indexes
 
 
 class WorkflowTests(unittest.TestCase):

@@ -1,0 +1,192 @@
+{
+  "schema": "ndx12.gpu-pci.v1",
+  "source": {
+    "commit": "e6a2e01579fbbd1ca2ed43fef2ee2589e9bd8bd9",
+    "git_blob": "d5c98a1e87f7f9fd1377d67388cbad975d1cec42",
+    "url": "https://github.com/NVIDIA/open-gpu-kernel-modules/blob/e6a2e01579fbbd1ca2ed43fef2ee2589e9bd8bd9/README.md"
+  },
+  "scope": "NVIDIA vendor/device pairs; subsystem IDs omitted; consistency only, never hardware authentication",
+  "models": {
+    "NVIDIA/RTX_3050": [
+      "10de:2507",
+      "10de:2582",
+      "10de:2584"
+    ],
+    "NVIDIA/RTX_3050_A_Laptop_GPU": [
+      "10de:2822",
+      "10de:28a3",
+      "10de:28e3"
+    ],
+    "NVIDIA/RTX_3050_Laptop_GPU": [
+      "10de:25a2",
+      "10de:25a5",
+      "10de:25e2",
+      "10de:25e5"
+    ],
+    "NVIDIA/RTX_3050_Ti_Laptop_GPU": [
+      "10de:2523",
+      "10de:2563",
+      "10de:25a0",
+      "10de:25a2",
+      "10de:25e0"
+    ],
+    "NVIDIA/RTX_3060": [
+      "10de:2487",
+      "10de:24c7",
+      "10de:2503",
+      "10de:2504",
+      "10de:2544"
+    ],
+    "NVIDIA/RTX_3060_Laptop_GPU": [
+      "10de:249c",
+      "10de:24a0",
+      "10de:2520",
+      "10de:2521",
+      "10de:2560",
+      "10de:25a0",
+      "10de:25a2"
+    ],
+    "NVIDIA/RTX_3060_Ti": [
+      "10de:2414",
+      "10de:2486",
+      "10de:2489",
+      "10de:24c9"
+    ],
+    "NVIDIA/RTX_3070": [
+      "10de:2484",
+      "10de:2488"
+    ],
+    "NVIDIA/RTX_3070_Laptop_GPU": [
+      "10de:249d",
+      "10de:24dd"
+    ],
+    "NVIDIA/RTX_3070_Ti": [
+      "10de:2207",
+      "10de:2482"
+    ],
+    "NVIDIA/RTX_3070_Ti_Laptop_GPU": [
+      "10de:24a0",
+      "10de:24e0"
+    ],
+    "NVIDIA/RTX_3080": [
+      "10de:2206",
+      "10de:220a",
+      "10de:2216"
+    ],
+    "NVIDIA/RTX_3080_Laptop_GPU": [
+      "10de:249c",
+      "10de:24dc"
+    ],
+    "NVIDIA/RTX_3080_Ti": [
+      "10de:2208"
+    ],
+    "NVIDIA/RTX_3080_Ti_Laptop_GPU": [
+      "10de:2420",
+      "10de:2460"
+    ],
+    "NVIDIA/RTX_3090": [
+      "10de:2204"
+    ],
+    "NVIDIA/RTX_3090_Ti": [
+      "10de:2203"
+    ],
+    "NVIDIA/RTX_4050_Laptop_GPU": [
+      "10de:28a1",
+      "10de:28e1"
+    ],
+    "NVIDIA/RTX_4060": [
+      "10de:2808",
+      "10de:2882"
+    ],
+    "NVIDIA/RTX_4060_Laptop_GPU": [
+      "10de:28a0",
+      "10de:28e0"
+    ],
+    "NVIDIA/RTX_4060_Ti": [
+      "10de:2788",
+      "10de:2803",
+      "10de:2805"
+    ],
+    "NVIDIA/RTX_4070": [
+      "10de:2709",
+      "10de:2786"
+    ],
+    "NVIDIA/RTX_4070_Laptop_GPU": [
+      "10de:2820",
+      "10de:2860"
+    ],
+    "NVIDIA/RTX_4070_Super": [
+      "10de:2783"
+    ],
+    "NVIDIA/RTX_4070_Ti": [
+      "10de:2782"
+    ],
+    "NVIDIA/RTX_4070_Ti_Super": [
+      "10de:2689",
+      "10de:2705"
+    ],
+    "NVIDIA/RTX_4080": [
+      "10de:2704"
+    ],
+    "NVIDIA/RTX_4080_Laptop_GPU": [
+      "10de:27a0",
+      "10de:27e0"
+    ],
+    "NVIDIA/RTX_4080_Super": [
+      "10de:2702"
+    ],
+    "NVIDIA/RTX_4090": [
+      "10de:2684"
+    ],
+    "NVIDIA/RTX_4090_D": [
+      "10de:2685"
+    ],
+    "NVIDIA/RTX_4090_Laptop_GPU": [
+      "10de:2717",
+      "10de:2757"
+    ],
+    "NVIDIA/RTX_5060": [
+      "10de:2d05",
+      "10de:2f06"
+    ],
+    "NVIDIA/RTX_5060_Laptop_GPU": [
+      "10de:2d19",
+      "10de:2d59"
+    ],
+    "NVIDIA/RTX_5060_Ti": [
+      "10de:2d04"
+    ],
+    "NVIDIA/RTX_5070": [
+      "10de:2c09",
+      "10de:2f04"
+    ],
+    "NVIDIA/RTX_5070_Laptop_GPU": [
+      "10de:2d18",
+      "10de:2d58"
+    ],
+    "NVIDIA/RTX_5070_Ti": [
+      "10de:2c05"
+    ],
+    "NVIDIA/RTX_5070_Ti_Laptop_GPU": [
+      "10de:2f18",
+      "10de:2f58"
+    ],
+    "NVIDIA/RTX_5080": [
+      "10de:2c02"
+    ],
+    "NVIDIA/RTX_5080_Laptop_GPU": [
+      "10de:2c19",
+      "10de:2c59"
+    ],
+    "NVIDIA/RTX_5090": [
+      "10de:2b85"
+    ],
+    "NVIDIA/RTX_5090_D": [
+      "10de:2b87"
+    ],
+    "NVIDIA/RTX_5090_Laptop_GPU": [
+      "10de:2c18",
+      "10de:2c58"
+    ]
+  }
+}

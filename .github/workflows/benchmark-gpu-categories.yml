@@ -96,7 +96,7 @@ jobs:
 
             if (eligible) {
               const model = readField('GPU model')
-                .toLowerCase().replace(/[\s\u00a0-]+/g, ' ')
+                .toLowerCase().replace(/[\s\u00a0]+/g, ' ')
                 .replace(/ \(pci [0-9a-f]{4}:[0-9a-f]{4}\)$/, '').trim();
               const match = known.find(([, regex]) => regex.test(model));
               desired.add('benchmark:submission');

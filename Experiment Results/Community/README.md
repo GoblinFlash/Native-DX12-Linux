@@ -4,13 +4,20 @@
 
 Community submissions are collected as public [Benchmark Results issues](https://github.com/GoblinFlash/Native-DX12-Linux/issues?q=is%3Aissue+label%3Abenchmark%3Asubmission). A GitHub Actions workflow labels recognized GPU models. **Labels categorize submissions; they do not approve correctness or performance claims.**
 
-## Latest submitted data
+## Automated community intake — UNVERIFIED
+
+<!-- ndx12-community-intake:start -->
+<!-- ndx12-community-intake:end -->
+
+Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
+
+## Curated v0.1.4 report
 
 **[Benchmark v0.1.4 — charts and extracted results for RTX 3060, RTX 3060 Ti, RTX 3090 and RTX 4060 Laptop GPU](v0.1.4-submitted-data.md)**
 
 This report contains GPU-specific charts and median values recalculated from the four attached `share-results-v0.1.4.tar.gz` archives. The separate Native (GPU ticks) and Vulkan (nanoseconds) columns preserve the units, including the RTX 3090 run where conversion was **NOT_QUALIFIED**. Charts show four selected workloads per GPU; full numeric variants remain in the tables.
 
-## GPU-specific folders and review status
+## Existing curated GPU folders and review status
 
 - [NVIDIA RTX 4090](NVIDIA/RTX_4090/README.md) — reserved for approved community submissions; maintainer-recorded experiments are [separate](../NVIDIA/README.md).
 - [NVIDIA RTX 3090](NVIDIA/RTX_3090/README.md) — [Issue #5](NVIDIA/RTX_3090/issue-5.md), archive-consistency reviewed; all four timestamp checks NOT_QUALIFIED.
@@ -46,6 +53,6 @@ Existing curated records stay in place. Version indexes link to those records an
 | #5 | [RTX 3090 / v0.1.4](NVIDIA/RTX_3090/v0.1.4/README.md) | Preserve all four NOT_QUALIFIED timestamp checks. |
 | #11 | Claimed RTX 3090 / v0.1.5 | The inspected attachment reports RTX 3060: GPU_MISMATCH. Manual review under Pending_Classification; no RTX 3090 measurements are imported. Recheck the live Issue before processing. |
 
-One Issue has one stable intake branch and draft PR. Duplicate, edited or reopened events never overwrite an existing review, PR or curated record. The source is checked immediately before creating a new branch ref. A later Issue change is shown in the draft body as `STALE`, with prepared/observed source fingerprints and the pinned snapshot commit; an unavailable final observation is `UNKNOWN`. Reviewers reconcile these observations before acceptance. Recovery of a pre-existing orphan still requires matching source, permission and exact branch bytes. See [the intake operator guide](../../.github/scripts/README.md) for permissions, limits, tests, failure handling and the owner approval gate.
+One Issue has one stable intake branch and draft PR. Duplicate, edited or reopened events never overwrite an existing review, PR or curated record. The source is checked immediately before creating a new branch ref. A later Issue change is shown in the draft body as `STALE`, with prepared/observed source fingerprints and the pinned snapshot commit; an unavailable final observation is `UNKNOWN`. Reviewers reconcile these observations before acceptance. Recovery of a pre-existing orphan still requires matching source, permission and exact branch bytes. See [the intake operator guide](https://github.com/GoblinFlash/Native-DX12-Linux/blob/main/.github/scripts/README.md) for permissions, limits, tests, failure handling and the owner approval gate.
 
 [All experiment results](../README.md)

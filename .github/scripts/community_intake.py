@@ -171,6 +171,29 @@ def gpu_category(value):
     return None
 
 
+def gpu_pci(gpu, value):
+    """Return a canonical vendor/device ID consistent with pinned NVIDIA model data.
+
+    Refuse malformed, unknown and contradictory IDs separately. This checks
+    self-reported field consistency only; subsystem identity, physical hardware,
+    execution and provenance are not authenticated. Unmapped models fail closed.
+    """
+    need(type(value) is str and re.fullmatch('[0-9a-f]{4}:[0-9a-f]{4}', value, re.I),
+         'GPU_PCI_FORMAT')
+    value = value.lower()
+    data = load_json(Path(__file__).with_name('community_gpu_pci.json').read_bytes(), MAX_MEMBER)
+    need(type(data) is dict and data.get('schema') == 'ndx12.gpu-pci.v1' and
+         type(data.get('models')) is dict, 'PROPOSAL_SCHEMA')
+    models = data['models']
+    need(all(key in GPUS and key.startswith('NVIDIA/') and type(ids) is list and
+             0 < len(ids) <= 32 and len(set(ids)) == len(ids) and
+             all(type(x) is str and re.fullmatch('10de:[0-9a-f]{4}', x) for x in ids)
+             for key, ids in models.items()), 'PROPOSAL_SCHEMA')
+    need(gpu in models and any(value in ids for ids in models.values()), 'GPU_PCI_UNVERIFIED')
+    need(value in models[gpu], 'GPU_PCI_MISMATCH')
+    return value
+
+
 def issue_fields(issue):
     """Parse a bounded Issue body into unique Markdown heading/value fields.
 
@@ -381,7 +404,8 @@ def read_share_members(compressed):
 
 
 REASONS = frozenset(('OK', 'INPUT_FORMAT', 'ISSUE_FORMAT', 'ISSUE_LIMIT',
-    'ISSUE_DUPLICATE_FIELD', 'GPU_UNKNOWN', 'GPU_MISMATCH', 'VERSION_UNKNOWN',
+    'ISSUE_DUPLICATE_FIELD', 'GPU_UNKNOWN', 'GPU_MISMATCH', 'GPU_PCI_FORMAT',
+    'GPU_PCI_UNVERIFIED', 'GPU_PCI_MISMATCH', 'VERSION_UNKNOWN',
     'VERSION_MISMATCH', 'IDENTITY_MISMATCH', 'DRIVER_MISMATCH', 'RUN_CLAIM_MISMATCH',
     'ATTACHMENT_MISSING', 'ATTACHMENT_AMBIGUOUS', 'ATTACHMENT_URL',
     'ATTACHMENT_REDIRECT_LIMIT', 'ATTACHMENT_UNAVAILABLE', 'ATTACHMENT_TIMEOUT', 'ATTACHMENT_GONE',
@@ -683,10 +707,10 @@ def base_proposal(issue):
         gpu, version, _, _ = claims(issue)
     except Refused:
         gpu, version = None, None
-    return {'schema': 'ndx12.community-intake.v1', 'issue': integer(issue['number'], 1, 2**31-1),
+    return {'schema': 'ndx12.community-intake.v2', 'issue': integer(issue['number'], 1, 2**31-1),
             'source_revision': issue_fingerprint(issue), 'bundle_sha256': None,
             'claimed_gpu': gpu, 'claimed_version': version, 'archive_gpu': None,
-            'archive_version': None, 'driver': None, 'state': 'MANUAL_REVIEW',
+            'archive_version': None, 'driver': None, 'pci': None, 'state': 'MANUAL_REVIEW',
             'reason': 'INPUT_FORMAT', 'run': None, 'processes': [], 'measurements': [],
             'warnings': sorted(WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN'})}
 
@@ -718,6 +742,11 @@ def prepare(issue, compressed=None, fetch=download):
         result['archive_version'] = actual_version if actual_version in catalog() else None
         need(actual_gpu is not None, 'GPU_UNKNOWN')
         need(actual_gpu == gpu, 'GPU_MISMATCH')
+        need(run['gpu'].get('status') == 'RECORDED', 'GPU_PCI_UNVERIFIED')
+        pci = gpu_pci(actual_gpu, run['gpu'].get('pci'))
+        for model_text in (run['gpu']['model'], first_line(fields.get('GPU model', ''))):
+            inline = re.search(r' \(PCI ([0-9a-f]{4}:[0-9a-f]{4})\)$', model_text, re.I)
+            need(inline is None or inline.group(1).lower() == pci, 'GPU_PCI_MISMATCH')
         need(actual_version == version, 'VERSION_MISMATCH')
         identity = run['identity']
         need(identity.get('schema') == 'ndx12-share.v2' and identity.get('status') == 'VERIFIED', 'IDENTITY_MISMATCH')
@@ -753,7 +782,7 @@ def prepare(issue, compressed=None, fetch=download):
         if run_claim == 'Full test completed':
             need(set(requested) == set(SUITES), 'RUN_CLAIM_MISMATCH')
         values = measurements(files, processes)
-        result.update(driver=driver, state='DATA_READY', reason='OK', run=sanitized,
+        result.update(driver=driver, pci=pci, state='DATA_READY', reason='OK', run=sanitized,
                       processes=processes, measurements=values)
         if any(p['kernel_records'] for p in processes):
             result['warnings'].append('KERNEL_RECORDS_REPORTED')
@@ -806,9 +835,9 @@ def _validate_proposal(value):
     Return value unchanged or raise Refused, without network or file writes.
     """
     exact_keys(value, ('schema', 'issue', 'source_revision', 'bundle_sha256',
-        'claimed_gpu', 'claimed_version', 'archive_gpu', 'archive_version', 'driver',
+        'claimed_gpu', 'claimed_version', 'archive_gpu', 'archive_version', 'driver', 'pci',
         'state', 'reason', 'run', 'processes', 'measurements', 'warnings'))
-    need(value['schema'] == 'ndx12.community-intake.v1', 'PROPOSAL_SCHEMA')
+    need(value['schema'] == 'ndx12.community-intake.v2', 'PROPOSAL_SCHEMA')
     integer(value['issue'], 1, 2**31-1)
     for key in ('source_revision', 'bundle_sha256'):
         need((key == 'bundle_sha256' and value[key] is None) or
@@ -827,9 +856,11 @@ def _validate_proposal(value):
          type(value['measurements']) is list and len(value['measurements']) <= MAX_PROCESSES, 'PROPOSAL_SCHEMA')
     expected_warnings = WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN'}
     if value['state'] == 'MANUAL_REVIEW':
+        need(value['pci'] is None, 'PROPOSAL_SCHEMA')
         need(value['reason'] != 'OK' and value['reason'] not in TRANSIENT_ATTACHMENT and value['run'] is None and
              not value['processes'] and not value['measurements'], 'PROPOSAL_SCHEMA')
     else:
+        need(gpu_pci(value['archive_gpu'], value['pci']) == value['pci'], 'PROPOSAL_SCHEMA')
         need(value['reason'] == 'OK' and value['claimed_gpu'] is not None and
              value['claimed_gpu'] == value['archive_gpu'] and value['claimed_version'] is not None and
              value['claimed_version'] == value['archive_version'] and value['driver'] is not None and
@@ -903,7 +934,8 @@ def record_folder(proposal):
     no untrusted free-form path is accepted or created here.
     """
     validate_proposal(proposal)
-    ambiguous = proposal['reason'] in ('GPU_UNKNOWN', 'GPU_MISMATCH', 'VERSION_UNKNOWN', 'VERSION_MISMATCH', 'IDENTITY_MISMATCH')
+    ambiguous = proposal['reason'] in ('GPU_UNKNOWN', 'GPU_MISMATCH', 'GPU_PCI_FORMAT',
+        'GPU_PCI_UNVERIFIED', 'GPU_PCI_MISMATCH', 'VERSION_UNKNOWN', 'VERSION_MISMATCH', 'IDENTITY_MISMATCH')
     gpu = proposal['claimed_gpu'] if not ambiguous else None
     version = proposal['claimed_version']
     return ROOT + (gpu or 'Pending_Classification') + '/' + (version or 'Unidentified_Version') + '/issue-' + str(proposal['issue'])
@@ -1021,6 +1053,7 @@ def render(proposal):
         '| Claimed release | ' + (proposal['claimed_version'] or 'Unidentified') + ' |',
         '| Archive release | ' + (proposal['archive_version'] or 'Not established') + ' |',
         '| Driver | ' + (proposal['driver'] or 'Not established') + ' |', '',
+        'Model/PCI field consistency is checked against pinned vendor data; this is not hardware authentication.', '',
         'The source Issue and attachment are untrusted reports. Matching catalog fields and recalculated',
         'medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.',
         'Review background contention and all reporter notes in the Issue; they are not copied here.',
