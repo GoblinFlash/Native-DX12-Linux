@@ -1077,7 +1077,7 @@ class PublisherTests(unittest.TestCase):
             entry = next(row for row in api.trees['c'*40] if row['path'] == path)
             text = api.blobs[entry['sha']]
             self.assertIn('Issue #12', text)
-            self.assertIn('**UNVERIFIED**', text)
+            self.assertIn('export consistency **CHECKED**; owner acceptance **NOT_RECORDED**', text)
             self.assertIn('v0.1.4', text)
 
     def test_duplicate_events_and_reopened_or_edited_issues(self):
@@ -1337,7 +1337,7 @@ class PublisherTests(unittest.TestCase):
         records = set(result['files']) - set(writer.INDEXES)
         self.assertTrue(all('/Pending_Classification/v0.1.5/' in name for name in records))
         self.assertEqual(len(records), 3)  # metadata includes memory-backing
-        self.assertEqual(len(result['files']), 5)  # plus two clearly UNVERIFIED indexes
+        self.assertEqual(len(result['files']), 5)  # plus two caveated indexes without chart previews
 
 
 class WorkflowTests(unittest.TestCase):

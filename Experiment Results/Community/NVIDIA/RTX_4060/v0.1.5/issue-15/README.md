@@ -1,6 +1,10 @@
 # Community submission — Issue #15
 
-**UNVERIFIED — draft for maintainer/owner review; no acceptance or performance endorsement.**
+**Export consistency: CHECKED**
+**Owner acceptance: NOT_RECORDED**
+
+CHECKED refers to export consistency, not a successful or independently verified GPU run.
+Intake does not record owner acceptance or infer it from a merged PR.
 
 Source: [Issue #15](https://github.com/GoblinFlash/Native-DX12-Linux/issues/15)
 
@@ -70,7 +74,9 @@ Frame-suite values are medians of process medians. No uploaded HTML, image or ra
 | kw | 64x64 | wave-root-scalar | native | GPU_TICKS | 7 | 86336 |
 | kw | 64x64 | wave-root-uint4 | native | GPU_TICKS | 7 | 83488 |
 
-[Fresh chart with separate scales](chart.svg). Full sanitized data: [measurements.csv](measurements.csv),
+![Exported measurements for Issue #15](chart.svg)
+
+[Open SVG](chart.svg). Full sanitized data: [measurements.csv](measurements.csv),
 [summary.csv](summary.csv), [processes.csv](processes.csv).
 
 ## Mandatory caveats
@@ -84,5 +90,5 @@ Frame-suite values are medians of process medians. No uploaded HTML, image or ra
 - SEPARATE_TIMING_UNITS
 - UNVERIFIED_SUBMISSION
 
-Maintainer review and an explicit owner decision are required before merging.
+Owner acceptance is a separate manual decision; this import does not record it.
 Intake approval labels authorize processing only; they do not accept these results.

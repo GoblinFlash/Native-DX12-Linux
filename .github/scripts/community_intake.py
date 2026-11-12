@@ -995,6 +995,12 @@ def memory_label(context):
     return 'Native DX12 memory backing: UNKNOWN (release evidence NOT_RECORDED)'
 
 
+def export_consistency(proposal):
+    """Describe typed export checks, without implying execution or owner acceptance."""
+    state = enum(proposal['state'], ('DATA_READY', 'MANUAL_REVIEW'))
+    return 'CHECKED' if state == 'DATA_READY' else 'REQUIRES_REVIEW'
+
+
 def chart(proposal, rows):
     """Render fresh UTF-8 SVG bytes from validated proposal and summary rows.
 
@@ -1008,7 +1014,7 @@ def chart(proposal, rows):
         '<metadata id="memory-backing">' + html.escape(json_bytes(context).decode()) + '</metadata>',
         '<rect width="100%" height="100%" fill="white"/>',
         '<g font-family="DejaVu Sans, sans-serif" font-size="12" fill="#18222c">',
-        f'<text x="16" y="24">UNVERIFIED Issue #{proposal["issue"]}: exported numeric summaries only</text>',
+        f'<text x="16" y="24">Issue #{proposal["issue"]} | Export consistency: {export_consistency(proposal)} | Owner acceptance: NOT_RECORDED</text>',
         '<text x="16" y="44">' + memory_label(context) + '</text>',
         '<text x="16" y="64">Vulkan memory backing: NOT_RECORDED (not inferred from Native DX12).</text>',
         '<text x="16" y="84">Separate scales and units; no cross-API speedup or GPU qualification is established.</text>']
@@ -1033,7 +1039,8 @@ def render(proposal):
     DATA_READY produces seven sanitized files, including derived memory metadata;
     MANUAL_REVIEW produces its record, backing metadata and caveated README. Charts/tables are generated from typed data,
     never uploaded prose or graphics. This function performs no filesystem
-    or network writes, and all result claims remain UNVERIFIED.
+    or network writes. Export checks and unrecorded owner acceptance are shown
+    separately; no result is automatically accepted or GPU-qualified.
     """
     validate_proposal(proposal)
     folder = record_folder(proposal)
@@ -1041,7 +1048,10 @@ def render(proposal):
     issue = proposal['issue']
     url = 'https://github.com/' + REPOSITORY + '/issues/' + str(issue)
     lines = [f'# Community submission — Issue #{issue}', '',
-        '**UNVERIFIED — draft for maintainer/owner review; no acceptance or performance endorsement.**', '',
+        '**Export consistency: ' + export_consistency(proposal) + '**',
+        '**Owner acceptance: NOT_RECORDED**', '',
+        'CHECKED refers to export consistency, not a successful or independently verified GPU run.',
+        'Intake does not record owner acceptance or infer it from a merged PR.', '',
         f'Source: [Issue #{issue}]({url})', '',
         '**' + memory_label(context) + '**',
         'Vulkan memory backing: NOT_RECORDED; Native placement is not attributed to the reference.',
@@ -1077,7 +1087,8 @@ def render(proposal):
             '| Suite | Case | Variant | Path | Unit | n | Median |', '| --- | --- | --- | --- | --- | ---: | ---: |']
         for row in rows:
             lines.append('| ' + ' | '.join(str(row[k]) for k in ('suite', 'case', 'variant', 'path', 'unit', 'n', 'median')) + ' |')
-        lines += ['', '[Fresh chart with separate scales](chart.svg). Full sanitized data: [measurements.csv](measurements.csv),',
+        lines += ['', f'![Exported measurements for Issue #{issue}](chart.svg)', '',
+                  '[Open SVG](chart.svg). Full sanitized data: [measurements.csv](measurements.csv),',
                   '[summary.csv](summary.csv), [processes.csv](processes.csv).', '']
         public[folder+'/processes.csv'] = csv_text(proposal['processes'], PROCESS_COLUMNS)
         public[folder+'/measurements.csv'] = csv_text(proposal['measurements'],
@@ -1089,7 +1100,7 @@ def render(proposal):
         lines += ['No numeric result or uploaded chart is proposed while this refusal remains unresolved.',
                   'Inspect and correct the source Issue/attachment, then request a new reviewed intake.', '']
     lines += ['## Mandatory caveats', '', *('- '+warning for warning in sorted(proposal['warnings'])), '',
-        'Maintainer review and an explicit owner decision are required before merging.',
+        'Owner acceptance is a separate manual decision; this import does not record it.',
         'Intake approval labels authorize processing only; they do not accept these results.', '']
     public[folder+'/README.md'] = '\n'.join(lines).encode()
     return public
