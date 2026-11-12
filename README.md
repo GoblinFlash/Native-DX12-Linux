@@ -4,6 +4,8 @@
 
 Andrew Kapica — GoblinFlash
 
+**AI-assisted development:** This project uses AI tools to assist with research, implementation, testing, code review, and documentation. AI-assisted contributions are subject to the same technical review, testing, and licensing requirements as other contributions. See the [contribution guidelines](AGENTS.md).
+
 <p>
   <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.5" height="54"></a>
   <a href="NDX12_GPU_Benchmark/HOW_TO_RUN.md"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
