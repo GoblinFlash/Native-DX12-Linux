@@ -247,7 +247,7 @@ class IntakeTests(unittest.TestCase):
                 self.assertEqual(len(core.summaries(p)), 27)
                 self.assertEqual(core.summaries(p)[0]['n'], 7)
                 outputs = core.render(p)
-                self.assertEqual(len(outputs), 7)
+                self.assertEqual(len(outputs), 7)  # memory-backing.json is a separate artifact
                 self.assertTrue(all('/NVIDIA/RTX_3090/'+version+'/issue-12/' in path for path in outputs))
 
     def test_deterministic_bytes(self):
@@ -310,7 +310,7 @@ class IntakeTests(unittest.TestCase):
         self.assertEqual(p['state'], 'MANUAL_REVIEW')
         self.assertEqual(p['measurements'], [])
         self.assertIn('/Pending_Classification/v0.1.5/', core.record_folder(p))
-        self.assertEqual(len(core.render(p)), 3)
+        self.assertEqual(len(core.render(p)), 3)  # metadata includes memory-backing
 
     def test_version_identity_driver_mismatches(self):
         """Reject mismatched release identity, catalogue fields and Issue/archive driver values."""
@@ -767,15 +767,17 @@ class IntakeTests(unittest.TestCase):
                 self.assertEqual(api.calls, [])
 
     def test_partial_failure_caveat_and_rejected_full_claim(self):
-        """Preserve partial/failure caveats while rejecting an inconsistent full-completion claim."""
-        f = raw_files();r = json.loads(f['run.json'])
-        r['run'].update(overall='STOPPED', completed=[], failed={'reason': 'PRIVATE_FAILURE_DETAIL'})
-        for step in r['steps']:step['status'] = 'STOPPED'
+        """A genuinely unfinished run keeps failure evidence and rejects full execution."""
+        f = not_run_process_files('native')
+        r = json.loads(f['run.json'])
+        r['run'].update(overall='STOPPED', failed={'reason': 'PRIVATE_FAILURE_DETAIL'})
+        next(s for s in r['steps'] if s['suite'] == 'd4')['status'] = 'STOPPED'
         f['run.json'] = core.json_bytes(r)
         self.assertEqual(core.prepare(issue(), bundle(f))['reason'], 'RUN_CLAIM_MISMATCH')
         x = issue();x['body'] = x['body'].replace('Full test completed', 'Stopped or interrupted before completion')
         p = core.validate_proposal(core.prepare(x, bundle(f)))
         self.assertEqual(p['run']['overall'], 'STOPPED')
+        self.assertEqual(p['run']['counts']['completed'], 188)
         self.assertTrue(p['run']['failure_reported'])
         self.assertIn('NONCOMPLETE_RUN', p['warnings'])
         self.assertNotIn(b'PRIVATE_FAILURE_DETAIL', b''.join(core.render(p).values()))
@@ -1194,7 +1196,7 @@ class PublisherTests(unittest.TestCase):
         p = core.prepare(api.issue, bundle())
         result = writer.publish(p, api, 12)
         self.assertTrue(all('/Pending_Classification/v0.1.5/' in name for name in result['files']))
-        self.assertEqual(len(result['files']), 3)
+        self.assertEqual(len(result['files']), 3)  # metadata includes memory-backing
 
 
 class WorkflowTests(unittest.TestCase):

@@ -1,19 +1,28 @@
 # Community benchmark intake operator guide
 
-Community intake proposes **UNVERIFIED draft PRs**, grouped by exact GPU model and benchmark release. Enabling the workflow and accepting each result require repository-owner approval. The existing `benchmark-gpu-categories.yml` labels Issues separately; intake does not change labels or close Issues.
+Community intake proposes **UNVERIFIED draft PRs**, grouped by exact GPU model and benchmark release. Enabling the workflow and accepting each result require repository-owner approval. The separate `benchmark-gpu-categories.yml` labels Issues and dispatches a non-manual intake retry after first adding the submission label, or when rerunning a categorizer job after dispatch failure; intake does not change labels or close Issues.
 
 ## Processing and permissions
 
-The workflow handles `issues` opened, edited, reopened and labeled events, plus an explicit `workflow_dispatch` Issue number. It runs trusted scripts from the triggering `main` revision, only in `GoblinFlash/Native-DX12-Linux`. The Issue must be open, have a `[Results]` title and `benchmark:submission` label. OWNER/MEMBER/COLLABORATOR submissions can be processed immediately. Outside contributors need a maintainer-applied `benchmark:intake-approved` label or a maintainer's manual dispatch. This is intake authorization, not benchmark acceptance.
+The workflow handles `issues` opened, edited, reopened and labeled events, plus an explicit `workflow_dispatch` Issue number. It runs trusted scripts from the triggering `main` revision, only in `GoblinFlash/Native-DX12-Linux`. The Issue must be open, have a `[Results]` title and `benchmark:submission` label. OWNER/MEMBER/COLLABORATOR submissions can be processed immediately. Outside contributors need a maintainer-applied `benchmark:intake-approved` label or a maintainer's **manual** dispatch. A categorizer-triggered `workflow_dispatch` has `intake_mode: label-reconciled` and explicitly does not count as manual permission; `intake_mode: manual` (the default for existing maintainer calls) retains the current manual route. This is intake authorization, not benchmark acceptance.
+
+The Issue form offers supported benchmark releases as a dropdown; update its options alongside every new approved release. Wrong/unknown releases and unsupported release suffixes such as `v0.1.5-rc.1` are not truncated or guessed from attachment filenames; they require correction or `VERSION_UNKNOWN` manual review. The GPU label workflow covers all 44 fixed NVIDIA RTX models supported by the intake parser, plus the listed AMD/Intel entries. Exact Ti/Super/D/Laptop suffixes stay separate. Explicit `GeForce 4060` and `NVIDIA GeForce 4060` aliases map to the fixed desktop `RTX 4060` entry, but bare `4060` and cross-vendor strings do not.
+
+A `Full test completed` or `Selected tests completed` claim means all requested processes reported execution completion (`completed == expected`), not that all passed `VERIFIED`. A run with one completed `FAIL` may remain `overall: FAILED` and retain only the `VERIFIED` processes' numeric measurements; failed counts, failure markers and `NONCOMPLETE_RUN` warnings remain visible. A stopped/failed-to-start claim cannot describe a run whose process schedule fully executed. None of these status selections is independent correctness evidence.
+
+For outside contributors without processing permission, `prepare` completes without `ready=true` and `propose` remains skipped. The Actions step summary and warning now explicitly say `AWAITING_INTAKE_APPROVAL` (or `NOT_ELIGIBLE` for a closed/invalid Issue). A green GitHub run **does not** imply a draft PR or a merged record. A permitted but malformed submission may yield `MANUAL_REVIEW:VERSION_UNKNOWN` and a metadata-only draft. Check the `prepare` summary, the actual draft PR, and the final repository tree. These messages do not alter acceptance policy or grant automation new Issue-write permissions.
 
 The `benchmark:intake-approved` label must exist before a maintainer can apply it. Intake and the GPU categorizer do not create that label. If it is absent, obtain explicit owner approval to create it, or use an authorized manual `workflow_dispatch` after the workflow is enabled. Do not grant workflow label-writing permissions to work around this prerequisite.
 
 | Job | Token permissions | Work |
 | --- | --- | --- |
+| `gpu-category` (separate workflow) | issues: write, actions: write | Reconcile fixed labels; dispatch a non-manual intake retry when adding the submission label, or on a rerun (`GITHUB_RUN_ATTEMPT` > 1) when the label persists after failure. Normal edits with existing labels do not dispatch duplicates. The draft writer is independently idempotent. The extra Actions scope is for `workflow_dispatch`, not benchmark acceptance. |
 | `prepare` | contents: read, issues: read | Read fresh Issue, download one public attachment without credentials, validate bounded data, upload only a typed JSON proposal. |
 | `propose` | contents: write, pull-requests: write, issues: read | Revalidate typed proposal and fresh Issue, render sanitized files with trusted code, add files on a new intake branch and create a draft PR. |
 
-The default token permissions are empty. Checkout uses a full action SHA and `persist-credentials: false`. No Issue body is inserted into shell code. Attachment content is never executed, imported, checked out or extracted to disk. The write-token job never downloads the archive. It accepts no paths, executable code, HTML, SVG, URLs or free-form prose from the proposal. The intermediate artifact contains only `proposal.json`, expires after three days, and uses the current run ID and attempt. Artifact service retention/deletion is not controlled by the parser.
+To protect a pending maintainer manual dispatch from being replaced by a later automatic Issue event, intake uses `concurrency.queue: max` with `cancel-in-progress: false`. GitHub can queue up to 100 pending runs per group; this preserves authorization mode on each queued event, but the approval gate still runs when a job starts. Live queue behavior has not been verified on GitHub.
+
+The intake workflow's default token permissions are empty; the separate categorizer explicitly grants `issues: write` and `actions: write` for fixed label/dispatch APIs. GitHub suppresses ordinary `GITHUB_TOKEN`-generated label events, but allows explicit `workflow_dispatch` events; no PAT or GitHub App secret is required for this scoped retry. Review this new permission before publication. Checkout uses a full action SHA and `persist-credentials: false`. No Issue body is inserted into shell code. Attachment content is never executed, imported, checked out or extracted to disk. The write-token job never downloads the archive. It accepts no paths, executable code, HTML, SVG, URLs or free-form prose from the proposal. The intermediate artifact contains only `proposal.json`, expires after three days, and uses the current run ID and attempt. Artifact service retention/deletion is not controlled by the parser.
 
 The successful prepare job exports its artifact name as a job output. A retry of only the failed propose job uses that preserved name, rather than looking for a new-attempt artifact that was never uploaded. GitHub preserves outputs from jobs omitted from a partial rerun; see [re-running jobs](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs). An expired/deleted artifact requires a fresh preparation, not bypassing validation.
 
@@ -79,7 +88,7 @@ Before enabling intake, maintainers review workflow changes under repository cod
 
 ## CPU-only verification
 
-From the repository root, with Python 3.10 or newer and only the standard library:
+From the repository root, with Python 3.10 or newer, its standard library, and Node.js on `PATH` for the real JavaScript GPU-categorizer test:
 
 ```bash
 python3 -I -B -m unittest discover -s tests -v
