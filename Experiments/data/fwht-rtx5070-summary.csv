@@ -1,0 +1,4 @@
+gpu,sm,driver,workload,data_backing,code_backing,median_raw_ticks,frames_per_process,median_frames,process_count,vm_audit,saved_bytes_check
+RTX 5070,SM120,620.70.06,fwht-block-128x128,SYSMEM,control_arena,856480,14,12,1,BOUNDED_SERIES_VERIFIED,PASS
+RTX 5070,SM120,620.70.06,fwht-block-128x128,VRAM,control_arena,32096,14,12,1,BOUNDED_SERIES_VERIFIED,PASS
+RTX 5070,SM120,620.70.06,fwht-block-128x128,VRAM,separate_1MiB_VRAM,32064,14,12,1,REFUSED_CODE_AUDIT_QMD_SET,CPU_RECHECK_PASS
