@@ -10,7 +10,7 @@ Recorded GPU experiments, CPU-side development checks and community benchmark su
 
 Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
 
-## Community benchmark data — v0.1.4
+## Community Benchmark Data — v0.1.4
 
 Four NVIDIA GPU submissions were received for benchmark **v0.1.4 / v21-r14**. Their exported CSV and JSON files have been inspected and the workload medians recalculated.
 
