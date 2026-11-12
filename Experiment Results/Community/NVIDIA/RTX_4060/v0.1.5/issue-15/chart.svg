@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="865" viewBox="0 0 1280 865">
+<metadata id="memory-backing">{
+  &quot;native_dx12&quot;: {
+    &quot;backing&quot;: &quot;SYSMEM&quot;,
+    &quot;basis&quot;: &quot;RELEASE_ARTIFACT_DOCUMENTATION&quot;,
+    &quot;documentation_git_blob&quot;: &quot;4a5a6001db6001db508224e4cf16b50289ac5a7a&quot;,
+    &quot;evidence_url&quot;: &quot;https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.5/NDX12_GPU_Benchmark/README.md#L113&quot;,
+    &quot;release&quot;: &quot;v0.1.5&quot;,
+    &quot;release_artifact_sha256&quot;: &quot;eed38c254c8e8cc8310c8fc84fbca6081696f114aadcb63cc584cb2828b448a5&quot;,
+    &quot;scope&quot;: &quot;data_buffers&quot;
+  },
+  &quot;schema&quot;: &quot;ndx12.community-memory.v1&quot;,
+  &quot;vulkan&quot;: {
+    &quot;backing&quot;: &quot;NOT_RECORDED&quot;,
+    &quot;basis&quot;: &quot;NOT_INFERRED_FROM_NATIVE&quot;
+  }
+}
+</metadata>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="DejaVu Sans, sans-serif" font-size="12" fill="#18222c">
+<text x="16" y="24">UNVERIFIED Issue #15: exported numeric summaries only</text>
+<text x="16" y="44">Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)</text>
+<text x="16" y="64">Vulkan memory backing: NOT_RECORDED (not inferred from Native DX12).</text>
+<text x="16" y="84">Separate scales and units; no cross-API speedup or GPU qualification is established.</text>
+<text x="16" y="108">native: GPU_TICKS — independent scale</text>
+<text x="16" y="144">compute affine default</text><rect x="330" y="132" width="3.92" height="16" fill="#337799"/><text x="800" y="144">22176</text>
+<text x="16" y="169">compute affine515 default</text><rect x="330" y="157" width="3.79" height="16" fill="#337799"/><text x="800" y="169">21408</text>
+<text x="16" y="194">compute parallel-sort default</text><rect x="330" y="182" width="460.00" height="16" fill="#337799"/><text x="800" y="194">2599104</text>
+<text x="16" y="219">d4 128x128 B</text><rect x="330" y="207" width="4.75" height="16" fill="#337799"/><text x="800" y="219">26848</text>
+<text x="16" y="244">d4 128x128 D4</text><rect x="330" y="232" width="3.60" height="16" fill="#337799"/><text x="800" y="244">20336</text>
+<text x="16" y="269">d4 16x1024 B</text><rect x="330" y="257" width="20.99" height="16" fill="#337799"/><text x="800" y="269">118592</text>
+<text x="16" y="294">d4 16x1024 D4</text><rect x="330" y="282" width="11.28" height="16" fill="#337799"/><text x="800" y="294">63760</text>
+<text x="16" y="319">d4 32x512 B</text><rect x="330" y="307" width="11.48" height="16" fill="#337799"/><text x="800" y="319">64864</text>
+<text x="16" y="344">d4 32x512 D4</text><rect x="330" y="332" width="6.67" height="16" fill="#337799"/><text x="800" y="344">37696</text>
+<text x="16" y="369">k 127x65 root-scalar</text><rect x="330" y="357" width="56.68" height="16" fill="#337799"/><text x="800" y="369">320272</text>
+<text x="16" y="394">k 127x65 root-uint4</text><rect x="330" y="382" width="46.95" height="16" fill="#337799"/><text x="800" y="394">265264</text>
+<text x="16" y="419">k 64x64 root-scalar</text><rect x="330" y="407" width="24.98" height="16" fill="#337799"/><text x="800" y="419">141152</text>
+<text x="16" y="444">k 64x64 root-uint4</text><rect x="330" y="432" width="19.76" height="16" fill="#337799"/><text x="800" y="444">111664</text>
+<text x="16" y="469">kw 127x65 wave-root-scalar</text><rect x="330" y="457" width="27.96" height="16" fill="#337799"/><text x="800" y="469">157984</text>
+<text x="16" y="494">kw 127x65 wave-root-uint4</text><rect x="330" y="482" width="27.43" height="16" fill="#337799"/><text x="800" y="494">154960</text>
+<text x="16" y="519">kw 64x64 wave-root-scalar</text><rect x="330" y="507" width="15.28" height="16" fill="#337799"/><text x="800" y="519">86336</text>
+<text x="16" y="544">kw 64x64 wave-root-uint4</text><rect x="330" y="532" width="14.78" height="16" fill="#337799"/><text x="800" y="544">83488</text>
+<text x="16" y="557">vulkan: NS — independent scale</text>
+<text x="16" y="593">compute affine default</text><rect x="330" y="581" width="25.38" height="16" fill="#337799"/><text x="800" y="593">8320</text>
+<text x="16" y="618">compute affine515 default</text><rect x="330" y="606" width="25.18" height="16" fill="#337799"/><text x="800" y="618">8256</text>
+<text x="16" y="643">compute parallel-sort default</text><rect x="330" y="631" width="460.00" height="16" fill="#337799"/><text x="800" y="643">150816</text>
+<text x="16" y="668">d4 128x128 default</text><rect x="330" y="656" width="21.03" height="16" fill="#337799"/><text x="800" y="668">6896</text>
+<text x="16" y="693">d4 16x1024 default</text><rect x="330" y="681" width="42.85" height="16" fill="#337799"/><text x="800" y="693">14048</text>
+<text x="16" y="718">d4 32x512 default</text><rect x="330" y="706" width="30.40" height="16" fill="#337799"/><text x="800" y="718">9968</text>
+<text x="16" y="743">k 127x65 default</text><rect x="330" y="731" width="46.21" height="16" fill="#337799"/><text x="800" y="743">15152</text>
+<text x="16" y="768">k 64x64 default</text><rect x="330" y="756" width="32.01" height="16" fill="#337799"/><text x="800" y="768">10496</text>
+<text x="16" y="793">kw 127x65 default</text><rect x="330" y="781" width="28.26" height="16" fill="#337799"/><text x="800" y="793">9264</text>
+<text x="16" y="818">kw 64x64 default</text><rect x="330" y="806" width="27.82" height="16" fill="#337799"/><text x="800" y="818">9120</text>
+</g></svg>
