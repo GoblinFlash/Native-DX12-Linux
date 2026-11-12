@@ -6,8 +6,8 @@
 
 **Research question:** Can Cache Arena safely reuse a prepared native GPU
 session, shader code and VRAM allocations across multiple dependent FWHT tasks?
-What does that reuse save on the host, and how does memory placement affect
-the measured GPU interval?
+What is the impact of session reuse on host-side overhead, and how does memory
+placement affect the measured GPU interval?
 
 ### FWHT and Cache Arena
 
