@@ -175,6 +175,7 @@ class FakeAPI:
         self.calls, self.writes, self.prs = [], [], []
         self.base, self.base_tree = 'a'*40, 'b'*40
         self.initial_base = self.base
+        self.initial_tree = self.base_tree
         self.entries = copy.deepcopy(existing or [])
         self.blobs, self.trees, self.commits, self.refs = {}, {}, {}, {}
         for path in writer.INDEXES:
@@ -198,8 +199,10 @@ class FakeAPI:
             return copy.deepcopy(self.issue)
         if endpoint == 'git/ref/heads/main':
             return {'object': {'sha': self.base}}
-        if endpoint == 'git/commits/'+self.base or endpoint == 'git/commits/'+self.initial_base:
+        if endpoint == 'git/commits/'+self.base:
             return {'tree': {'sha': self.base_tree}}
+        if endpoint == 'git/commits/'+self.initial_base:
+            return {'tree': {'sha': self.initial_tree}}
         if endpoint.startswith('git/commits/'):
             return self.commits[endpoint.rsplit('/', 1)[1]]
         if endpoint.startswith('git/blobs/'):
@@ -222,7 +225,8 @@ class FakeAPI:
             if head == self.base:
                 return {'merge_base_commit': {'sha': parent}, 'behind_by': 0}
             commit = self.commits[head]
-            baseline = {x['path']: x['sha'] for x in self.entries if 'sha' in x}
+            parent_tree = self.initial_tree if parent == self.initial_base else self.base_tree
+            baseline = {x['path']: x['sha'] for x in self.trees[parent_tree] if 'sha' in x}
             return {'files': [{'filename': row['path'],
                                'status': 'modified' if row['path'] in baseline else 'added'}
                 for row in self.trees[commit['tree']['sha']]
@@ -1250,7 +1254,21 @@ class PublisherTests(unittest.TestCase):
             api = FakeAPI();api.fail_pr_once = True
             with self.assertRaises(core.Refused):writer.publish(ready(), api, 12)
             previous_get = api.get
-            if mode in ('advanced-main', 'foreign-history'):api.base = 'e'*40
+            initial_tree = api.base_tree
+            initial_indexes = {row['path']: row['sha'] for row in api.entries if row['path'] in writer.INDEXES}
+            if mode in ('advanced-main', 'foreign-history'):
+                api.base = 'e'*40
+                api.base_tree = '7'*40
+                api.entries = copy.deepcopy(api.entries)
+                for row in api.entries:
+                    if row['path'] in writer.INDEXES:
+                        content = api.blobs[row['sha']] + '\nEditorial update on advanced main.\n'
+                        row['sha'] = writer.git_blob(content.encode())
+                        api.blobs[row['sha']] = content
+                api.trees[api.base_tree] = api.entries
+                self.assertNotEqual(api.base_tree, initial_tree)
+                self.assertTrue(all(row['sha'] != initial_indexes[row['path']]
+                                    for row in api.entries if row['path'] in writer.INDEXES))
             if mode == 'changed-blob':api.trees['c'*40][0]['sha'] = 'f'*40
             if mode == 'changed-mode':api.trees['c'*40][0]['mode'] = '120000'
             def altered_get(endpoint):
@@ -1261,11 +1279,19 @@ class PublisherTests(unittest.TestCase):
                 if mode == 'changed-diff' and endpoint.startswith('compare/'):
                     result['files'][0]['status'] = 'removed'
                 return result
-            api.get = altered_get;before = len(api.writes)
+            api.get = altered_get;before = len(api.writes);before_reads = len(api.calls)
             with self.subTest(mode=mode):
                 if mode == 'advanced-main':
                     self.assertEqual(writer.publish(ready(), api, 12)['status'], 'DRAFT_PR_CREATED')
                     self.assertEqual([x[0] for x in api.writes[before:]], ['pulls'])
+                    reads = api.calls[before_reads:]
+                    self.assertIn(('GET', 'git/trees/'+api.base_tree+'?recursive=1'), reads)
+                    self.assertIn(('GET', 'git/trees/'+initial_tree+'?recursive=1'), reads)
+                    for object_id in initial_indexes.values():
+                        self.assertIn(('GET', 'git/blobs/'+object_id), reads)
+                    for row in api.entries:
+                        if row['path'] in writer.INDEXES:
+                            self.assertNotIn(('GET', 'git/blobs/'+row['sha']), reads)
                 else:
                     with self.assertRaisesRegex(core.Refused, '^EXISTING_BRANCH_CHANGED$'):writer.publish(ready(), api, 12)
                     self.assertEqual(len(api.writes), before)
