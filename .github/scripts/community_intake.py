@@ -6,7 +6,7 @@ import csv
 from decimal import Decimal, localcontext
 from fractions import Fraction
 import hashlib
-import html
+import importlib.util
 import io
 import json
 import math
@@ -1002,35 +1002,17 @@ def export_consistency(proposal):
 
 
 def chart(proposal, rows):
-    """Render fresh UTF-8 SVG bytes from validated proposal and summary rows.
+    """Reuse pinned project v0.1.4 layouts with new numeric summaries and evidence.
 
-    Use fixed/escaped labels and exact numeric text with separate native/Vulkan
-    scales. Only bar geometry uses floating-point scaling. Uploaded graphics
-    are never reused; this helper does not write any file.
+    Qualified complete exports use its four workload panels; other exports use
+    its separate raw-unit panels. No uploaded graphics or filesystem writes.
     """
-    context = memory_backing(proposal)
-    height = 190 + len(rows) * 25
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="{height}" viewBox="0 0 1280 {height}">',
-        '<metadata id="memory-backing">' + html.escape(json_bytes(context).decode()) + '</metadata>',
-        '<rect width="100%" height="100%" fill="white"/>',
-        '<g font-family="DejaVu Sans, sans-serif" font-size="12" fill="#18222c">',
-        f'<text x="16" y="24">Issue #{proposal["issue"]} | Export consistency: {export_consistency(proposal)} | Owner acceptance: NOT_RECORDED</text>',
-        '<text x="16" y="44">' + memory_label(context) + '</text>',
-        '<text x="16" y="64">Vulkan memory backing: NOT_RECORDED (not inferred from Native DX12).</text>',
-        '<text x="16" y="84">Separate scales and units; no cross-API speedup or GPU qualification is established.</text>']
-    y = 108
-    for path, unit in [('native', 'GPU_TICKS'), ('vulkan', 'NS')]:
-        subset = [r for r in rows if r['path'] == path]
-        parts.append(f'<text x="16" y="{y}">{path}: {unit} — independent scale</text>')
-        y += 24
-        peak = max([float(r['median']) for r in subset] + [1])
-        for row in subset:
-            label = html.escape(' '.join([row['suite'], row['case'], row['variant'] or 'default']))
-            width = float(row['median']) / peak * 460
-            parts.append(f'<text x="16" y="{y+12}">{label}</text><rect x="330" y="{y}" width="{width:.2f}" height="16" fill="#337799"/><text x="800" y="{y+12}">{row["median"]}</text>')
-            y += 25
-    parts.append('</g></svg>\n')
-    return '\n'.join(parts).encode()
+    spec = importlib.util.spec_from_file_location('community_chart_renderer',
+                                                  Path(__file__).with_name('community_charts.py'))
+    renderer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(renderer)
+    return renderer.render(proposal, rows, memory_backing(proposal),
+                           catalog()[proposal['claimed_version']]['package_id'])
 
 
 def render(proposal):
