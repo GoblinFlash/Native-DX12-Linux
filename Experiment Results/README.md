@@ -2,7 +2,7 @@
 
 Recorded GPU experiments, CPU-side development checks and community benchmark submissions. Each result is tied to its hardware, benchmark revision and measurement method.
 
-## Automated community intake — UNVERIFIED
+## Community Benchmark Data — v0.1.5
 
 <!-- ndx12-community-intake:start -->
 - [NVIDIA RTX 4060 / v0.1.5 / Issue #15](Community/NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — **UNVERIFIED** (`DATA_READY`); maintainer review required.
