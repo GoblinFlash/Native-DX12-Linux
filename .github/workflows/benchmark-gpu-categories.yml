@@ -13,6 +13,7 @@ concurrency:
 
 permissions:
   issues: write
+  actions: write # Required only to dispatch an intake retry after label reconciliation.
 
 jobs:
   gpu-category:
@@ -48,23 +49,40 @@ jobs:
             }
 
             // Keep closely related GPU models separate (Laptop, Ti, Super, D).
-            const known = [
-              ['gpu:rtx-4090-laptop', /^(?:nvidia )?(?:geforce )?rtx 4090 laptop(?: gpu)?$/],
-              ['gpu:rtx-4090',        /^(?:nvidia )?(?:geforce )?rtx 4090(?: gpu)?$/],
-              ['gpu:rtx-3090-ti',     /^(?:nvidia )?(?:geforce )?rtx 3090 ti(?: gpu)?$/],
-              ['gpu:rtx-3090',        /^(?:nvidia )?(?:geforce )?rtx 3090(?: gpu)?$/],
-              ['gpu:rtx-3060-ti',     /^(?:nvidia )?(?:geforce )?rtx 3060 ti(?: gpu)?$/],
-              ['gpu:rtx-3060',        /^(?:nvidia )?(?:geforce )?rtx 3060(?: gpu)?$/],
-              ['gpu:rtx-4060-laptop', /^(?:nvidia )?(?:geforce )?rtx 4060 laptop(?: gpu)?$/],
-              ['gpu:rtx-3080-ti',     /^(?:nvidia )?(?:geforce )?rtx 3080 ti(?: gpu)?$/],
-              ['gpu:rtx-3080',        /^(?:nvidia )?(?:geforce )?rtx 3080(?: gpu)?$/],
-              ['gpu:rtx-4080-super',  /^(?:nvidia )?(?:geforce )?rtx 4080 super(?: gpu)?$/],
-              ['gpu:rtx-4080',        /^(?:nvidia )?(?:geforce )?rtx 4080(?: gpu)?$/],
-              ['gpu:rtx-5080',        /^(?:nvidia )?(?:geforce )?rtx 5080(?: gpu)?$/],
-              ['gpu:rtx-5090',        /^(?:nvidia )?(?:geforce )?rtx 5090(?: gpu)?$/],
-              ['gpu:amd-rx-7900-xtx',/^(?:amd )?(?:radeon )?rx 7900 xtx(?: gpu)?$/],
-              ['gpu:intel-arc-a770', /^(?:intel )?arc a770(?: graphics)?$/]
+            // Fixed GPU categories mirror community_intake.GPU_NAMES.
+            // GeForce without RTX is accepted only for an exact allowlisted GPU.
+            const supportedNvidia = [
+              "RTX 4090", "RTX 4090 Laptop GPU", "RTX 4090 D",
+              "RTX 4080", "RTX 4080 Super", "RTX 4080 Laptop GPU",
+              "RTX 4070", "RTX 4070 Ti", "RTX 4070 Super",
+              "RTX 4070 Ti Super", "RTX 4070 Laptop GPU", "RTX 4060",
+              "RTX 4060 Ti", "RTX 4060 Laptop GPU", "RTX 4050 Laptop GPU",
+              "RTX 3090", "RTX 3090 Ti", "RTX 3080",
+              "RTX 3080 Ti", "RTX 3080 Laptop GPU", "RTX 3080 Ti Laptop GPU",
+              "RTX 3070", "RTX 3070 Ti", "RTX 3070 Laptop GPU",
+              "RTX 3070 Ti Laptop GPU", "RTX 3060", "RTX 3060 Ti",
+              "RTX 3060 Laptop GPU", "RTX 3050", "RTX 3050 Laptop GPU",
+              "RTX 3050 Ti Laptop GPU", "RTX 3050 A Laptop GPU", "RTX 5090",
+              "RTX 5090 D", "RTX 5090 Laptop GPU", "RTX 5080",
+              "RTX 5080 Laptop GPU", "RTX 5070", "RTX 5070 Ti",
+              "RTX 5070 Laptop GPU", "RTX 5070 Ti Laptop GPU", "RTX 5060",
+              "RTX 5060 Ti", "RTX 5060 Laptop GPU"
             ];
+            const known = supportedNvidia.map(name => {
+              const lower = name.toLowerCase();
+              const model = lower.endsWith(' laptop gpu')
+                ? lower.slice(0, -4) + '(?: gpu)?' : lower;
+              const shortName = name.slice(4).toLowerCase();
+              const shortModel = shortName.endsWith(' laptop gpu')
+                ? shortName.slice(0, -4) + '(?: gpu)?' : shortName;
+              const slug = lower.replace(/ laptop gpu$/, ' laptop').replace(/\s+/g, '-');
+              return ['gpu:' + slug, new RegExp('^(?:(?:nvidia )?(?:geforce )?' +
+                model + '|(?:nvidia )?geforce ' + shortModel + ')$')];
+            });
+            known.push(
+              ['gpu:amd-rx-7900-xtx', /^(?:amd )?(?:radeon )?rx 7900 xtx$/],
+              ['gpu:intel-arc-a770', /^(?:intel )?arc a770$/]
+            );
 
             // Strict ownership: never remove unrelated/manual gpu:* labels.
             const managed = new Set([
@@ -126,6 +144,24 @@ jobs:
                 // Another actor may have removed this label since the GET.
                 if (error.status !== 404) throw error;
               }
+            }
+
+            // Labels created with GITHUB_TOKEN do not fire downstream workflows.
+            // On a failed dispatch, labels persist; a rerun must retry even if
+            // no label is missing. Avoid dispatch on every normal Issue edit.
+            // Non-manual mode preserves the approval gate.
+            if (desired.has('benchmark:submission') &&
+                (missing.includes('benchmark:submission') ||
+                 Number(process.env.GITHUB_RUN_ATTEMPT || '1') > 1)) {
+              await github.rest.actions.createWorkflowDispatch({
+                owner, repo,
+                workflow_id: 'community-benchmark-intake.yml',
+                ref: 'main',
+                inputs: {
+                  issue_number: String(issue_number),
+                  intake_mode: 'label-reconciled'
+                }
+              });
             }
 
             core.info('Issue #' + issue_number + ': ' +

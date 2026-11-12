@@ -10,10 +10,18 @@ on:
         description: Existing benchmark Issue number (digits only)
         required: true
         type: string
+      intake_mode:
+        description: Manual maintainer dispatch or automated label-reconciliation retry
+        required: false
+        default: manual
+        type: choice
+        options: [manual, label-reconciled]
 
 concurrency:
   group: community-benchmark-intake-${{ github.event.issue.number || inputs.issue_number }}
   cancel-in-progress: false
+  # Preserve a maintainer's pending manual dispatch behind automatic Issue events.
+  queue: max
 
 permissions: {}
 

@@ -15,12 +15,15 @@ body:
         **This issue and its attachments are public and linked to your GitHub account.**
         Inspect `share-results-<release>.tar.gz` (older releases: `share-results.tar.gz`) before attaching it. Remove anything you do not want public, such as usernames, hostnames, IP addresses, serial numbers or personal paths. Mention any redaction without repeating the removed values.
         Do not upload an unfiltered raw benchmark evidence directory. If you cannot safely share the bundle, describe the result instead.
-  - type: input
+  - type: dropdown
     id: version
     attributes:
       label: Benchmark version
-      description: Release version; add the archive SHA-256 if known. Write unknown if you cannot identify it.
-      placeholder: "v0.1.5 (package v21-r16), benchmark archive SHA-256 if known"
+      description: Select the version shown in your benchmark results. Never guess from the driver or GPU model; select Other/unknown if unsure.
+      options:
+        - v0.1.5
+        - v0.1.4
+        - Other or unknown
     validations:
       required: true
   - type: input

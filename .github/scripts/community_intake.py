@@ -158,8 +158,17 @@ def gpu_category(value):
         value += ' gpu'
     prefixes = {'NVIDIA': r'(?:nvidia )?(?:geforce )?', 'AMD': r'(?:amd )?(?:radeon )?',
                 'Intel': r'(?:intel )?'}
-    return next((key for key, name in GPUS.items() if
-                 re.fullmatch(prefixes[key.split('/')[0]] + re.escape(name.casefold()), value)), None)
+    for key, name in GPUS.items():
+        vendor = key.split('/')[0]
+        canonical = name.casefold()
+        if re.fullmatch(prefixes[vendor] + re.escape(canonical), value):
+            return key
+        # NVIDIA's GeForce brand is an explicit disambiguator for a missing RTX
+        # prefix. Do not accept bare numbers or alter Ti/Super/D/Laptop suffixes.
+        if vendor == 'NVIDIA' and canonical.startswith('rtx ') and re.fullmatch(
+                r'(?:nvidia )?geforce ' + re.escape(canonical[4:]), value):
+            return key
+    return None
 
 
 def issue_fields(issue):
@@ -406,8 +415,12 @@ def claims(issue):
     fields = issue_fields(issue)
     gpu = gpu_category(first_line(fields.get('GPU model', '')))
     text = first_line(fields.get('Benchmark version', ''))
-    versions = set(x.lower() for x in re.findall(r'\bv[0-9]+\.[0-9]+\.[0-9]+\b', text, re.I))
+    # Capture the entire claimed release token: a stable prefix of a prerelease
+    # or patch build must not be mistaken for an approved release.
+    versions = set(x.lower() for x in re.findall(
+        r'\bv[0-9]+\.[0-9]+\.[0-9]+[^\s,;)]*', text, re.I))
     version = versions.pop() if len(versions) == 1 else None
+    version = version if version and re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+', version) else None
     version = version if version in catalog() else None
     driver = first_line(fields.get('GPU driver version', ''))
     stack = r'(?:NVIDIA )?(?:Open|proprietary)(?: kernel module)?'
@@ -725,14 +738,20 @@ def prepare(issue, compressed=None, fetch=download):
         run_claim = first_line(fields.get('Run status', ''))
         need(run_claim in ('Full test completed', 'Selected tests completed',
             'Stopped or interrupted before completion', 'Failed or refused to start', 'Unsure'), 'RUN_CLAIM_MISMATCH')
+        # Completion means every requested process finished execution, not
+        # that every process passed correctness or timing verification. Retain
+        # the separate reported FAILED/PARTIAL state and successful samples.
+        all_executed = sanitized['counts']['completed'] == sanitized['counts']['expected']
         if run_claim in ('Full test completed', 'Selected tests completed'):
-            need(sanitized['overall'] == 'COMPLETE', 'RUN_CLAIM_MISMATCH')
+            need(all_executed, 'RUN_CLAIM_MISMATCH')
         elif run_claim == 'Stopped or interrupted before completion':
-            need(sanitized['overall'] != 'COMPLETE', 'RUN_CLAIM_MISMATCH')
+            need(not all_executed, 'RUN_CLAIM_MISMATCH')
         elif run_claim == 'Failed or refused to start':
-            need(sanitized['overall'] == 'FAILED' or sanitized['failure_reported'], 'RUN_CLAIM_MISMATCH')
+            need(not all_executed and
+                 (sanitized['overall'] == 'FAILED' or sanitized['failure_reported']),
+                 'RUN_CLAIM_MISMATCH')
         if run_claim == 'Full test completed':
-            need(sanitized['overall'] == 'COMPLETE' and set(requested) == set(SUITES), 'RUN_CLAIM_MISMATCH')
+            need(set(requested) == set(SUITES), 'RUN_CLAIM_MISMATCH')
         values = measurements(files, processes)
         result.update(driver=driver, state='DATA_READY', reason='OK', run=sanitized,
                       processes=processes, measurements=values)
@@ -1107,9 +1126,14 @@ def event_issue(event):
     acceptance or a grant of publication authority.
     """
     if os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch':
-        value = event.get('inputs', {}).get('issue_number')
+        inputs = event.get('inputs', {})
+        need(type(inputs) is dict, 'EVENT_TYPE')
+        value = inputs.get('issue_number')
         need(type(value) in (int, str) and re.fullmatch('[1-9][0-9]{0,9}', str(value)), 'ISSUE_NUMBER')
-        return integer(int(value), 1, 2**31-1), True
+        mode = inputs.get('intake_mode', 'manual')
+        need(type(mode) is str and mode in ('manual', 'label-reconciled'), 'EVENT_TYPE')
+        # A categorizer-triggered retry is NOT a maintainer's manual approval.
+        return integer(int(value), 1, 2**31-1), mode == 'manual'
     need(os.environ.get('GITHUB_EVENT_NAME') == 'issues', 'EVENT_TYPE')
     return integer(event.get('issue', {}).get('number'), 1, 2**31-1), False
 
@@ -1126,6 +1150,37 @@ def write_new(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open('xb') as output:
         output.write(data)
+
+
+def report_intake_skip(issue_number, reason):
+    """Expose an expected refusal in the job summary without enabling publication.
+
+    Only fixed text and a bounded integer reach Actions commands/Markdown.
+    No submission prose, attachment URLs or private exception messages are used.
+    """
+    notes = {
+        'AWAITING_INTAKE_APPROVAL': (
+            'Awaiting maintainer permission to process this outside submission.',
+            'Keep the Issue OPEN. A maintainer must apply benchmark:intake-approved '
+            'or explicitly dispatch the workflow. This does not validate results.'),
+        'NOT_ELIGIBLE': (
+            'Not eligible for automatic intake.',
+            'The Issue must be OPEN, start with [Results], and carry the '
+            'benchmark:submission label. Reopen/correct it before retrying.'),
+    }
+    title, guidance = notes[reason]
+    print(reason)
+    print('::warning title=Community benchmark intake::' + reason + ' - ' + title)
+    summary = os.environ.get('GITHUB_STEP_SUMMARY')
+    if summary:
+        with open(summary, 'a', encoding='utf-8') as output:
+            output.write('### Community benchmark intake — NOT PROCESSED\n\n'
+                         + '- Source: Issue #' + str(issue_number) + '\n'
+                         + '- Status: `' + reason + '`\n'
+                         + '- ' + title + '\n'
+                         + '- Next step: ' + guidance + '\n\n'
+                         + '**UNVERIFIED:** No benchmark records, charts or draft '
+                           'PR were created by this run.\n')
 
 
 def prepare_main(argv=None):
@@ -1153,7 +1208,7 @@ def prepare_main(argv=None):
         except Refused as error:
             if str(error) not in ('NOT_ELIGIBLE', 'AWAITING_INTAKE_APPROVAL'):
                 raise
-            print(str(error))
+            report_intake_skip(issue_number, str(error))
             return 0
     else:
         issue = load_json(args.issue_json.read_bytes(), MAX_API)
