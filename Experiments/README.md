@@ -123,9 +123,12 @@ fresh-session baseline (A = 100%). Exact measured medians are below.
 
 This is **host-side work, not shader execution time**. The comparison has
 two observations per arm in sequential A–B–B–A order; it is not a statistical
-significance test. Avoiding repeated 1 MiB code uploads, setup/teardown and
-duplicated audit work contributes to the recorded difference. A smaller
-upload strategy was not measured.
+significance test. Saved phase records show **0.561522 s less median
+code-upload time** in the retained arm across two tasks; setup/teardown
+and audit phases also differ. These are descriptive components of a
+whole-session A/B comparison, not isolated causal speedups. A smaller
+code-upload strategy was **not measured**; the exact pilot artifact pins
+are listed in the [detailed FWHT report](FWHT.md#tested-pilot-identities-and-evidence).
 
 Saved output and lifetime evidence were checked and timings recalculated;
 the full runtime consumer was not independently qualified. No NVIDIA Vulkan

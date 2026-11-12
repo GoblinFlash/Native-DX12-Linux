@@ -69,11 +69,14 @@ Control structures remain in system memory.
 
 These are **host-side timings, not shader or GPU execution times**.
 There are only **two observations per arm**, run sequentially in A–B–B–A
-order; they do not constitute a significance test. Much of the recorded
-difference comes from avoiding repeated upload of the full 1 MiB code image,
-session setup/teardown and duplicated audit work. The implementation uploads
-a 1 MiB allocation even though the program itself is much smaller. A
-smaller-code-upload variant was **not** measured.
+order; they do not constitute a significance test. The saved phase records
+show median full-code-upload spans of **1.107244 s (A)** and **0.545722 s
+(B)** across two tasks, a measured difference of **0.561522 s**. Setup,
+teardown and audit phases also differ. Because the A/B treatment changes
+whole-session retention, these phase timings do **not** independently
+establish the cause of the total reduction. The code image upload transfers
+a full 1 MiB allocation although the program contains 6,880 bytes.
+A smaller-code-upload variant was **NOT_RUN**.
 
 The saved-data checks accepted both FWHT tasks and the recorded control,
 allocation and lifetime evidence. A second reviewer recalculated the timings
@@ -81,6 +84,32 @@ and checked saved bytes; this does **not** independently establish live GPU
 clock behavior, review the entire Rust consumer or qualify the production API.
 Raw GPU ticks were not converted into time units. There was no Vulkan
 comparison in this Arena pilot.
+
+## Tested pilot identities and evidence
+
+The identifiers below describe the **recorded development pilots**, not the
+later `v21-r20b` integration candidate.
+
+- **RTX 5070 (SM120):** Linux kernel `7.0.0-43-generic`, NVIDIA Open
+  `620.70.06`; recorded runtime-input bytes SHA-256
+  `e3408950827341b7670673aa21228fed254d337c8446315b44a917fe461fa31b`;
+  loaded runtime library SHA-256
+  `a60ddcb47edffda54986de9aebe3b2a16c2630a186aac43798ea4fa653d21ff4`;
+  retained evidence-manifest file SHA-256
+  `4a4ebde4ec03ab07c9b7b355ddbbd52b2250d52fc643fc08eadbe736e445e69a`.
+- **RTX 4090 (SM89):** Linux kernel `7.0.0-43-generic`, NVIDIA Open
+  `620.70.06`; pinned native runtime receipt SHA-256
+  `6946312ad7490c8e7d60e3fe4c93e25599fbca06dee7047704c15d54c87de043`;
+  private pilot source-manifest file SHA-256
+  `1be020526b306c9355118fb69b1cd5f8a266012ca72a2b5cb85f3e9eb363fa74`;
+  retained A–B–B–A capture SHA-256
+  `3b199b2777890622c896e526c6e1a53ab0bda85c2688e0d83955e8662b5138d6`.
+
+The captured host records identify Linux kernels but do not establish a
+separately verified distribution release. Original manifests and captures
+remain private. Their fingerprints support artifact identity checks; they
+are **not public evidence downloads** or proof that a later source revision
+produced the same results.
 
 ## Full benchmark integration — in progress
 
