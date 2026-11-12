@@ -125,6 +125,7 @@ def document_set(version, proposals, core):
     result = {}
     for path, raw in output.items():
         if path == core.ROOT + version + '-submitted-data.md':
+            raw = raw.replace((version + '-submitted-data.md').encode(), basename(version).encode())
             result[core.ROOT + basename(version)] = (raw, 'aggregate:' + version)
         elif path.endswith('/' + version + '/README.md'):
             target = path if version != 'v0.1.4' else path[:-len('README.md')] + 'intake-README.md'
@@ -269,15 +270,22 @@ def verify(root, core=None):
             if path.exists() or path.is_symlink():
                 documents.append(path)
     core.need(len(documents) <= 512, 'AGGREGATE_DOCUMENT_LIMIT')
-    for name in list(('Experiment Results/README.md', core.ROOT + 'README.md')) + [
+    discovered = {}
+    overview_paths = ('Experiment Results/README.md', core.ROOT + 'README.md')
+    for name in list(overview_paths) + [
             p.relative_to(root).as_posix() for p in documents]:
         for match in managed.finditer(local_file(name)):
-            versions.add((match[1] or match[2]).decode('ascii'))
+            version = (match[1] or match[2]).decode('ascii')
+            versions.add(version)
+            discovered.setdefault(version, set()).add(name)
     for version in sorted(versions):
         core.need(version in core.catalog(), 'AGGREGATE_VERSION')
         proposals = records(Local(), rows, version, core)
         core.need(proposals, 'AGGREGATE_SOURCE_MISSING')
-        for path, (content, key) in document_set(version, proposals, core).items():
+        expected = document_set(version, proposals, core)
+        core.need(discovered.get(version, set()) <= set(expected) | set(overview_paths),
+                  'AGGREGATE_ORPHAN_DOCUMENT')
+        for path, (content, key) in expected.items():
             raw = local_file(path)
             replace_region(raw, content, content, key, core)
         for path, prefix in [('Experiment Results/README.md', 'Community/'),

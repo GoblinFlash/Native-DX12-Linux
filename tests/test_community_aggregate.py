@@ -147,13 +147,22 @@ class AggregateTests(unittest.TestCase):
     def test_v14_additions_do_not_touch_curated_v14_report_or_indexes(self):
         """Historical v0.1.4 has a separate additional-intake report and GPU index."""
         api = seeded();api.issue = issue(version='v0.1.4')
+        curated = core.ROOT + 'v0.1.4-submitted-data.md'
+        owner_notes = b'Owner note: retain the curated measurements.\n'
+        put(api, curated, owner_notes + (ROOT / curated).read_bytes())
+        before = {r['path']: api.blobs[r['sha']].encode() for r in api.entries
+                  if '/v0.1.4' in r['path']}
         p = core.prepare(api.issue, bundle(raw_files('v0.1.4')))
         writer.publish(p, api, 12)
         files = draft_files(api)
         self.assertIn(core.ROOT + 'v0.1.4-intake-data.md', files)
         self.assertIn(core.ROOT + 'NVIDIA/RTX_3090/v0.1.4/intake-README.md', files)
-        self.assertEqual(files[core.ROOT + 'v0.1.4-submitted-data.md'],
-                         (ROOT / core.ROOT / 'v0.1.4-submitted-data.md').read_bytes())
+        report = files[core.ROOT + 'v0.1.4-intake-data.md']
+        self.assertIn(b'(v0.1.4-intake-data.md#rtx-3090--issue-12)', report)
+        self.assertNotIn(b'v0.1.4-submitted-data.md#', report)
+        self.assertIn('## RTX 3090 — [Issue #12]'.encode(), report)
+        for name, raw in before.items():
+            self.assertEqual(files[name], raw, name)
         for name in ('Experiment Results/README.md', core.ROOT + 'README.md'):
             old = (ROOT / name).read_bytes()
             heading = (b'\n## Community Benchmark Data ' + '— v0.1.4'.encode() if
@@ -260,6 +269,48 @@ class AggregateTests(unittest.TestCase):
                     path.write_bytes((ROOT / name).read_bytes())
                 with self.assertRaisesRegex(core.Refused, '^AGGREGATE_SOURCE_MISSING$'):
                     aggregate.verify(root, core)
+
+    def test_local_checker_rejects_orphan_documents_with_other_records_remaining(self):
+        """Refreshing the remaining release must not hide an obsolete managed GPU index."""
+        for orphan in ('gpu', 'report'):
+            with self.subTest(orphan=orphan), tempfile.TemporaryDirectory() as tmp:
+                api = seeded()
+                files = {r['path']: api.blobs[r['sha']].encode() for r in api.entries}
+                if orphan == 'gpu':
+                    removed = core.ROOT + 'NVIDIA/RTX_4060/v0.1.5/issue-15/record.json'
+                    del files[removed]
+                    api.entries[:] = [r for r in api.entries if r['path'] != removed]
+                    proposals = aggregate.records(api, api.entries, 'v0.1.5', core)
+                    self.assertEqual(len(proposals), 3)
+                    for name, (raw, key) in aggregate.document_set('v0.1.5', proposals, core).items():
+                        files[name] = aggregate.wrap(raw, key)
+                    for name, prefix in [('Experiment Results/README.md', 'Community/'),
+                                         (core.ROOT + 'README.md', '')]:
+                        files[name] = aggregate.wrap(aggregate.overview('v0.1.5', proposals, prefix, core),
+                                                     'overview:v0.1.5')
+                else:
+                    files[core.ROOT + 'v0.1.5-orphan-data.md'] = files[core.ROOT + 'v0.1.5-submitted-data.md']
+                root = Path(tmp)
+                for name, raw in files.items():
+                    path = root / name;path.parent.mkdir(parents=True, exist_ok=True);path.write_bytes(raw)
+                with self.assertRaisesRegex(core.Refused, '^AGGREGATE_ORPHAN_DOCUMENT$'):
+                    aggregate.verify(root, core)
+                self.assertEqual(files, {p.relative_to(root).as_posix(): p.read_bytes()
+                                         for p in root.rglob('*') if p.is_file()})
+
+    def test_local_checker_preserves_unmarked_curated_history(self):
+        """Curated v0.1.4 documents without managed markers do not require intake records."""
+        api = seeded()
+        files = {r['path']: api.blobs[r['sha']].encode() for r in api.entries}
+        files[core.ROOT + 'v0.1.4-owner-data.md'] = b'# Curated history\nOwner notes stay here.\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name, raw in files.items():
+                path = root / name;path.parent.mkdir(parents=True, exist_ok=True);path.write_bytes(raw)
+            self.assertEqual(aggregate.verify(root, core),
+                             {'status': 'AGGREGATES_CURRENT', 'versions': ['v0.1.5']})
+            self.assertEqual(files, {p.relative_to(root).as_posix(): p.read_bytes()
+                                     for p in root.rglob('*') if p.is_file()})
 
 
 
