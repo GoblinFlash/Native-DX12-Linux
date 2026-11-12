@@ -53,7 +53,8 @@ def existing_issue(entries, issue_number):
 
 INDEX_START = '<!-- ndx12-community-intake:start -->'
 INDEX_END = '<!-- ndx12-community-intake:end -->'
-INDEX_NOTE = ('Intake entries remain **UNVERIFIED** even after a draft PR is merged. '
+INDEX_NOTE = ('Export consistency and owner acceptance are separate: intake checks exported data '
+              'but does not record owner acceptance or infer it from a merged PR. '
               'Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.')
 INDEXES = {
     'Experiment Results/README.md': ('\n## Curated community benchmark data — v0.1.4\n', 'Community/'),
@@ -68,7 +69,7 @@ INDEX_BOOTSTRAP = {
 
 
 def index_entry(proposal, prefix):
-    """Format a link only from validated catalogue identity and a fixed result path."""
+    """Format fixed report/chart paths and separate export/acceptance observations."""
     folder = intake.record_folder(proposal)
     gpu = proposal['claimed_gpu']
     if gpu in intake.GPUS and folder.startswith(intake.ROOT + gpu + '/'):
@@ -77,8 +78,13 @@ def index_entry(proposal, prefix):
         label = 'Pending classification'
     version = proposal['claimed_version'] or 'Unidentified release'
     relative = prefix + folder[len(intake.ROOT):] + '/README.md'
-    return (f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative}) '
-            f'— **UNVERIFIED** (`{proposal["state"]}`); maintainer review required.')
+    entry = (f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative}) '
+             f'— export consistency **{intake.export_consistency(proposal)}**; '
+             f'owner acceptance **NOT_RECORDED** (`{proposal["state"]}`).')
+    if proposal['state'] == 'DATA_READY':
+        chart = prefix + folder[len(intake.ROOT):] + '/chart.svg'
+        entry += f'<br />![Exported measurements for Issue #{proposal["issue"]}]({chart})'
+    return entry
 
 
 def update_index(source, proposal, anchor, prefix):
@@ -99,7 +105,7 @@ def update_index(source, proposal, anchor, prefix):
         intake.need(bootstrap is not None and git_blob(source) == bootstrap[0], 'INDEX_FORMAT')
         anchor = bootstrap[1]
         intake.need(body.count(anchor) == 1, 'INDEX_ANCHOR')
-        block = ('\n## Automated community intake — UNVERIFIED\n\n' + INDEX_START +
+        block = ('\n## Community benchmark data\n\n' + INDEX_START +
                  '\n' + entry + '\n' + INDEX_END + '\n\n' + INDEX_NOTE + '\n')
         updated = body.replace(anchor, block + anchor, 1).encode('utf-8')
         intake.need(len(updated) <= 128 * 1024, 'INDEX_FORMAT')
@@ -109,7 +115,10 @@ def update_index(source, proposal, anchor, prefix):
     stop = body.index(INDEX_END)
     intake.need(start < stop and body[start] == '\n' and body[stop-1] == '\n', 'INDEX_FORMAT')
     entries = body[start+1:stop-1]
-    intake.need(not entries or all(line.startswith('- [') and ') — **UNVERIFIED** (' in line
+    markers = (') — **UNVERIFIED** (',
+               ') — export consistency **CHECKED**; owner acceptance **NOT_RECORDED** (`DATA_READY`).',
+               ') — export consistency **REQUIRES_REVIEW**; owner acceptance **NOT_RECORDED** (`MANUAL_REVIEW`).')
+    intake.need(not entries or all(line.startswith('- [') and any(marker in line for marker in markers)
                                    for line in entries.split('\n')), 'INDEX_FORMAT')
     intake.need('/issue-' + str(proposal['issue']) + '/README.md)' not in entries, 'INDEX_DUPLICATE')
     updated = (body[:start+1] + entry + '\n' + entries + ('\n' if entries else '') +

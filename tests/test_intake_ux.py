@@ -169,6 +169,8 @@ class IntakeUXTests(unittest.TestCase):
                 self.assertIn('NONCOMPLETE_RUN', proposal['warnings'])
                 rendered = b'\n'.join(core.render(proposal).values())
                 self.assertIn(b'UNVERIFIED', rendered)
+                self.assertIn(b'Export consistency: CHECKED', rendered)
+                self.assertIn(b'Owner acceptance: NOT_RECORDED', rendered)
                 self.assertIn(b'Reported overall state: `FAILED`', rendered)
                 self.assertNotIn(b'PRIVATE_FAIL_CANARY', rendered)
                 api = FakeAPI(current=current)

@@ -5,10 +5,10 @@ Recorded GPU experiments, CPU-side development checks and community benchmark su
 ## Community Benchmark Data — v0.1.5
 
 <!-- ndx12-community-intake:start -->
-- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](Community/NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — **UNVERIFIED** (`DATA_READY`); maintainer review required.
+- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](Community/NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — export consistency **CHECKED**; owner acceptance **NOT_RECORDED** (`DATA_READY`).<br />![Exported measurements for Issue #15](Community/NVIDIA/RTX_4060/v0.1.5/issue-15/chart.svg)
 <!-- ndx12-community-intake:end -->
 
-Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
+Export consistency and owner acceptance are separate: intake checks exported data but does not record owner acceptance or infer it from a merged PR. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
 
 ## Community Benchmark Data — v0.1.4
 

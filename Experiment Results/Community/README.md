@@ -4,13 +4,13 @@
 
 Community submissions are collected as public [Benchmark Results issues](https://github.com/GoblinFlash/Native-DX12-Linux/issues?q=is%3Aissue+label%3Abenchmark%3Asubmission). A GitHub Actions workflow labels recognized GPU models. **Labels categorize submissions; they do not approve correctness or performance claims.**
 
-## Automated community intake — UNVERIFIED
+## Community benchmark data
 
 <!-- ndx12-community-intake:start -->
-- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — **UNVERIFIED** (`DATA_READY`); maintainer review required.
+- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — export consistency **CHECKED**; owner acceptance **NOT_RECORDED** (`DATA_READY`).<br />![Exported measurements for Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/chart.svg)
 <!-- ndx12-community-intake:end -->
 
-Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
+Export consistency and owner acceptance are separate: intake checks exported data but does not record owner acceptance or infer it from a merged PR. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
 
 ## Curated v0.1.4 report
 
@@ -42,7 +42,7 @@ New records use `<vendor>/<exact_GPU>/<release>/issue-<number>/`. Ti, Laptop GPU
 
 Supported, internally consistent archives produce sanitized process/measurement CSV, recalculated medians and a fresh chart with separate Native GPU-tick and Vulkan-nanosecond scales. Uploaded HTML, SVG, prose, system details and raw logs are not copied. A missing, malformed, unsupported or inconsistent archive produces only a clearly marked manual-review record, with no extracted measurements.
 
-Every generated record remains **UNVERIFIED**, including a reported 189/189 count or QUALIFIED clock status. The share export does not establish independent GPU execution, readback correctness, actual per-dispatch clocks, receipt provenance or absence of background contention. Review the source Issue and its caveats before approval.
+Generated reports show **Export consistency: CHECKED** only after supported export checks pass; otherwise they show **REQUIRES_REVIEW**. **Owner acceptance: NOT_RECORDED** describes what intake records, not whether a maintainer has reviewed the result. Intake never infers acceptance from an Issue, label or merged PR. The machine-readable `UNVERIFIED_SUBMISSION` caveat remains, including for a reported 189/189 count or QUALIFIED clock status. The share export does not establish independent GPU execution, readback correctness, actual per-dispatch clocks, receipt provenance or absence of background contention. Review the source Issue and its caveats before approval.
 
 Existing curated records stay in place. Version indexes link to those records and the centralized tables instead of duplicating them:
 

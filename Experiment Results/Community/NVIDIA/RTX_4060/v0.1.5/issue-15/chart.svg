@@ -18,7 +18,7 @@
 </metadata>
 <rect width="100%" height="100%" fill="white"/>
 <g font-family="DejaVu Sans, sans-serif" font-size="12" fill="#18222c">
-<text x="16" y="24">UNVERIFIED Issue #15: exported numeric summaries only</text>
+<text x="16" y="24">Issue #15 | Export consistency: CHECKED | Owner acceptance: NOT_RECORDED</text>
 <text x="16" y="44">Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)</text>
 <text x="16" y="64">Vulkan memory backing: NOT_RECORDED (not inferred from Native DX12).</text>
 <text x="16" y="84">Separate scales and units; no cross-API speedup or GPU qualification is established.</text>
