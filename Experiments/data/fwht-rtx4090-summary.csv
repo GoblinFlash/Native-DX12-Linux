@@ -1,0 +1,5 @@
+gpu,sm,driver,workload,design,host_metric,arm,median_seconds,observations_per_arm
+RTX 4090,SM89,620.70.06,two_fwht_tasks,ABBA,operational_wall,fresh_sessions,1.751565,2
+RTX 4090,SM89,620.70.06,two_fwht_tasks,ABBA,operational_wall,retained_session,1.009055,2
+RTX 4090,SM89,620.70.06,two_fwht_tasks,ABBA,full_audited_wall,fresh_sessions,34.908102,2
+RTX 4090,SM89,620.70.06,two_fwht_tasks,ABBA,full_audited_wall,retained_session,28.485755,2

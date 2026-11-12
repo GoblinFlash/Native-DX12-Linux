@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="565" viewBox="0 0 1050 565" role="img" aria-label="RTX 4090 FWHT host-time A/B: operational 1.751565 versus 1.009055 seconds and full audited 34.908102 versus 28.485755 seconds, fresh versus retained sessions.">
+<rect width="1050" height="565" fill="#ffffff"/>
+<rect x="24" y="22" width="1002" height="518" rx="8" fill="#ffffff" stroke="#d7e2ea"/>
+<text x="54" y="68" font-family="DejaVu Sans, Arial, sans-serif" font-size="25" font-weight="700" fill="#142b45">FWHT / RTX 4090 — retained-session pilot</text>
+<text x="54" y="99" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" fill="#3c5874">A–B–B–A · two observations per arm · two FWHT tasks per measurement</text>
+<text x="54" y="123" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#3c5874">Bars normalized within each host metric (fresh sessions = 100%)</text>
+<g font-family="DejaVu Sans, Arial, sans-serif">
+<line x1="295" y1="149" x2="295" y2="429" stroke="#d4dfe9"/><text x="295" y="455" font-size="13" fill="#3c5874" text-anchor="middle">0%</text>
+<line x1="391.3636363636364" y1="149" x2="391.3636363636364" y2="429" stroke="#d4dfe9"/><text x="391.3636363636364" y="455" font-size="13" fill="#3c5874" text-anchor="middle">20%</text>
+<line x1="487.72727272727275" y1="149" x2="487.72727272727275" y2="429" stroke="#d4dfe9"/><text x="487.72727272727275" y="455" font-size="13" fill="#3c5874" text-anchor="middle">40%</text>
+<line x1="584.0909090909091" y1="149" x2="584.0909090909091" y2="429" stroke="#d4dfe9"/><text x="584.0909090909091" y="455" font-size="13" fill="#3c5874" text-anchor="middle">60%</text>
+<line x1="680.4545454545455" y1="149" x2="680.4545454545455" y2="429" stroke="#d4dfe9"/><text x="680.4545454545455" y="455" font-size="13" fill="#3c5874" text-anchor="middle">80%</text>
+<line x1="776.8181818181818" y1="149" x2="776.8181818181818" y2="429" stroke="#d4dfe9"/><text x="776.8181818181818" y="455" font-size="13" fill="#3c5874" text-anchor="middle">100%</text>
+<text x="275" y="176" font-size="17" font-weight="600" fill="#142b45" text-anchor="end">Operational wall time</text>
+<text x="276" y="215" font-size="14" fill="#3c5874" text-anchor="end">A · fresh</text>
+<rect x="295" y="192" width="481.82" height="30" rx="2" fill="#087fba"/>
+<text x="786.82" y="214" font-size="14" fill="#142b45">1.751565 s</text>
+<text x="276" y="254" font-size="14" fill="#3c5874" text-anchor="end">B · retained</text>
+<rect x="295" y="231" width="277.58" height="30" rx="2" fill="#f2770d"/>
+<text x="582.58" y="253" font-size="14" fill="#142b45">1.009055 s</text>
+<text x="275" y="319" font-size="17" font-weight="600" fill="#142b45" text-anchor="end">Full audited wall time</text>
+<text x="276" y="358" font-size="14" fill="#3c5874" text-anchor="end">A · fresh</text>
+<rect x="295" y="335" width="481.82" height="30" rx="2" fill="#087fba"/>
+<text x="786.82" y="357" font-size="14" fill="#142b45">34.908102 s</text>
+<text x="276" y="397" font-size="14" fill="#3c5874" text-anchor="end">B · retained</text>
+<rect x="295" y="374" width="393.16" height="30" rx="2" fill="#f2770d"/>
+<text x="698.16" y="396" font-size="14" fill="#142b45">28.485755 s</text>
+<rect x="297" y="481" width="19" height="13" fill="#087fba"/>
+<text x="323" y="493" font-size="14" fill="#142b45">A · fresh sessions</text>
+<rect x="516" y="481" width="19" height="13" fill="#f2770d"/>
+<text x="542" y="493" font-size="14" fill="#142b45">B · retained session</text>
+<text x="297" y="519" font-size="13" fill="#3c5874">Host elapsed time only — not GPU shader time, not a statistical significance test.</text>
+</g>
+</svg>
