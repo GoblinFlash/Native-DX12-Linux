@@ -61,7 +61,11 @@ def raw_files(version='v0.1.5', gpu='NVIDIA GeForce RTX 3090'):
                 'failed': 0, 'held': 0, 'not_run': 0, 'unknown': 0}
     run = {'schema': 'ndx12-share.v2', 'identity': dict(core.catalog()[version],
                 schema='ndx12-share.v2', status='VERIFIED'),
-        'gpu': {'model': gpu, 'driver': '620.70.06', 'pci': '10de:2204', 'status': 'RECORDED'},
+        'gpu': {'model': gpu, 'driver': '620.70.06',
+                'pci': {'NVIDIA/RTX_3090': '10de:2204', 'NVIDIA/RTX_3060': '10de:2503',
+                        'NVIDIA/RTX_3060_Ti': '10de:2489', 'NVIDIA/RTX_4060': '10de:2882',
+                        'NVIDIA/RTX_4060_Laptop_GPU': '10de:28a0'}.get(core.gpu_category(gpu), '10de:ffff'),
+                'status': 'RECORDED'},
         'run': {'requested': list(core.SUITES), 'completed': list(core.SUITES),
                 'not_started': [], 'failed': None, 'clocks': 'unchanged', 'overall': 'COMPLETE'},
         'totals': counts(processes), 'steps': [dict(suite=s, status='COMPLETE',
@@ -153,6 +157,16 @@ def ready(number=12):
     return p
 
 
+INDEX_FIXTURES = Path(__file__).resolve().parent / 'fixtures'
+
+
+def index_fixture(path):
+    """Read a fixed post-migration index scenario independent of live community content."""
+    names = {'Experiment Results/README.md': 'index-results.md',
+             'Experiment Results/Community/README.md': 'index-community.md'}
+    return (INDEX_FIXTURES/names[path]).read_bytes()
+
+
 class FakeAPI:
     """Enforces the Git/PR protocol and keeps failure/retry state."""
     def __init__(self, current=None, existing=None):
@@ -165,7 +179,7 @@ class FakeAPI:
         self.blobs, self.trees, self.commits, self.refs = {}, {}, {}, {}
         for path in writer.INDEXES:
             if not any(row['path'] == path for row in self.entries):
-                content = (ROOT / path).read_bytes()
+                content = index_fixture(path)
                 object_id = writer.git_blob(content)
                 self.blobs[object_id] = content.decode('utf-8')
                 self.entries.append({'path':path,'type':'blob','mode':'100644','sha':object_id})
@@ -928,7 +942,7 @@ class IntakeTests(unittest.TestCase):
             root = Path(tmp);i = root/'issue.json';i.write_bytes(core.json_bytes(issue()));b = root/'bundle.tar.gz';b.write_bytes(bundle())
             for folder in ('location-a', 'location with spaces'):
                 target = root/folder;target.mkdir()
-                for name in ('community_intake.py', 'community_releases.json'):
+                for name in ('community_intake.py', 'community_releases.json', 'community_gpu_pci.json'):
                     shutil.copyfile(SCRIPTS/name, target/name)
                 out = target/'proposal.json'
                 result = subprocess.run([sys.executable, '-I', '-B', str(target/'community_intake.py'),
@@ -948,54 +962,55 @@ class IntakeTests(unittest.TestCase):
 
 
 class PublisherTests(unittest.TestCase):
-    def test_issue_15_backfill_links_exact_gpu_version_in_both_indexes(self):
-        """The manually backfilled RTX 4060 entry matches the production index renderer."""
+    def test_issue_15_links_are_added_only_with_the_record(self):
+        """Issue15 is indexable once, and only as part of a real draft containing its record."""
         submitted = issue(15, 'RTX 4060', 'v0.1.5')
         p = core.prepare(submitted, bundle(raw_files('v0.1.5', 'NVIDIA GeForce RTX 4060')))
         self.assertEqual(p['state'], 'DATA_READY')
-        for path, (_anchor, prefix) in writer.INDEXES.items():
+        for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
-                body = (ROOT / path).read_text()
-                self.assertIn(writer.INDEX_START+'\n'+writer.index_entry(p, prefix)+
-                              '\n'+writer.INDEX_END, body)
-                self.assertIn('**UNVERIFIED**', body)
-                self.assertIn('v0.1.4', body)
-                self.assertIn('RTX_4060/v0.1.5/issue-15/README.md', body)
-                self.assertNotIn('RTX_4060_Laptop_GPU/v0.1.5/issue-15', body)
+                body = index_fixture(path)
+                self.assertNotIn(b'issue-15/README.md', body)
+                changed = writer.update_index(body, p, anchor, prefix)
+                self.assertIn(writer.index_entry(p, prefix).encode(), changed)
+                self.assertNotIn(b'RTX_4060_Laptop_GPU/v0.1.5/issue-15', changed)
                 with self.assertRaisesRegex(core.Refused, '^INDEX_DUPLICATE$'):
-                    writer.update_index(body.encode(), p, _anchor, prefix)
+                    writer.update_index(changed, p, anchor, prefix)
 
-    def test_index_drafts_keep_history_and_existing_issue_15(self):
-        """New submissions prepend entries while preserving old curated text and Issue #15."""
+    def test_index_drafts_keep_history_without_dangling_issue_15(self):
+        """New submissions prepend entries while preserving old curated text."""
         api = FakeAPI()
         p = ready()
         result = writer.publish(p, api, 12)
         self.assertEqual(len(result['files']), 9)
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
-                baseline = (ROOT / path).read_bytes()
+                baseline = index_fixture(path)
                 row = next(row for row in api.trees['c'*40] if row['path'] == path)
                 changed = api.blobs[row['sha']].encode()
                 self.assertEqual(changed, writer.update_index(baseline, p, anchor, prefix))
                 added = (writer.index_entry(p, prefix)+'\n').encode()
                 self.assertEqual(changed.count(added), 1)
                 self.assertEqual(changed.replace(added, b'', 1), baseline)
-                self.assertIn(b'issue-15/README.md', changed)
+                self.assertNotIn(b'issue-15/README.md', changed)
                 self.assertIn(b'v0.1.4', changed)
 
     def test_index_bootstrap_from_preexisting_curated_readme(self):
-        """A repository without the managed section gets one bounded section; old text stays."""
+        """Only exact pre-migration blobs bootstrap, preserving all original curated prose."""
         p = ready()
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
-                current = (ROOT / path).read_text()
-                start = current.index('\n## Automated community intake')
-                stop = current.index(anchor, start)
-                prior = (current[:start] + current[stop:]).encode()
+                name = 'results' if prefix else 'community'
+                prior = (ROOT/'tests/fixtures'/('pre-index-'+name+'.md')).read_bytes()
+                self.assertEqual(writer.git_blob(prior), writer.INDEX_BOOTSTRAP[prefix][0])
+                old_anchor = writer.INDEX_BOOTSTRAP[prefix][1]
+                start = prior.decode().index(old_anchor)
                 result = writer.update_index(prior, p, anchor, prefix).decode()
                 self.assertIn(writer.index_entry(p, prefix), result)
                 self.assertIn(writer.INDEX_NOTE, result)
-                self.assertEqual(result.replace(result[start:result.index(anchor, start)], ''), prior.decode())
+                self.assertEqual(result.replace(result[start:result.index(old_anchor, start)], ''), prior.decode())
+                with self.assertRaisesRegex(core.Refused, '^INDEX_FORMAT$'):
+                    writer.update_index(b'Edited\n'+prior, p, anchor, prefix)
 
     def test_index_corruption_fails_before_any_api_write(self):
         """Refuse missing, aliased, tampered or partially hand-edited indexes before Git writes."""

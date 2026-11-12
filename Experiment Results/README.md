@@ -5,7 +5,6 @@ Recorded GPU experiments, CPU-side development checks and community benchmark su
 ## Automated community intake — UNVERIFIED
 
 <!-- ndx12-community-intake:start -->
-- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](Community/NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — **UNVERIFIED** (`DATA_READY`); maintainer review required.
 <!-- ndx12-community-intake:end -->
 
 Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.

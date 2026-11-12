@@ -58,6 +58,26 @@ JSON duplicate keys, nonfinite/oversized numbers, malformed CSV, unexpected head
 
 ## Sanitized results and evidence limits
 
+### GPU and PCI field consistency
+
+Preparation compares the exact Issue/archive GPU category and the recorded
+`run.json` vendor/device PCI ID with `community_gpu_pci.json`. Its factual
+NVIDIA mappings come from the pinned upstream 620.70.06 README commit/blob
+recorded in that file; several IDs may match one model. An explicit PCI suffix
+in either model field must also match the recorded ID. Malformed, unknown,
+unrecorded or contradictory identities stay in manual review without numeric
+data. Unmapped models require new reviewed evidence rather than guessed IDs.
+Only vendor/device IDs are retained; PCI locations, subsystem IDs, hostnames
+and serial identifiers are not exported. A match is self-reported consistency,
+not authentication of the GPU, subsystem, provenance or execution.
+
+The internal typed proposal is now `ndx12.community-intake.v2`, with one
+canonical `pci` field. The writer repeats the model/PCI check before any API
+call. The uploaded `ndx12-share.v2` archive and release identity pins are
+unchanged. Old internal v1 proposals must be prepared again; old orphan
+branches keep strict exact-byte recovery and may require manual reconciliation.
+Existing published records are not rewritten by this schema transition.
+
 The draft writer also proposes updates to **both public result indexes**:
 [`Experiment Results/README.md`](../../Experiment%20Results/README.md) and
 [`Experiment Results/Community/README.md`](../../Experiment%20Results/Community/README.md).
@@ -65,7 +85,9 @@ These are the only two existing paths the writer may modify; the Issue-specific 
 additive. Index blobs are fetched from the exact base Git tree and verified by Git object SHA,
 size, UTF-8 format and managed section markers before any Git write. New entries link the exact
 GPU/release/Issue folder and remain **UNVERIFIED**; historic v0.1.4 measurements are preserved.
-The initial index section can be inserted at a known heading if markers do not yet exist.
+The initial index section may be inserted only into the two exact pre-migration Git blobs
+recorded from main `8e720506`; their original headings and curated prose are preserved.
+Both the input and updated UTF-8 index must fit within 128 KiB.
 Missing, malformed or hand-modified markers stop intake instead of overwriting documentation.
 Concurrent unmerged intake PRs may touch the same indexes and require manual Git conflict
 resolution before owner-approved merge. An index link is never acceptance of an experiment.
@@ -84,7 +106,7 @@ The writer checks the Issue fingerprint (number, title, body, state and the two 
 
 After a new ref succeeds, the writer creates a draft for that pinned snapshot even if the Issue changes, closes or loses intake authorization afterward. The PR body records the prepared and observed content fingerprints, snapshot commit, bundle hash and eligibility observation. Source status is `MATCH_AT_CHECK`, `STALE`, or `UNKNOWN` if the final read fails or is malformed. This post-ref observation annotates the draft rather than blocking it and leaving an avoidable orphan. No raw Issue prose or API error text is copied into the body. `STALE`/`UNKNOWN` requires explicit reconciliation before acceptance; compare the live Issue and actual PR head with the pinned fingerprints/commit. GitHub provides no atomic Issue/ref/PR transaction, so even `MATCH_AT_CHECK` describes only one observation. No acceptance follows from a successful API call.
 
-A PR API failure, interrupted job or ambiguous ref response can still leave an orphan intake branch. A retry only creates the missing draft PR when the branch has exactly the original proposal message, one parent, the expected added-file diff and exact blob bytes/modes. Its parent must still be an ancestor of current main. The existing-orphan path also requires a fresh matching Issue fingerprint and intake permission immediately before creating the PR; it never uses the new-ref allowance for late changes. Human edits, foreign branches and unrelated history stop recovery. No branch/ref is updated, forced or deleted. Objects created before an API failure may remain unattached; automatic destructive cleanup is deliberately absent. Unexpected main file/path collisions stop the proposal; only the two guarded index paths are updated in a Draft PR.
+A PR API failure, interrupted job or ambiguous ref response can still leave an orphan intake branch. A retry only creates the missing draft PR when the branch has exactly the original proposal message, one parent, the expected diff (added Issue record files and modified index files) and exact blob bytes/modes. Its parent must still be an ancestor of current main. The existing-orphan path also requires a fresh matching Issue fingerprint and intake permission immediately before creating the PR; it never uses the new-ref allowance for late changes. Human edits, foreign branches and unrelated history stop recovery. No branch/ref is updated, forced or deleted. Objects created before an API failure may remain unattached; automatic destructive cleanup is deliberately absent. Unexpected main file/path collisions stop the proposal; only the two guarded index paths are updated in a Draft PR.
 
 If an existing orphan no longer matches the current proposal/source or permission, recovery reports `EXISTING_BRANCH_CHANGED`, `SOURCE_CHANGED` or an eligibility refusal with no additional writes. A maintainer inspects the orphan's commit message/content, current Issue and existing PR list. Under explicit owner approval, the maintainer can either create a manually reviewed UNVERIFIED draft with accurate source/provenance, or retire the exact stale orphan and rerun preparation. Never silently reuse changed bytes, weaken recovery checks, force-update/delete a branch or accept results to clear this condition.
 

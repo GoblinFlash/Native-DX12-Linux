@@ -59,6 +59,12 @@ INDEXES = {
     'Experiment Results/README.md': ('\n## Curated community benchmark data — v0.1.4\n', 'Community/'),
     'Experiment Results/Community/README.md': ('\n## Curated v0.1.4 report\n', ''),
 }
+# Exact public main 8e720506 index blobs, before managed-section migration.
+INDEX_BOOTSTRAP = {
+    'Community/': ('c594a30eb9c6b74ecde7bd3b38fd7ac840b70006',
+                   '\n## Latest community benchmark data — v0.1.4\n'),
+    '': ('9ac283a9f673501c90f838b09ccb4ee001d0c66a', '\n## Latest submitted data\n'),
+}
 
 
 def index_entry(proposal, prefix):
@@ -89,10 +95,15 @@ def update_index(source, proposal, anchor, prefix):
     intake.need(body.endswith('\n') and '\r' not in body, 'INDEX_FORMAT')
     entry = index_entry(proposal, prefix)
     if INDEX_START not in body and INDEX_END not in body:
+        bootstrap = INDEX_BOOTSTRAP.get(prefix)
+        intake.need(bootstrap is not None and git_blob(source) == bootstrap[0], 'INDEX_FORMAT')
+        anchor = bootstrap[1]
         intake.need(body.count(anchor) == 1, 'INDEX_ANCHOR')
         block = ('\n## Automated community intake — UNVERIFIED\n\n' + INDEX_START +
                  '\n' + entry + '\n' + INDEX_END + '\n\n' + INDEX_NOTE + '\n')
-        return body.replace(anchor, block + anchor, 1).encode('utf-8')
+        updated = body.replace(anchor, block + anchor, 1).encode('utf-8')
+        intake.need(len(updated) <= 128 * 1024, 'INDEX_FORMAT')
+        return updated
     intake.need(body.count(INDEX_START) == 1 and body.count(INDEX_END) == 1, 'INDEX_FORMAT')
     start = body.index(INDEX_START) + len(INDEX_START)
     stop = body.index(INDEX_END)
@@ -101,8 +112,10 @@ def update_index(source, proposal, anchor, prefix):
     intake.need(not entries or all(line.startswith('- [') and ') — **UNVERIFIED** (' in line
                                    for line in entries.split('\n')), 'INDEX_FORMAT')
     intake.need('/issue-' + str(proposal['issue']) + '/README.md)' not in entries, 'INDEX_DUPLICATE')
-    return (body[:start+1] + entry + '\n' + entries + ('\n' if entries else '') +
-            body[stop:]).encode('utf-8')
+    updated = (body[:start+1] + entry + '\n' + entries + ('\n' if entries else '') +
+               body[stop:]).encode('utf-8')
+    intake.need(len(updated) <= 128 * 1024, 'INDEX_FORMAT')
+    return updated
 
 
 def indexed_files(proposal, api, entries):
@@ -214,7 +227,7 @@ def publish(proposal, api, expected_issue, manual=False):
         source_entries = entries
     files = indexed_files(proposal, api, source_entries)
     names = set(files)
-    for row in source_entries:
+    for row in entries:
         path = row.get('path', '')
         intake.need((path not in names or path in INDEXES) and
                     not any(name.startswith(path+'/') and row.get('type') != 'tree'

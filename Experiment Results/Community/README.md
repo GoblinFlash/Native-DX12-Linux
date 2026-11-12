@@ -7,7 +7,6 @@ Community submissions are collected as public [Benchmark Results issues](https:/
 ## Automated community intake — UNVERIFIED
 
 <!-- ndx12-community-intake:start -->
-- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — **UNVERIFIED** (`DATA_READY`); maintainer review required.
 <!-- ndx12-community-intake:end -->
 
 Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
@@ -54,6 +53,6 @@ Existing curated records stay in place. Version indexes link to those records an
 | #5 | [RTX 3090 / v0.1.4](NVIDIA/RTX_3090/v0.1.4/README.md) | Preserve all four NOT_QUALIFIED timestamp checks. |
 | #11 | Claimed RTX 3090 / v0.1.5 | The inspected attachment reports RTX 3060: GPU_MISMATCH. Manual review under Pending_Classification; no RTX 3090 measurements are imported. Recheck the live Issue before processing. |
 
-One Issue has one stable intake branch and draft PR. Duplicate, edited or reopened events never overwrite an existing review, PR or curated record. The source is checked immediately before creating a new branch ref. A later Issue change is shown in the draft body as `STALE`, with prepared/observed source fingerprints and the pinned snapshot commit; an unavailable final observation is `UNKNOWN`. Reviewers reconcile these observations before acceptance. Recovery of a pre-existing orphan still requires matching source, permission and exact branch bytes. See [the intake operator guide](../../.github/scripts/README.md) for permissions, limits, tests, failure handling and the owner approval gate.
+One Issue has one stable intake branch and draft PR. Duplicate, edited or reopened events never overwrite an existing review, PR or curated record. The source is checked immediately before creating a new branch ref. A later Issue change is shown in the draft body as `STALE`, with prepared/observed source fingerprints and the pinned snapshot commit; an unavailable final observation is `UNKNOWN`. Reviewers reconcile these observations before acceptance. Recovery of a pre-existing orphan still requires matching source, permission and exact branch bytes. See [the intake operator guide](https://github.com/GoblinFlash/Native-DX12-Linux/blob/main/.github/scripts/README.md) for permissions, limits, tests, failure handling and the owner approval gate.
 
 [All experiment results](../README.md)

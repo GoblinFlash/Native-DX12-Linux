@@ -78,6 +78,8 @@ class IntakeUXTests(unittest.TestCase):
             ('NVIDIA GeForce 4060 Laptop', 'gpu:rtx-4060-laptop'),
             ('NVIDIA GeForce RTX 5090 D', 'gpu:rtx-5090-d'),
             ('AMD GeForce 4060', 'gpu:unclassified'),
+            ('RTX-3090', 'gpu:unclassified'),
+            ('GeForce-RTX-4070-Ti', 'gpu:unclassified'),
         ]
         examples += [(name, 'gpu:' + name.lower().replace(' laptop gpu', ' laptop').replace(' ', '-'))
                      for name in core.GPU_NAMES]
