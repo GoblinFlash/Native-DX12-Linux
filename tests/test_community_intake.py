@@ -300,7 +300,7 @@ class IntakeTests(unittest.TestCase):
             self.assertNotIn(canary, output)
         self.assertIn(b'UNVERIFIED', output)
         self.assertIn(b'NOT_QUALIFIED', output)
-        self.assertIn(b'Separate scales', output)
+        self.assertIn(b'Vulkan memory backing: NOT_RECORDED', output)
         self.assertEqual({r['unit'] for r in p['measurements']}, {'GPU_TICKS', 'NS'})
 
     def test_exact_gpu_suffixes_and_unknown(self):
@@ -986,12 +986,15 @@ class PublisherTests(unittest.TestCase):
         api = FakeAPI()
         p = ready()
         result = writer.publish(p, api, 12)
-        self.assertEqual(len(result['files']), 9)
+        self.assertEqual(len(result['files']), 11)
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
                 baseline = index_fixture(path)
                 row = next(row for row in api.trees['c'*40] if row['path'] == path)
                 changed = api.blobs[row['sha']].encode()
+                section = b'\n## Community Benchmark Data \xe2\x80\x94 v0.1.5\n'
+                self.assertIn(section, changed)
+                changed = changed.replace(changed[changed.index(section):changed.index(b'\n## ', changed.index(section)+1)], b'', 1)
                 self.assertEqual(changed, writer.update_index(baseline, p, anchor, prefix))
                 added = (writer.index_entry(p, prefix)+'\n').encode()
                 self.assertEqual(changed.count(added), 1)
@@ -1072,12 +1075,14 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(api.prs[0]['draft'], True)
         self.assertIn('UNVERIFIED', api.prs[0]['body'])
         self.assertEqual(set(x[0] for x in api.writes), {'git/blobs','git/trees','git/commits','git/refs','pulls'})
-        self.assertEqual(set(r['files']) - set(writer.INDEXES), set(core.render(p)))
+        self.assertEqual(set(r['files']) - set(writer.INDEXES), set(core.render(p)) | {
+            core.ROOT + 'v0.1.5-submitted-data.md',
+            core.ROOT + 'NVIDIA/RTX_3090/v0.1.5/README.md'})
         for path in writer.INDEXES:
             entry = next(row for row in api.trees['c'*40] if row['path'] == path)
             text = api.blobs[entry['sha']]
             self.assertIn('Issue #12', text)
-            self.assertIn('export consistency **CHECKED**; owner acceptance **NOT_RECORDED**', text)
+            self.assertIn('Issue #12](', text)
             self.assertIn('v0.1.4', text)
 
     def test_duplicate_events_and_reopened_or_edited_issues(self):
@@ -1249,7 +1254,7 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(len(api.writes), before)
 
     def test_orphan_recovery_ancestor_and_exact_bytes(self):
-        """Allow advanced-main ancestry but reject foreign history or altered orphan bytes/modes/diff."""
+        """Allow unrelated main changes but reject foreign history or altered orphan bytes/modes/diff."""
         for mode in ('advanced-main', 'foreign-history', 'changed-blob', 'changed-mode', 'changed-diff'):
             api = FakeAPI();api.fail_pr_once = True
             with self.assertRaises(core.Refused):writer.publish(ready(), api, 12)
@@ -1260,14 +1265,14 @@ class PublisherTests(unittest.TestCase):
                 api.base = 'e'*40
                 api.base_tree = '7'*40
                 api.entries = copy.deepcopy(api.entries)
-                for row in api.entries:
-                    if row['path'] in writer.INDEXES:
-                        content = api.blobs[row['sha']] + '\nEditorial update on advanced main.\n'
-                        row['sha'] = writer.git_blob(content.encode())
-                        api.blobs[row['sha']] = content
+                content = '# Unrelated editorial update on advanced main.\n'
+                editorial_blob = writer.git_blob(content.encode())
+                api.blobs[editorial_blob] = content
+                api.entries.append({'path': 'docs/editorial-note.md', 'type': 'blob',
+                                    'mode': '100644', 'sha': editorial_blob})
                 api.trees[api.base_tree] = api.entries
                 self.assertNotEqual(api.base_tree, initial_tree)
-                self.assertTrue(all(row['sha'] != initial_indexes[row['path']]
+                self.assertTrue(all(row['sha'] == initial_indexes[row['path']]
                                     for row in api.entries if row['path'] in writer.INDEXES))
             if mode == 'changed-blob':api.trees['c'*40][0]['sha'] = 'f'*40
             if mode == 'changed-mode':api.trees['c'*40][0]['mode'] = '120000'
@@ -1289,9 +1294,7 @@ class PublisherTests(unittest.TestCase):
                     self.assertIn(('GET', 'git/trees/'+initial_tree+'?recursive=1'), reads)
                     for object_id in initial_indexes.values():
                         self.assertIn(('GET', 'git/blobs/'+object_id), reads)
-                    for row in api.entries:
-                        if row['path'] in writer.INDEXES:
-                            self.assertNotIn(('GET', 'git/blobs/'+row['sha']), reads)
+                    self.assertNotIn(('GET', 'git/blobs/'+editorial_blob), reads)
                 else:
                     with self.assertRaisesRegex(core.Refused, '^EXISTING_BRANCH_CHANGED$'):writer.publish(ready(), api, 12)
                     self.assertEqual(len(api.writes), before)
@@ -1334,10 +1337,10 @@ class PublisherTests(unittest.TestCase):
         api = FakeAPI(issue(gpu='Unknown Model'))
         p = core.prepare(api.issue, bundle())
         result = writer.publish(p, api, 12)
-        records = set(result['files']) - set(writer.INDEXES)
+        records = {name for name in result['files'] if '/issue-12/' in name}
         self.assertTrue(all('/Pending_Classification/v0.1.5/' in name for name in records))
         self.assertEqual(len(records), 3)  # metadata includes memory-backing
-        self.assertEqual(len(result['files']), 5)  # plus two caveated indexes without chart previews
+        self.assertEqual(len(result['files']), 6)  # plus indexes and a refusal-only release report
 
 
 class WorkflowTests(unittest.TestCase):

@@ -6,26 +6,26 @@ from test_community_intake import FakeAPI, bundle, core, index_fixture, issue, r
 
 
 class DisplayTests(unittest.TestCase):
-    def test_publisher_embeds_chart_in_report_and_both_indexes(self):
-        """Publishing numeric data must display its generated chart at all three entry points."""
+    def test_publisher_embeds_chart_in_report_and_links_both_indexes(self):
+        """Keep the prior release's flow: index links lead to a report with its chart."""
         api = FakeAPI()
         writer.publish(ready(), api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
         folder = 'Experiment Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-12'
+        self.assertIn('![Exported measurements for Issue #12](chart.svg)',
+                      api.blobs[entries[folder + '/README.md']['sha']])
         expected = {
-            folder + '/README.md': 'chart.svg',
-            'Experiment Results/README.md': 'Community/NVIDIA/RTX_3090/v0.1.5/issue-12/chart.svg',
-            'Experiment Results/Community/README.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/chart.svg',
+            'Experiment Results/README.md': 'Community/NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
+            'Experiment Results/Community/README.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
         }
         for path, relative in expected.items():
             with self.subTest(path=path):
                 text = api.blobs[entries[path]['sha']]
-                self.assertIn('![Exported measurements for Issue #12](' + relative + ')', text)
+                self.assertIn('Issue #12](' + relative + ')', text)
         svg = ET.fromstring(api.blobs[entries[folder + '/chart.svg']['sha']])
-        bars = [row for row in svg.iter('{http://www.w3.org/2000/svg}rect')
-                if row.get('fill') == '#337799']
-        self.assertEqual(len(bars), 27)
-        self.assertTrue(all(float(row.get('width')) > 0 for row in bars))
+        bars = [row for row in svg.iter('{http://www.w3.org/2000/svg}path')
+                if row.get('style') in ('fill: #0c80bd', 'fill: #ef7100')]
+        self.assertEqual(len(bars), 8)
 
     def test_export_checks_do_not_imply_owner_acceptance(self):
         """An eligible Issue's prose/approval label cannot supply an acceptance decision."""
@@ -44,11 +44,11 @@ class DisplayTests(unittest.TestCase):
             with self.subTest(path=path):
                 text = api.blobs[entries[path]['sha']]
                 managed = text.split(writer.INDEX_START)[1].split(writer.INDEX_END)[0]
-                self.assertIn('export consistency **CHECKED**; owner acceptance **NOT_RECORDED**', managed)
+                self.assertIn('Issue #12](', managed)
+                self.assertNotIn('owner acceptance', managed)
                 self.assertNotIn('**UNVERIFIED**', managed)
         svg = api.blobs[entries[folder + '/chart.svg']['sha']]
-        self.assertIn('Export consistency: CHECKED | Owner acceptance: NOT_RECORDED', svg)
-        self.assertIn('no cross-API speedup or GPU qualification', svg)
+        self.assertIn('Raw units and independent scales', svg)
         self.assertEqual(api.blobs[entries[folder + '/record.json']['sha']], core.json_bytes(proposal).decode())
         self.assertIn('UNVERIFIED_SUBMISSION', proposal['warnings'])
         self.assertIn('NO_INDEPENDENT_GPU_RERUN', proposal['warnings'])
@@ -66,8 +66,7 @@ class DisplayTests(unittest.TestCase):
             if row['path'] in writer.INDEXES:
                 text = api.blobs[row['sha']]
                 managed = text.split(writer.INDEX_START)[1].split(writer.INDEX_END)[0]
-                self.assertIn('export consistency **REQUIRES_REVIEW**', managed)
-                self.assertIn('owner acceptance **NOT_RECORDED**', managed)
+                self.assertIn('Pending classification', managed)
                 self.assertNotIn('![', managed)
                 self.assertNotIn('**CHECKED**', managed)
             elif row['path'].endswith('/README.md'):
@@ -76,7 +75,7 @@ class DisplayTests(unittest.TestCase):
                 self.assertNotIn('![', text)
                 self.assertIn('Native DX12 memory backing: UNKNOWN', text)
 
-    def test_next_entry_preserves_visible_charts_and_legacy_entries(self):
+    def test_next_entry_preserves_legacy_entries_and_report_links(self):
         """New and legacy managed entries coexist without duplicate or lost previews."""
         next_proposal = core.prepare(issue(13), bundle())
         for path, (anchor, prefix) in writer.INDEXES.items():
@@ -92,7 +91,7 @@ class DisplayTests(unittest.TestCase):
                 added = (writer.index_entry(next_proposal, prefix) + '\n').encode()
                 self.assertEqual(second.replace(added, b'', 1), first)
                 self.assertIn(legacy.encode(), second)
-                self.assertEqual(second.count(b'![Exported measurements'), 2)
+                self.assertEqual(second.count(b'![Exported measurements'), 0)
                 with self.assertRaisesRegex(core.Refused, '^INDEX_DUPLICATE$'):
                     writer.update_index(second, ready(), anchor, prefix)
 

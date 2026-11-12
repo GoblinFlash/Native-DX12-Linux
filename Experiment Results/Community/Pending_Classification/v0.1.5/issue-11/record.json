@@ -1,0 +1,27 @@
+{
+  "archive_gpu": "NVIDIA/RTX_3060",
+  "archive_version": "v0.1.5",
+  "bundle_sha256": "f424668009885acad705fc0baf2fd40bac7dd9154813926001e2360ad604d6ff",
+  "claimed_gpu": "NVIDIA/RTX_3090",
+  "claimed_version": "v0.1.5",
+  "driver": null,
+  "issue": 11,
+  "measurements": [],
+  "pci": null,
+  "processes": [],
+  "reason": "GPU_MISMATCH",
+  "run": null,
+  "schema": "ndx12.community-intake.v2",
+  "source_revision": "a4ee63c815ffb6175f9422c09885064b172078d2ac81df4f000a2ac9de3a5a01",
+  "state": "MANUAL_REVIEW",
+  "warnings": [
+    "BACKGROUND_NOT_ASSESSED",
+    "CLOCKS_NOT_PROVEN_PER_DISPATCH",
+    "IDENTITY_SELF_REPORTED",
+    "NO_INDEPENDENT_GPU_RERUN",
+    "RAW_READBACKS_NOT_INCLUDED",
+    "REVIEW_ISSUE_CONTEXT",
+    "SEPARATE_TIMING_UNITS",
+    "UNVERIFIED_SUBMISSION"
+  ]
+}

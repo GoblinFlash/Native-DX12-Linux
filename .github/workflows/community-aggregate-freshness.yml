@@ -1,0 +1,30 @@
+# Check the prospective merge tree, not a stale per-Issue snapshot.
+# To enforce this check, require the named job on main with strict up-to-date
+# checks or a merge queue. This workflow does not change branch protection.
+name: Verify community benchmark aggregates
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  merge_group:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  freshness:
+    name: Community aggregate freshness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout tested tree
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Reject stale generated community reports
+        run: python3 -I -B .github/scripts/community_aggregate.py --verify-root .

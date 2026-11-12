@@ -13,6 +13,10 @@ import re
 _spec = importlib.util.spec_from_file_location('trusted_intake', Path(__file__).with_name('community_intake.py'))
 intake = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(intake)
+_aggregate_spec = importlib.util.spec_from_file_location(
+    "trusted_aggregate", Path(__file__).with_name("community_aggregate.py"))
+aggregate = importlib.util.module_from_spec(_aggregate_spec)
+_aggregate_spec.loader.exec_module(aggregate)
 
 
 def git_blob(data):
@@ -69,7 +73,7 @@ INDEX_BOOTSTRAP = {
 
 
 def index_entry(proposal, prefix):
-    """Format fixed report/chart paths and separate export/acceptance observations."""
+    """Format one plain report link from validated catalogue identity and a fixed path."""
     folder = intake.record_folder(proposal)
     gpu = proposal['claimed_gpu']
     if gpu in intake.GPUS and folder.startswith(intake.ROOT + gpu + '/'):
@@ -78,13 +82,7 @@ def index_entry(proposal, prefix):
         label = 'Pending classification'
     version = proposal['claimed_version'] or 'Unidentified release'
     relative = prefix + folder[len(intake.ROOT):] + '/README.md'
-    entry = (f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative}) '
-             f'— export consistency **{intake.export_consistency(proposal)}**; '
-             f'owner acceptance **NOT_RECORDED** (`{proposal["state"]}`).')
-    if proposal['state'] == 'DATA_READY':
-        chart = prefix + folder[len(intake.ROOT):] + '/chart.svg'
-        entry += f'<br />![Exported measurements for Issue #{proposal["issue"]}]({chart})'
-    return entry
+    return f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative})'
 
 
 def update_index(source, proposal, anchor, prefix):
@@ -118,7 +116,10 @@ def update_index(source, proposal, anchor, prefix):
     markers = (') — **UNVERIFIED** (',
                ') — export consistency **CHECKED**; owner acceptance **NOT_RECORDED** (`DATA_READY`).',
                ') — export consistency **REQUIRES_REVIEW**; owner acceptance **NOT_RECORDED** (`MANUAL_REVIEW`).')
-    intake.need(not entries or all(line.startswith('- [') and any(marker in line for marker in markers)
+    plain = re.compile(r'- \[[^\]\r\n]{1,200}\]\((?:Community/)?(?:[A-Za-z0-9_]+/){1,2}'
+                       r'(?:v[0-9]+\.[0-9]+\.[0-9]+|Unidentified_Version)/issue-[0-9]+/README\.md\)')
+    intake.need(not entries or all(plain.fullmatch(line) or
+                                   (line.startswith('- [') and any(marker in line for marker in markers))
                                    for line in entries.split('\n')), 'INDEX_FORMAT')
     intake.need('/issue-' + str(proposal['issue']) + '/README.md)' not in entries, 'INDEX_DUPLICATE')
     updated = (body[:start+1] + entry + '\n' + entries + ('\n' if entries else '') +
@@ -128,7 +129,7 @@ def update_index(source, proposal, anchor, prefix):
 
 
 def indexed_files(proposal, api, entries):
-    """Return result artifacts plus two guarded updates to existing public indexes."""
+    """Return individual artifacts and snapshot-consistent, guarded aggregate/index updates."""
     files = intake.render(proposal)
     for path, (anchor, prefix) in INDEXES.items():
         found = [row for row in entries if row.get('path') == path]
@@ -147,7 +148,10 @@ def indexed_files(proposal, api, entries):
             raise intake.Refused('INDEX_BLOB') from None
         intake.need(len(raw) == data['size'] and git_blob(raw) == object_id, 'INDEX_BLOB')
         files[path] = update_index(raw, proposal, anchor, prefix)
-    return files
+    modified = set(INDEXES) | aggregate.derive(proposal, api, entries, files, intake)
+    for path in INDEXES:
+        intake.need(len(files[path]) <= 128 * 1024, 'INDEX_FORMAT')
+    return files, modified
 
 
 def check_current_source(api, proposal, manual):
@@ -234,11 +238,18 @@ def publish(proposal, api, expected_issue, manual=False):
             source_entries = entries
     else:
         source_entries = entries
-    files = indexed_files(proposal, api, source_entries)
+    if previous:
+        prior_indexes = {row['path']: row.get('sha') for row in source_entries if row['path'] in INDEXES}
+        current_indexes = {row['path']: row.get('sha') for row in entries if row['path'] in INDEXES}
+        intake.need(prior_indexes == current_indexes and
+                    aggregate.source_signature(source_entries, proposal["claimed_version"], intake) ==
+                    aggregate.source_signature(entries, proposal["claimed_version"], intake),
+                    "EXISTING_BRANCH_CHANGED")
+    files, modified = indexed_files(proposal, api, source_entries)
     names = set(files)
     for row in entries:
         path = row.get('path', '')
-        intake.need((path not in names or path in INDEXES) and
+        intake.need((path not in names or path in modified) and
                     not any(name.startswith(path+'/') and row.get('type') != 'tree'
                             for name in names), 'BASE_OUTPUT_COLLISION')
     plan = intake.digest(intake.json_bytes({path: intake.digest(data) for path, data in sorted(files.items())}))
@@ -251,7 +262,7 @@ def publish(proposal, api, expected_issue, manual=False):
         diff = api.get('compare/' + prior_base + '...' + previous_sha)
         intake.need(type(diff.get('files')) is list and
                     {x['filename'] for x in diff['files']} == names and
-                    all(x['status'] == ('modified' if x['filename'] in INDEXES else 'added')
+                    all(x['status'] == ('modified' if x['filename'] in modified else 'added')
                         for x in diff['files']), 'EXISTING_BRANCH_CHANGED')
         previous_entries = {x['path']: x for x in tree_entries(api, previous_commit['tree']['sha'])}
         intake.need(all(previous_entries.get(path, {}).get('sha') == git_blob(data) and
@@ -296,7 +307,10 @@ def publish(proposal, api, expected_issue, manual=False):
             'Check the exact GPU/release, raw provenance, clock model, background contention, '
             'negative evidence and privacy. Exported consistency is not independent GPU qualification. '
             'This workflow never merges, approves or closes the Issue.\n\n'
-            'Source edits/reopened events do not overwrite this draft; reconcile changed submissions manually.')
+            'Source edits/reopened events do not overwrite this draft; reconcile changed submissions manually.\n\n'
+            'Release tables and indexes describe this base-tree snapshot. Before merging, verify aggregate '
+            'freshness against the merged checkout; another merged intake can make this draft stale. '
+            'Owner annotations outside generated regions are retained; generated-region edits stop intake.')
     result = api.post('pulls', {'base': 'main', 'head': branch, 'draft': True,
         'title': 'UNVERIFIED community result #' + str(expected_issue), 'body': body})
     return {'status': 'DRAFT_PR_CREATED', 'issue': expected_issue,
