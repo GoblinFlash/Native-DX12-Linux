@@ -13,7 +13,7 @@ Four NVIDIA GPU submissions were received for benchmark **v0.1.4 / v21-r14**. Th
 
 | GPU | Exported process status | GPU tick-to-ns model | Important limitation |
 | --- | --- | --- | --- |
-| [RTX 3060](Community/v0.1.4-submitted-data.md#rtx-3060--issue-4) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Model clarified; maintainer acceptance pending |
+| [RTX 3060](Community/v0.1.4-submitted-data.md#rtx-3060--issue-4) | 189/189 VERIFIED | QUALIFIED, 4/4 suites |
 | [RTX 3060 Ti](Community/v0.1.4-submitted-data.md#rtx-3060-ti--issue-3) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Background ONNX GPU activity |
 | [RTX 3090](Community/v0.1.4-submitted-data.md#rtx-3090--issue-5) | 189/189 VERIFIED | **NOT_QUALIFIED**, 4/4 suites | Native-versus-Vulkan percentage comparisons invalid |
 | [RTX 4060 Laptop](Community/v0.1.4-submitted-data.md#rtx-4060-laptop-gpu--issue-2) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Laptop-specific submission |
