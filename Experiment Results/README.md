@@ -2,7 +2,15 @@
 
 Recorded GPU experiments, CPU-side development checks and community benchmark submissions. Each result is tied to its hardware, benchmark revision and measurement method.
 
-## Latest community benchmark data — v0.1.4
+## Automated community intake — UNVERIFIED
+
+<!-- ndx12-community-intake:start -->
+- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](Community/NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — **UNVERIFIED** (`DATA_READY`); maintainer review required.
+<!-- ndx12-community-intake:end -->
+
+Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
+
+## Curated community benchmark data — v0.1.4
 
 Four NVIDIA GPU submissions were received for benchmark **v0.1.4 / v21-r14**. Their exported CSV and JSON files have been inspected and the workload medians recalculated.
 

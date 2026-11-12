@@ -4,13 +4,21 @@
 
 Community submissions are collected as public [Benchmark Results issues](https://github.com/GoblinFlash/Native-DX12-Linux/issues?q=is%3Aissue+label%3Abenchmark%3Asubmission). A GitHub Actions workflow labels recognized GPU models. **Labels categorize submissions; they do not approve correctness or performance claims.**
 
-## Latest submitted data
+## Automated community intake — UNVERIFIED
+
+<!-- ndx12-community-intake:start -->
+- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md) — **UNVERIFIED** (`DATA_READY`); maintainer review required.
+<!-- ndx12-community-intake:end -->
+
+Intake entries remain **UNVERIFIED** even after a draft PR is merged. Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.
+
+## Curated v0.1.4 report
 
 **[Benchmark v0.1.4 — charts and extracted results for RTX 3060, RTX 3060 Ti, RTX 3090 and RTX 4060 Laptop GPU](v0.1.4-submitted-data.md)**
 
 This report contains GPU-specific charts and median values recalculated from the four attached `share-results-v0.1.4.tar.gz` archives. The separate Native (GPU ticks) and Vulkan (nanoseconds) columns preserve the units, including the RTX 3090 run where conversion was **NOT_QUALIFIED**. Charts show four selected workloads per GPU; full numeric variants remain in the tables.
 
-## GPU-specific folders and review status
+## Existing curated GPU folders and review status
 
 - [NVIDIA RTX 4090](NVIDIA/RTX_4090/README.md) — reserved for approved community submissions; maintainer-recorded experiments are [separate](../NVIDIA/README.md).
 - [NVIDIA RTX 3090](NVIDIA/RTX_3090/README.md) — [Issue #5](NVIDIA/RTX_3090/issue-5.md), archive-consistency reviewed; all four timestamp checks NOT_QUALIFIED.

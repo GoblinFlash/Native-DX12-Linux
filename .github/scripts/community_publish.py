@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Typed-data-only draft PR writer. Never downloads, executes, merges or approves."""
 import argparse
+import base64
+import binascii
 import hashlib
 import importlib.util
 import json
@@ -47,6 +49,83 @@ def existing_issue(entries, issue_number):
     pattern = re.compile(r'^Experiment Results/Community/(?:[^/]+/)*issue-' + str(issue_number) +
                          r'(?:-submission)?(?:\.md|/(?:README\.md|record\.json))$')
     return any(type(row.get('path')) is str and pattern.fullmatch(row['path']) for row in entries)
+
+
+INDEX_START = '<!-- ndx12-community-intake:start -->'
+INDEX_END = '<!-- ndx12-community-intake:end -->'
+INDEX_NOTE = ('Intake entries remain **UNVERIFIED** even after a draft PR is merged. '
+              'Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.')
+INDEXES = {
+    'Experiment Results/README.md': ('\n## Curated community benchmark data — v0.1.4\n', 'Community/'),
+    'Experiment Results/Community/README.md': ('\n## Curated v0.1.4 report\n', ''),
+}
+
+
+def index_entry(proposal, prefix):
+    """Format a link only from validated catalogue identity and a fixed result path."""
+    folder = intake.record_folder(proposal)
+    gpu = proposal['claimed_gpu']
+    if gpu in intake.GPUS and folder.startswith(intake.ROOT + gpu + '/'):
+        label = gpu.split('/')[0] + ' ' + intake.GPUS[gpu]
+    else:
+        label = 'Pending classification'
+    version = proposal['claimed_version'] or 'Unidentified release'
+    relative = prefix + folder[len(intake.ROOT):] + '/README.md'
+    return (f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative}) '
+            f'— **UNVERIFIED** (`{proposal["state"]}`); maintainer review required.')
+
+
+def update_index(source, proposal, anchor, prefix):
+    """Insert one pending entry within a small, explicitly managed Markdown region.
+
+    Historical curated reports and all prose outside the markers are byte-preserved.
+    Fail closed if a maintainer removed a marker, changed its format or duplicated an Issue.
+    """
+    intake.need(type(source) is bytes and len(source) <= 128 * 1024, 'INDEX_FORMAT')
+    try:
+        body = source.decode('utf-8')
+    except UnicodeError:
+        raise intake.Refused('INDEX_FORMAT') from None
+    intake.need(body.endswith('\n') and '\r' not in body, 'INDEX_FORMAT')
+    entry = index_entry(proposal, prefix)
+    if INDEX_START not in body and INDEX_END not in body:
+        intake.need(body.count(anchor) == 1, 'INDEX_ANCHOR')
+        block = ('\n## Automated community intake — UNVERIFIED\n\n' + INDEX_START +
+                 '\n' + entry + '\n' + INDEX_END + '\n\n' + INDEX_NOTE + '\n')
+        return body.replace(anchor, block + anchor, 1).encode('utf-8')
+    intake.need(body.count(INDEX_START) == 1 and body.count(INDEX_END) == 1, 'INDEX_FORMAT')
+    start = body.index(INDEX_START) + len(INDEX_START)
+    stop = body.index(INDEX_END)
+    intake.need(start < stop and body[start] == '\n' and body[stop-1] == '\n', 'INDEX_FORMAT')
+    entries = body[start+1:stop-1]
+    intake.need(not entries or all(line.startswith('- [') and ') — **UNVERIFIED** (' in line
+                                   for line in entries.split('\n')), 'INDEX_FORMAT')
+    intake.need('/issue-' + str(proposal['issue']) + '/README.md)' not in entries, 'INDEX_DUPLICATE')
+    return (body[:start+1] + entry + '\n' + entries + ('\n' if entries else '') +
+            body[stop:]).encode('utf-8')
+
+
+def indexed_files(proposal, api, entries):
+    """Return result artifacts plus two guarded updates to existing public indexes."""
+    files = intake.render(proposal)
+    for path, (anchor, prefix) in INDEXES.items():
+        found = [row for row in entries if row.get('path') == path]
+        intake.need(len(found) == 1 and found[0].get('type') == 'blob' and
+                    found[0].get('mode') == '100644', 'INDEX_BASE')
+        object_id = sha(found[0].get('sha'))
+        data = api.get('git/blobs/' + object_id)
+        intake.need(type(data) is dict and data.get('encoding') == 'base64' and
+                    type(data.get('content')) is str and
+                    type(data.get('size')) is int and 0 <= data['size'] <= 128 * 1024 and
+                    sha(data.get('sha')) == object_id, 'INDEX_BLOB')
+        try:
+            raw = base64.b64decode(data['content'].replace('\n', '').replace('\r', ''),
+                                   validate=True)
+        except (ValueError, binascii.Error):
+            raise intake.Refused('INDEX_BLOB') from None
+        intake.need(len(raw) == data['size'] and git_blob(raw) == object_id, 'INDEX_BLOB')
+        files[path] = update_index(raw, proposal, anchor, prefix)
+    return files
 
 
 def check_current_source(api, proposal, manual):
@@ -111,36 +190,47 @@ def publish(proposal, api, expected_issue, manual=False):
     if expected_issue in intake.LEGACY:
         # Issue #4 has centralized curated data without a legacy issue-4.md page.
         return {'status': 'CURATED_MANUAL_MIGRATION', 'issue': expected_issue}
-    files = intake.render(proposal)
-    names = set(files)
-    for row in entries:
-        path = row.get('path', '')
-        intake.need(path not in names and not any(name.startswith(path+'/') and row.get('type') != 'tree'
-                                                 for name in names), 'BASE_OUTPUT_COLLISION')
     branch = 'community/benchmark-issue-' + str(expected_issue)
     requests = api.get('pulls?state=all&head=GoblinFlash:' + branch + '&per_page=100')
     intake.need(type(requests) is list and len(requests) < 100, 'PR_LIST_LIMIT')
     if requests:
         return {'status': 'EXISTING_PR_REQUIRES_REVIEW', 'issue': expected_issue}
-    plan = intake.digest(intake.json_bytes({path: intake.digest(data) for path, data in sorted(files.items())}))
-    message = ('Propose unverified community result for Issue #' + str(expected_issue) +
-               '\n\nsource:' + proposal['source_revision'] + '\ncontent:' + plan)
     previous = get_optional(api, 'git/ref/heads/' + branch)
+    prior_commit = None
     if previous:
-        # Recover only an unchanged orphan created by the exact same proposal.
         previous_sha = sha(previous['object']['sha'])
-        previous_commit = api.get('git/commits/' + previous_sha)
-        intake.need(previous_commit.get('message') == message and
-                    len(previous_commit.get('parents', [])) == 1, 'EXISTING_BRANCH_CHANGED')
-        prior_base = sha(previous_commit['parents'][0]['sha'])
+        prior_commit = api.get('git/commits/' + previous_sha)
+        intake.need(len(prior_commit.get('parents', [])) == 1, 'EXISTING_BRANCH_CHANGED')
+        prior_base = sha(prior_commit['parents'][0]['sha'])
         if prior_base != base:
             ancestry = api.get('compare/' + prior_base + '...' + base)
             intake.need(ancestry.get('merge_base_commit', {}).get('sha') == prior_base and
                         ancestry.get('behind_by') == 0, 'EXISTING_BRANCH_CHANGED')
+            old_parent = api.get('git/commits/' + prior_base)
+            source_entries = tree_entries(api, old_parent['tree']['sha'])
+        else:
+            source_entries = entries
+    else:
+        source_entries = entries
+    files = indexed_files(proposal, api, source_entries)
+    names = set(files)
+    for row in source_entries:
+        path = row.get('path', '')
+        intake.need((path not in names or path in INDEXES) and
+                    not any(name.startswith(path+'/') and row.get('type') != 'tree'
+                            for name in names), 'BASE_OUTPUT_COLLISION')
+    plan = intake.digest(intake.json_bytes({path: intake.digest(data) for path, data in sorted(files.items())}))
+    message = ('Propose unverified community result for Issue #' + str(expected_issue) +
+               '\n\nsource:' + proposal['source_revision'] + '\ncontent:' + plan)
+    if previous:
+        # Recover only an unchanged orphan created by the exact same proposal.
+        previous_commit = prior_commit
+        intake.need(previous_commit.get('message') == message, 'EXISTING_BRANCH_CHANGED')
         diff = api.get('compare/' + prior_base + '...' + previous_sha)
         intake.need(type(diff.get('files')) is list and
                     {x['filename'] for x in diff['files']} == names and
-                    all(x['status'] == 'added' for x in diff['files']), 'EXISTING_BRANCH_CHANGED')
+                    all(x['status'] == ('modified' if x['filename'] in INDEXES else 'added')
+                        for x in diff['files']), 'EXISTING_BRANCH_CHANGED')
         previous_entries = {x['path']: x for x in tree_entries(api, previous_commit['tree']['sha'])}
         intake.need(all(previous_entries.get(path, {}).get('sha') == git_blob(data) and
                         previous_entries[path].get('mode') == '100644' for path, data in files.items()),
