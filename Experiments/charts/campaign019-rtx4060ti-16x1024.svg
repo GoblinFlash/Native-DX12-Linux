@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="620" viewBox="0 0 1180 620" role="img" aria-label="Campaign 019 RTX 4060 Ti 16×1024 independently scaled Native GPU tick and Vulkan nanosecond measurements for empty, D4 reference variants and Q8PL.">
+<rect width="1180" height="620" fill="#FFFFFF"/>
+<rect x="20" y="20" width="1140" height="580" rx="10" fill="#FFFFFF" stroke="#D6E2EC"/>
+<text x="48" y="68" font-family="DejaVu Sans,Arial,sans-serif" font-size="29" font-weight="700" fill="#162F48">Campaign 019 · RTX 4060 Ti — 16×1024</text>
+<text x="48" y="99" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" fill="#41627B">Locked P0: SM 2310 MHz · VRAM 9001 MHz · Median of 4 processes per series</text>
+<text x="48" y="123" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#4B6377">TWO INDEPENDENT MEASUREMENT SCALES — NOT A CROSS-API SPEEDUP CHART</text>
+<g font-family="DejaVu Sans,Arial,sans-serif">
+<rect x="40" y="139" width="533" height="396" rx="9" fill="#FAFCFF" stroke="#CBD9E3"/>
+<text x="64" y="175" font-size="22" font-weight="700" fill="#146A9D">Native DX12</text>
+<text x="64" y="202" font-size="14" fill="#48657C">GPU timer ticks · separate axis 0–12,000</text>
+<text x="64" y="237" font-size="16" fill="#1D3349">E0 · empty</text>
+<text x="549" y="237" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">4,424 ticks</text>
+<rect x="64" y="249" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="64" y="249" width="176.960" height="17" rx="3" fill="#9EC8E5"/>
+<text x="64" y="305" font-size="16" fill="#1D3349">D4 · reference A1</text>
+<text x="549" y="305" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">10,864 ticks</text>
+<rect x="64" y="317" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="64" y="317" width="434.560" height="17" rx="3" fill="#4F9DCD"/>
+<text x="64" y="373" font-size="16" fill="#1D3349">D4 · reference A2</text>
+<text x="549" y="373" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">10,880 ticks</text>
+<rect x="64" y="385" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="64" y="385" width="435.200" height="17" rx="3" fill="#4F9DCD"/>
+<text x="64" y="441" font-size="16" fill="#1D3349">Q8PL · packed INT8</text>
+<text x="549" y="441" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">7,344 ticks</text>
+<rect x="64" y="453" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="64" y="453" width="293.760" height="17" rx="3" fill="#0C68AE"/>
+<text x="64" y="519" font-size="13" fill="#61788C">Process median (n = 4). Lower is better within this panel.</text>
+<rect x="607" y="139" width="533" height="396" rx="9" fill="#FAFCFF" stroke="#CBD9E3"/>
+<text x="631" y="175" font-size="22" font-weight="700" fill="#C86316">NVIDIA Vulkan</text>
+<text x="631" y="202" font-size="14" fill="#48657C">GPU nanoseconds · separate axis 0–17,000</text>
+<text x="631" y="237" font-size="16" fill="#1D3349">Z · empty</text>
+<text x="1116" y="237" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">6,792 ns</text>
+<rect x="631" y="249" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="631" y="249" width="191.774" height="17" rx="3" fill="#F8C596"/>
+<text x="631" y="305" font-size="16" fill="#1D3349">D4 · reference V1</text>
+<text x="1116" y="305" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">15,680 ns</text>
+<rect x="631" y="317" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="631" y="317" width="442.729" height="17" rx="3" fill="#F6A15D"/>
+<text x="631" y="373" font-size="16" fill="#1D3349">D4 · reference V2</text>
+<text x="1116" y="373" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">15,688 ns</text>
+<rect x="631" y="385" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="631" y="385" width="442.955" height="17" rx="3" fill="#F6A15D"/>
+<text x="631" y="441" font-size="16" fill="#1D3349">Q8PL · packed INT8</text>
+<text x="1116" y="441" text-anchor="end" font-size="17" font-weight="700" fill="#1D3349">9,152 ns</text>
+<rect x="631" y="453" width="480" height="17" rx="3" fill="#E9EFF4"/>
+<rect x="631" y="453" width="258.409" height="17" rx="3" fill="#EF7516"/>
+<text x="631" y="519" font-size="13" fill="#61788C">Process median (n = 4). Lower is better within this panel.</text>
+<text x="48" y="567" font-size="15" fill="#273F55">Native ticks are not calibrated to ns; timing brackets and memory placement differ between APIs.</text>
+<text x="1131" y="586" text-anchor="end" font-size="12" fill="#607C93">Andrew Kapica · GoblinFlash · development experiment</text>
+</g>
+</svg>

@@ -175,6 +175,10 @@ failures, evidence levels and remaining checks.
 
 ### Experiment history
 
+- [Campaign 019 — RTX 4060 Ti locked-clock histogram measurements](Campaign-019-RTX4060Ti.md)
+  — bit-exact Native/Vulkan histogram runs at locked clocks, separate GPU tick/ns
+  charts, evidence identities and explicit cross-API limits (15 November 2026).
+
 - [GPU instruction memory placement (SYSMEM vs VRAM) — RTX 5070](GPU-Instruction-Memory-Placement-RTX5070.md)
   — 32 process-level records across balanced A/B pairs, original GPU/host charts and summary
   CSV, hardware caveats and full original report (12 November 2026).
