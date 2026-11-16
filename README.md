@@ -21,19 +21,20 @@
 
 ### How does Native-DX12-Linux differ from VKD3D-Proton and DXVK?
 
-Traditional compatibility tools on Linux translate Direct3D API calls into Vulkan:
-* **DXVK** translates Direct3D 9/10/11 → Vulkan.
+Compatibility tools on Linux implement Direct3D APIs using Vulkan:
+
+* **DXVK** translates Direct3D 8/9/10/11 → Vulkan.
 * **VKD3D-Proton** translates Direct3D 12 → Vulkan.
 
-While mature and battle-tested for full games, translation layers inherently carry extra API mapping, state tracking, and driver overhead (`D3D12 → VKD3D → Vulkan API → Proprietary/Mesa Vulkan Driver → GPU`).
+Both are mature, game-oriented projects. A translation layer introduces an API boundary, but its actual performance cost depends on the workload, implementation, and driver. It cannot be assumed from the architecture alone.
 
-**Native-DX12-Linux eliminates the Vulkan and VKD3D translation layers completely.** Shaders pass through a direct compilation pipeline (**DXIL → NIR → NAK**) and compute workloads are submitted straight to the GPU hardware. Currently, this is an experimental compute-focused runtime rather than a drop-in replacement for running full commercial games, built specifically to explore direct execution efficiency and ultra-low dispatch latency on Linux.
+**Native-DX12-Linux does not use Vulkan or VKD3D in its experimental NVIDIA compute path.** Shaders are compiled through **DXIL → NIR → NAK**, and compute work is submitted through native NVIDIA Linux driver interfaces. The project is an experimental, compute-focused subset of Direct3D 12, **not** a drop-in replacement for commercial games or a complete D3D12 implementation.
 
-### Measured GPU Dispatch Overhead vs. Vulkan on NVIDIA RTX (Ada Lovelace)
+### Experimental GPU Measurements — Campaign 019 (RTX 4060 Ti)
 
-During low-level benchmarking on an **NVIDIA GeForce RTX 4060 Ti** (16,384-sample 256-bin histogram compute workload), initial runs at dynamic clocks were so short and lightweight that the GPU remained in its idle power state (`P8`: 210/405 MHz) instead of boosting.
+The campaign used a **16,384-sample, 256-bin histogram** on an NVIDIA GeForce **RTX 4060 Ti**. Earlier dynamic-clock tests showed P8 power-state readings after Native runs, so the comparison was repeated with **locked clocks** (2310 MHz core / 9001 MHz memory). Recorded monitoring samples during the locked-clock campaign showed P0 / 2310 / 9001 MHz.
 
-When evaluated fairly under **locked `P0` clocks (2310 MHz core / 9001 MHz memory)** across 67 verified runs with bit-exact output validation, bypassing the Vulkan stack yielded substantial reductions in both baseline frame/dispatch overhead and total execution time:
+**All 67 campaign runs completed**, with bit-exact output validation reported by the campaign author. The following results are medians of four processes for each workload. **Native values are GPU ticks; Vulkan values are nanoseconds.**
 
 | Workload Variant | 256×64 Native (ticks) | 256×64 NVIDIA Vulkan (ns) | 16×1024 Native (ticks) | 16×1024 NVIDIA Vulkan (ns) |
 | :--- | ---: | ---: | ---: | ---: |
@@ -41,7 +42,7 @@ When evaluated fairly under **locked `P0` clocks (2310 MHz core / 9001 MHz memor
 | **D4 (Reference)** | **5,032** | 8,160 | **10,864** | 15,680 |
 | **Q8PL (Packed INT8 Opt.)** | **4,816** | 7,992 | **7,344** | 9,152 |
 
-*Note: Nominal comparison (`1 GPU tick ≈ 1 ns` on Ada Lovelace, pending formal counter calibration; measurement brackets differ slightly between paths). Even on the identical `Q8PL` shader, total execution is **40% shorter on 256×64** and **20% shorter on 16×1024** compared to NVIDIA's proprietary Vulkan driver, while highlighting remaining loop-level compiler optimization opportunities in NAK on long-loop shapes (`16×1024` net above empty).*
+**Measurement limitations:** The Native GPU tick counter has **not** been calibrated to nanoseconds. The Native and Vulkan timing windows differ, and Native buffers use VRAM while the Vulkan reference uses system memory. Therefore, the numbers above are **independent experimental observations**, not directly comparable execution times or evidence of a specific cross-API speedup. The empty-kernel measurements also include their respective measurement/submission brackets; they do not isolate API translation overhead. Independent review is pending.
 
 
 ## Current Progress
