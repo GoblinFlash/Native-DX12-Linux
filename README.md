@@ -17,10 +17,32 @@
   <a href="Experiments/README.md"><img src=".github/readme-assets/button-experiments.svg" alt="Experiments" height="54"></a>
 </p>
 
-<picture>
-  <source media="(max-width: 650px)" srcset=".github/readme-assets/about-mobile.svg">
-  <img src=".github/readme-assets/about-desktop.svg" alt="About the project: native D3D12 exploration, NVIDIA compute execution demonstrated, full applications and games not supported" width="950">
-</picture>
+## Frequently Asked Questions (FAQ)
+
+### How does Native-DX12-Linux differ from VKD3D-Proton and DXVK?
+
+Traditional compatibility tools on Linux translate Direct3D API calls into Vulkan:
+* **DXVK** translates Direct3D 9/10/11 → Vulkan.
+* **VKD3D-Proton** translates Direct3D 12 → Vulkan.
+
+While mature and battle-tested for full games, translation layers inherently carry extra API mapping, state tracking, and driver overhead (`D3D12 → VKD3D → Vulkan API → Proprietary/Mesa Vulkan Driver → GPU`).
+
+**Native-DX12-Linux eliminates the Vulkan and VKD3D translation layers completely.** Shaders pass through a direct compilation pipeline (**DXIL → NIR → NAK**) and compute workloads are submitted straight to the GPU hardware. Currently, this is an experimental compute-focused runtime rather than a drop-in replacement for running full commercial games, built specifically to explore direct execution efficiency and ultra-low dispatch latency on Linux.
+
+### Measured GPU Dispatch Overhead vs. Vulkan on NVIDIA RTX (Ada Lovelace)
+
+During low-level benchmarking on an **NVIDIA GeForce RTX 4060 Ti** (16,384-sample 256-bin histogram compute workload), initial runs at dynamic clocks were so short and lightweight that the GPU remained in its idle power state (`P8`: 210/405 MHz) instead of boosting.
+
+When evaluated fairly under **locked `P0` clocks (2310 MHz core / 9001 MHz memory)** across 67 verified runs with bit-exact output validation, bypassing the Vulkan stack yielded substantial reductions in both baseline frame/dispatch overhead and total execution time:
+
+| Workload Variant | 256×64 Native (ticks) | 256×64 NVIDIA Vulkan (ns) | 16×1024 Native (ticks) | 16×1024 NVIDIA Vulkan (ns) |
+| :--- | ---: | ---: | ---: | ---: |
+| **Empty Kernel (Baseline)** | **4,480** | 6,792 | **4,424** | 6,792 |
+| **D4 (Reference)** | **5,032** | 8,160 | **10,864** | 15,680 |
+| **Q8PL (Packed INT8 Opt.)** | **4,816** | 7,992 | **7,344** | 9,152 |
+
+*Note: Nominal comparison (`1 GPU tick ≈ 1 ns` on Ada Lovelace, pending formal counter calibration; measurement brackets differ slightly between paths). Even on the identical `Q8PL` shader, total execution is **40% shorter on 256×64** and **20% shorter on 16×1024** compared to NVIDIA's proprietary Vulkan driver, while highlighting remaining loop-level compiler optimization opportunities in NAK on long-loop shapes (`16×1024` net above empty).*
+
 
 ## Current Progress
 
