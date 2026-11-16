@@ -4,7 +4,7 @@
 
 **Help test and shape the next optimizations!**
 
-**I strongly encourage anyone with a supported NVIDIA RTX GPU on Linux to download the benchmark and submit your results. Every single submission, including, full/partial runs or even failures provides critical real-world hardware data needed to guide next low-level compiler and runtime optimizations.**
+**I strongly encourage anyone with a supported NVIDIA RTX GPU on Linux to download the benchmark and [submit your results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml). Every single submission, including, full/partial runs or even failures provides critical real-world hardware data needed to guide next low-level compiler and runtime optimizations.**
 
 **Andrew Kapica — GoblinFlash**
 
