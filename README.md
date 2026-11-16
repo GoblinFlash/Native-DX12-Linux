@@ -1,8 +1,12 @@
 # Native DX12 Linux
 
-**Experimental native Direct3D 12 on Linux — without Vulkan or VKD3D translation.**
+**Native-DX12-Linux is an experimental Direct3D 12 runtime for Linux that executes directly on the GPU — completely bypassing Vulkan and VKD3D translation layers. Built around a direct shader pipeline (DXIL → NIR → NAK) and low-level NVIDIA RTX compute execution.**
 
-Andrew Kapica — GoblinFlash
+**Help test and shape the next optimizations!**
+
+**I strongly encourage anyone with a supported NVIDIA RTX GPU on Linux to download the benchmark and submit your results. Every single submission  — including, full and partial runs, or even failures — provides critical real-world hardware data needed to guide next low-level compiler and runtime optimizations.**
+
+**Andrew Kapica — GoblinFlash**
 
 **AI-assisted development:** This project uses AI tools to assist with research, implementation, testing, code review, and documentation. AI-assisted contributions are subject to the same technical review, testing, and licensing requirements as other contributions. See the [contribution guidelines](AGENTS.md).
 
