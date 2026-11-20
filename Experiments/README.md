@@ -1,5 +1,32 @@
 # Experiments — Native DX12 Linux
 
+## <img src="charts/cube-matrix.svg" width="40" align="center" alt=""> Cube Matrix and Neural Grid — light stored in a 3D grid
+
+<sub>17–20 November 2026 · RTX 4060 Ti / RTX 4090 · native GPU experiments · not part of a released benchmark</sub>
+
+Games often keep the light of a scene in a 3D grid of small cells, so they do not have to compute it again every frame.
+These two experiments ask how small such a grid can be and how fast our native D3D12 path can read it back on the GPU.
+
+- **[Cube Matrix](Cube-Matrix.md)** packs the grid into 4 × 4 × 4 blocks.
+  - Some blocks are rebuilt on the GPU's Tensor Cores.
+  - Empty blocks are not stored at all.
+- **[Neural Grid](Neural-Grid.md)** tries a tiny neural network that rebuilds the cell values instead. It also compares
+  the grid with tracing rays for light bouncing off walls.
+
+What we found, in short:
+
+- **The results are exact.** Every image and grid computed on the GPU matched our CPU reference to the last byte.
+- **Smaller is not always faster.** The compressed grids are much smaller, but on the test scene (Sponza) they did not
+  make the frame faster: the whole scene already fits in the GPU cache.
+- **The biggest speed-up came from the compiler.** Our compiler treated every memory read as "might change at any
+  moment". Telling it which buffers are read-only made the lighting about 2× faster, and up to 3.4× in some programs,
+  with identical images.
+- **A grid is cheap but blurrier.** Reading the light grid is about 33× cheaper than one ray per pixel, but the picture
+  is about 5 dB worse.
+
+All timings are raw GPU clock ticks on locked clocks, not milliseconds. These are development results, not a released
+benchmark.
+
 ## Current experiment: Fast Walsh–Hadamard Transform (FWHT)
 
 <sub>12 November 2026 · RTX 5070 / RTX 4090 · bounded native GPU pilots · full-benchmark integration in progress</sub>
@@ -187,3 +214,5 @@ failures, evidence levels and remaining checks.
 This is a development report, not a released benchmark result. Public tables
 and charts summarize private retained evidence; they are not substitutes for
 an independent hardware reproduction.
+
+**AI Disclosure:** Core architecture, mathematical concepts, and R&D direction by Andrew Kapica (GoblinFlash). Low-level NAK/IMMA shader implementation and benchmark harnesses built with AI assistance (Claude Code, ChatGPT Codex) under strict hardware verification: locked-clock GPU runs, negative fault-injection tests, and byte-for-byte CPU oracle matching.

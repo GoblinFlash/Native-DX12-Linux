@@ -1,0 +1,6 @@
+case,All loads strong (before),nir_opt_access (cmat loads stay strong),"All loads constant, incl. cmat",source
+Ray march only,2947808,1321584,1321584,"campaign ngb-4090-054, RTX 4090, 1920x1080"
+"Tensor Core, B by columns",4002048,4003376,1191952,"campaign ngb-4090-054, RTX 4090, 1920x1080"
+"Tensor Core, B by rows",8143376,8140640,3561872,"campaign ngb-4090-054, RTX 4090, 1920x1080"
+"Tensor Core + march, columns",5738160,4110448,2302256,"campaign ngb-4090-054, RTX 4090, 1920x1080"
+"Tensor Core + march, rows",9675600,8211088,4612160,"campaign ngb-4090-054, RTX 4090, 1920x1080"

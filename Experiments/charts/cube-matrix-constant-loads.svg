@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 408" width="860" height="408" font-family="Arial, 'Liberation Sans', Helvetica, sans-serif" role="img" aria-label="Cube Matrix on RTX 4090: strong vs constant buffer loads">
+<title>Cube Matrix on RTX 4090: strong vs constant buffer loads</title>
+<rect width="860" height="408" rx="10" fill="#ffffff" stroke="#e3e8ef"/>
+<text x="24" y="36" font-size="19" font-weight="700" fill="#0f2440">Cube Matrix on RTX 4090: strong vs constant buffer loads</text>
+<text x="24" y="60" font-size="13" fill="#41536b">Median raw GPU ticks per frame, lower is better. Same source, same data, bit-exact images.</text>
+<rect x="24" y="78" width="12" height="12" rx="3" fill="#2a78d6"/>
+<text x="42" y="88" font-size="13" fill="#41536b">Strong GPU-scope loads (before)</text>
+<rect x="424" y="78" width="12" height="12" rx="3" fill="#1baf7a"/>
+<text x="442" y="88" font-size="13" fill="#41536b">Constant loads (nir_opt_access / CAN_REORDER)</text>
+<line x1="412.5" y1="110" x2="412.5" y2="382" stroke="#e3e8ef"/>
+<text x="412.5" y="398" font-size="11" fill="#66758a" text-anchor="middle">128,000</text>
+<line x1="525.0" y1="110" x2="525.0" y2="382" stroke="#e3e8ef"/>
+<text x="525.0" y="398" font-size="11" fill="#66758a" text-anchor="middle">257,000</text>
+<line x1="637.5" y1="110" x2="637.5" y2="382" stroke="#e3e8ef"/>
+<text x="637.5" y="398" font-size="11" fill="#66758a" text-anchor="middle">385,000</text>
+<line x1="750.0" y1="110" x2="750.0" y2="382" stroke="#e3e8ef"/>
+<text x="750.0" y="398" font-size="11" fill="#66758a" text-anchor="middle">513,000</text>
+<line x1="300" y1="110" x2="300" y2="382" stroke="#66758a"/>
+<text x="290" y="139.0" font-size="13" fill="#0f2440" text-anchor="end">Lighting, dense 64³ grid</text>
+<path d="M300,118 h105.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-105.5 z" fill="#2a78d6"/>
+<text x="415.5" y="130" font-size="12" fill="#41536b">124,800</text>
+<path d="M300,136 h50.9 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-50.9 z" fill="#1baf7a"/>
+<text x="360.9" y="148" font-size="12" fill="#41536b">62,608  (0.50×)</text>
+<text x="290" y="191.0" font-size="13" fill="#0f2440" text-anchor="end">Lighting, sparse 64³ via block table</text>
+<path d="M300,170 h208.6 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-208.6 z" fill="#2a78d6"/>
+<text x="518.6" y="182" font-size="12" fill="#41536b">242,400</text>
+<path d="M300,188 h60.1 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-60.1 z" fill="#1baf7a"/>
+<text x="370.1" y="200" font-size="12" fill="#41536b">73,136  (0.30×)</text>
+<text x="290" y="243.0" font-size="13" fill="#0f2440" text-anchor="end">Lighting, sparse 256³ via block table</text>
+<path d="M300,222 h105.0 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-105.0 z" fill="#2a78d6"/>
+<text x="415.0" y="234" font-size="12" fill="#41536b">124,240</text>
+<path d="M300,240 h61.8 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-61.8 z" fill="#1baf7a"/>
+<text x="371.8" y="252" font-size="12" fill="#41536b">75,040  (0.60×)</text>
+<text x="290" y="295.0" font-size="13" fill="#0f2440" text-anchor="end">Frame: scalar 4-bit decoder + lighting</text>
+<path d="M300,274 h442.2 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-442.2 z" fill="#2a78d6"/>
+<text x="752.2" y="286" font-size="12" fill="#41536b">508,688</text>
+<path d="M300,292 h231.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-231.5 z" fill="#1baf7a"/>
+<text x="541.5" y="304" font-size="12" fill="#41536b">268,464  (0.53×)</text>
+<text x="290" y="347.0" font-size="13" fill="#0f2440" text-anchor="end">Frame: Tensor Core decoder + lighting</text>
+<path d="M300,326 h446.0 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-446.0 z" fill="#2a78d6"/>
+<text x="756.0" y="338" font-size="12" fill="#41536b">513,072</text>
+<path d="M300,344 h233.9 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-233.9 z" fill="#1baf7a"/>
+<text x="543.9" y="356" font-size="12" fill="#41536b">271,280  (0.53×)</text>
+</svg>

@@ -1,0 +1,5 @@
+case,Raw GPU ticks,source
+4 rays per pixel + filter,56919744,"campaign ngb-4060-001, RTX 4060 Ti, 1920x1080"
+1 ray per pixel + filter,22922640,"campaign ngb-4060-001, RTX 4060 Ti, 1920x1080"
+"Cube lookup, 13 cm voxels",697344,"campaign ngb-4060-001, RTX 4060 Ti, 1920x1080"
+"Cube lookup, 52 cm voxels",687952,"campaign ngb-4060-001, RTX 4060 Ti, 1920x1080"

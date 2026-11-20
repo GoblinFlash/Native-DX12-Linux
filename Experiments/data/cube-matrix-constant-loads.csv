@@ -1,0 +1,6 @@
+case,Strong GPU-scope loads (before),Constant loads (nir_opt_access / CAN_REORDER),source
+"Lighting, dense 64³ grid",124800,62608,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"
+"Lighting, sparse 64³ via block table",242400,73136,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"
+"Lighting, sparse 256³ via block table",124240,75040,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"
+Frame: scalar 4-bit decoder + lighting,508688,268464,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"
+Frame: Tensor Core decoder + lighting,513072,271280,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"

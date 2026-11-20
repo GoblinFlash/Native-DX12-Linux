@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 250" width="860" height="250" font-family="Arial, 'Liberation Sans', Helvetica, sans-serif" role="img" aria-label="Indirect light on RTX 4060 Ti: cube lookup vs rays">
+<title>Indirect light on RTX 4060 Ti: cube lookup vs rays</title>
+<rect width="860" height="250" rx="10" fill="#ffffff" stroke="#e3e8ef"/>
+<text x="24" y="36" font-size="19" font-weight="700" fill="#0f2440">Indirect light on RTX 4060 Ti: cube lookup vs rays</text>
+<text x="24" y="60" font-size="13" fill="#41536b">Median raw GPU ticks, 1920×1080, lower is better (strong loads, before the compiler fix).</text>
+<line x1="412.5" y1="76" x2="412.5" y2="224" stroke="#e3e8ef"/>
+<text x="412.5" y="240" font-size="11" fill="#66758a" text-anchor="middle">14,230,000</text>
+<line x1="525.0" y1="76" x2="525.0" y2="224" stroke="#e3e8ef"/>
+<text x="525.0" y="240" font-size="11" fill="#66758a" text-anchor="middle">28,460,000</text>
+<line x1="637.5" y1="76" x2="637.5" y2="224" stroke="#e3e8ef"/>
+<text x="637.5" y="240" font-size="11" fill="#66758a" text-anchor="middle">42,690,000</text>
+<line x1="750.0" y1="76" x2="750.0" y2="224" stroke="#e3e8ef"/>
+<text x="750.0" y="240" font-size="11" fill="#66758a" text-anchor="middle">56,920,000</text>
+<line x1="300" y1="76" x2="300" y2="224" stroke="#66758a"/>
+<text x="290" y="96.0" font-size="13" fill="#0f2440" text-anchor="end">4 rays per pixel + filter</text>
+<path d="M300,84 h446.0 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-446.0 z" fill="#2a78d6"/>
+<text x="756.0" y="96" font-size="12" fill="#41536b">56,919,744</text>
+<text x="290" y="130.0" font-size="13" fill="#0f2440" text-anchor="end">1 ray per pixel + filter</text>
+<path d="M300,118 h177.2 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-177.2 z" fill="#2a78d6"/>
+<text x="487.2" y="130" font-size="12" fill="#41536b">22,922,640</text>
+<text x="290" y="164.0" font-size="13" fill="#0f2440" text-anchor="end">Cube lookup, 13 cm voxels</text>
+<path d="M300,152 h1.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-1.5 z" fill="#2a78d6"/>
+<text x="311.5" y="164" font-size="12" fill="#41536b">697,344</text>
+<text x="290" y="198.0" font-size="13" fill="#0f2440" text-anchor="end">Cube lookup, 52 cm voxels</text>
+<path d="M300,186 h1.4 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-1.4 z" fill="#2a78d6"/>
+<text x="311.4" y="198" font-size="12" fill="#41536b">687,952</text>
+</svg>
