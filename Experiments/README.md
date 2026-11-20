@@ -5,7 +5,7 @@
 <sub>17–20 November 2026 · RTX 4060 Ti / RTX 4090 · native GPU experiments · not part of a released benchmark</sub>
 
 Games often keep the light of a scene in a 3D grid of small cells, so they do not have to compute it again every frame.
-These two experiments ask how small such a grid can be and how fast our native D3D12 path can read it back on the GPU.
+These two experiments ask how small such a grid can be and how fast native D3D12 path can read it back on the GPU.
 
 - **[Cube Matrix](Cube-Matrix.md)** packs the grid into 4 × 4 × 4 blocks.
   - Some blocks are rebuilt on the GPU's Tensor Cores.
