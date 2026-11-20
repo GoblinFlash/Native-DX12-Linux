@@ -133,6 +133,64 @@ programs it was neutral: new / old time 0.97–1.01, all outputs verified.
   X50 and 27.40 dB for 4-bit.
 - With strong loads, the Tensor Core decoder was 1.85× slower than the scalar 4-bit decoder, and the frame 1.057× slower.
 
+### 6. A real HDR sky instead of a constant sky colour
+
+The earlier stages lit the scene with the sun plus a constant sky colour. This stage replaces the constant sky with the
+HDR sky image that ships with the Unity Classic Sponza scene (see *Licence* below), and repeats the main tests.
+
+- **Sky model.** Each of the 32 sky directions gets the mean radiance of its patch of the HDR image. The image's sun disk
+  (3°, 2.8 % of the sky energy) is masked, because the scene already has its own directional sun. The mean brightness is
+  scaled to the old constant sky, so only the colour and the distribution over directions change. The brightness of the
+  sky directions now varies 13× (0.16 to 2.17 luminance).
+- **Sky orientation.** The scene's 220° sky rotation was applied. The mapping direction was chosen so that the sun in the
+  image lands next to the scene sun: 9.3° apart, almost all of it in elevation. This alignment is inferred from the data,
+  not taken from Unity documentation.
+- **Controls.** With the old constant sky, every new tool reproduces the earlier results byte for byte: the light grid,
+  the compressed containers, the CPU reference images, the directional cube D8 and the GPU lighting image.
+
+**Effect on the grid.** The HDR sky changes the light of 73.7 % of the occupied cells (mean 3.1 levels, max 35 of 255).
+
+| Format | Bytes, constant sky → HDR | Camera 1 PSNR | Camera 3 PSNR |
+| --- | --- | --- | --- |
+| Lossless 8-bit grid | — | 24.41 → 24.02 dB | 30.74 → 30.76 dB |
+| 2-bit | 84,160 → 84,160 | 22.54 → 22.38 dB | 26.45 → 26.55 dB |
+| 3-bit | 101,652 → 101,652 | 23.94 → 23.59 dB | 28.46 → 28.49 dB |
+| Hadamard X50 | 58,976 → 60,704 | 23.61 → 23.12 dB | 29.56 → 29.84 dB |
+| Hadamard X18 | 85,152 → 89,272 | 24.34 → 23.96 dB | 30.28 → 30.45 dB |
+| Directional cube D8 | 8 bytes per cell | 28.05 → 27.56 dB | 36.02 → 36.06 dB |
+
+PSNR is measured against a per-pixel reference lit by the same sky, 1920 × 1080.
+
+- Quality moves by −0.5 to +0.3 dB.
+- The order of the formats does not change.
+- D8 keeps its lead over the non-directional grid: +3.5 dB on camera 1 and +5.3 dB on camera 3.
+- The Hadamard containers grow by 3–5 %, because more cells need exceptions.
+
+**GPU, RTX 4090, clocks locked at 2520 / 10501 MHz.**
+- **Grid decoders (tc-064).** The HDR grid and the old grid ran in the same campaign: 26 / 26 rows bit-exact, and both
+  negatives changed exactly the one predicted word.
+- **D8 lighting pass, camera 1 (tc-065).** 10 / 10 rows bit-exact, and the negative changed exactly the 50,221 predicted
+  pixels.
+
+| Program | Constant sky | HDR sky | HDR / constant |
+| --- | ---: | ---: | ---: |
+| 2-bit decoder | 8,832 | 8,992 | 1.018 |
+| 3-bit decoder | 8,544 | 8,672 | 1.015 |
+| Hadamard X50 decoder (Tensor Cores) | 12,256 | 12,208 | 0.996 |
+| Hadamard X18 decoder (Tensor Cores) | 12,496 | 12,576 | 1.006 |
+| D8 lighting, strong loads | 124,800 | 121,504 | 0.974 |
+| D8 lighting, constant loads | 62,608 | 62,576 | 0.999 |
+| D8 lighting, constant loads + 128 threads + two read waves | 62,224 | 62,128 | 0.998 |
+
+Median raw GPU ticks. The decoder rows come from one campaign. The lighting rows compare two campaigns on the same card,
+clocks and boot (tc-061 and tc-065).
+
+- The HDR sky does not change the decoding or lighting cost; the decoder differences are within the spread of the
+  three processes.
+- Constant loads still halve the lighting pass (0.515×).
+- The 2.6 % difference of the strong-load lighting row is between two campaigns and is not attributed to the sky.
+- Not run with the HDR sky: the D8 decoders and the decoder → lighting pipeline, other cameras on the GPU, cold L2.
+
 ## Conclusion
 
 - **Tensor Core reconstruction works natively and exactly.** For coloured indirect light it gives the smallest container
@@ -159,6 +217,8 @@ programs it was neutral: new / old time 0.97–1.01, all outputs verified.
 - Hardware counters (L1 / L2 hit rates) are not available on the native RM path. Cache explanations are labelled
   inferred.
 - Code review for publication (CodeRabbit) and licence / NOTICE closure are open.
+- The HDR sky stage (section 6) publishes numbers only. Images and grids lit by that sky are adaptations of a
+  no-derivatives work and are not published.
 
 ## Licence of the scene
 
@@ -166,6 +226,10 @@ The Sponza model is © 2010 Frank Meinl, Crytek, licensed under
 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), obtained through the Unity Classic Sponza repository. The
 grids, light values and images in this experiment are **adaptations**: voxelised, with light computed in this project. They are
 not the original work.
+
+The HDR sky of section 6 is "05-18 Day D" by Peter Sanitra, NoEmotion HDRs, licensed under
+[CC BY-ND 4.0](https://creativecommons.org/licenses/by-nd/4.0/), obtained through the same Unity repository. This
+page reports only measurements made with it. No image of the sky and no image or grid lit by it is published.
 
 ## Evidence identities
 
@@ -177,6 +241,8 @@ Campaign archives (SHA-256 of the retained private captures; fingerprints, not p
 | tc-061 | lighting with constant loads, RTX 4090 | `60f86201c7dd99d269d1bbbb186d71c3a00b39338a479da86e3f6247db3c1b31` |
 | tc-062 | decoders with constant loads, RTX 4090 | `34d5be513e50d5c0486c1dcd027f1e8489cc59d9141836f90faf27de5eb61743` |
 | tc-063 | decoder → lighting pipeline, constant loads | `d1c2016b2003587483514bd37f33f0d160971c480ea9097533755d2d92bf71de` |
+| tc-064 | grid decoders, constant sky and HDR sky, RTX 4090 | `254691a32bfd8afdc6d4b4d8d00ef036077c90e19a427bb9f4f2fa8c718a2ca3` |
+| tc-065 | D8 lighting with the HDR sky, RTX 4090 | `45991d4ca5a596b5c2310814489f26db1ab079d30d635717198ef3dd711a7e96` |
 
 Third-party implementation code: none. The programs call Mesa / NAK as pinned dependencies.
 
