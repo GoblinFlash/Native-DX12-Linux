@@ -60,7 +60,8 @@ def main():
     pad = 6
     shadow_y = max(ys) + 4
     x0, y0 = min(xs) - pad, min(ys) - pad
-    w, h = max(xs) - x0 + pad, shadow_y + 10 - y0
+    ground_cy, ground_ry = shadow_y - y0 - 2, N * S * 0.20
+    w, h = max(xs) - x0 + pad, ground_cy + ground_ry + 2       # the whole ground ellipse inside the view box
     cx = (proj(N, 0, 0)[0] + proj(0, N, 0)[0]) / 2 - x0
     out = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %.1f %.1f" width="%d" height="%d" role="img" '
            'aria-label="Cube Matrix: a 4 by 4 by 4 block of voxels; sunlit voxels warm, shadowed voxels blue, '
@@ -88,12 +89,12 @@ def main():
                             'stroke-opacity="0.35" stroke-width="0.9"/>' % (ax - x0, ay - y0, bx - x0, by - y0, cx2 - x0, cy2 - y0))
     out.append('</defs>')
     out.append('<ellipse cx="%.2f" cy="%.2f" rx="%.2f" ry="%.2f" fill="url(#ground)"/>'
-               % (cx, shadow_y - y0 - 2, N * S * C30 * 0.95, N * S * 0.20))
+               % (cx, ground_cy, N * S * C30 * 0.95, ground_ry))
     out += body
     out.append('</svg>')
     svg = '\n'.join(out) + '\n'
     (OUT / 'charts').mkdir(exist_ok=True)
-    (OUT / 'charts/cube-matrix.svg').write_text(svg)
+    (OUT / 'charts/cube-matrix.svg').write_text(svg, encoding='utf-8')
     if '--preview' in sys.argv:
         import cairosvg
         preview = Path(sys.argv[sys.argv.index('--preview') + 1])

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 186.7 221.8" width="187" height="222" role="img" aria-label="Cube Matrix: a 4 by 4 by 4 block of voxels; sunlit voxels warm, shadowed voxels blue, removed voxels are empty space that is not stored">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 186.7 232.6" width="187" height="233" role="img" aria-label="Cube Matrix: a 4 by 4 by 4 block of voxels; sunlit voxels warm, shadowed voxels blue, removed voxels are empty space that is not stored">
 <title>Cube Matrix</title>
 <defs>
 <radialGradient id="ground" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#000" stop-opacity="0.35"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
