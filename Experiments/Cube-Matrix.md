@@ -8,7 +8,7 @@ Real-time lighting often stores precomputed light in a 3D grid: the scene is cut
 light that reaches it (colour, direct light, shadow, sky visibility). A full-resolution grid is large. Cube Matrix asks:
 
 1. How small can such a grid get when cells are stored in blocks and reconstructed on the GPU?
-2. Can the reconstruction run on **Tensor Cores** (`IMMA` / `HMMA` instructions) emitted by our native compiler path
+2. Can the reconstruction run on **Tensor Cores** (`IMMA` / `HMMA` instructions) emitted by native compiler path
    (DXIL → SPIR-V → NIR → NAK), not through Vulkan or CUDA?
 3. Does a smaller grid make the actual lighting pass faster on a real scene, or only smaller?
 
