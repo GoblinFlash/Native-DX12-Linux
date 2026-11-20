@@ -1,6 +1,6 @@
 # Experiments — Native DX12 Linux
 
-## <img src="charts/cube-matrix.svg" width="40" align="center" alt=""> Cube Matrix and Neural Grid — light stored in a 3D grid
+## <img src="charts/cube-matrix.svg" width="40" align="center" alt=""> Cube Matrix and Neural Grid
 
 <sub>17–20 November 2026 · RTX 4060 Ti / RTX 4090 · native GPU experiments · not part of a released benchmark</sub>
 
