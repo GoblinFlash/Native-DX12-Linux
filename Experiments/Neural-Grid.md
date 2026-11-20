@@ -9,7 +9,7 @@ cell keeps a few int8 features, and a small neural network (a multi-layer percep
 values on the GPU. Two questions:
 
 1. **Step 1–3:** at the same memory budget, does a learned decoder beat plain quantisation (int8, int4) and a linear
-   decoder (PCA)? Does it run correctly and fast through our native compiler path?
+   decoder (PCA)? Does it run correctly and fast through the native compiler path?
 2. **Indirect light ("bounce"):** for the light that bounces off walls in Sponza, is a precomputed grid cheaper than
    tracing a few rays per pixel? Can Tensor Core work overlap the ray march?
 
@@ -45,7 +45,7 @@ values on the GPU. Two questions:
   "useful" bar of ≥ 40 dB with a maximum error ≤ 0.05.
 
 **GPU (RTX 4060 Ti, SM89, clocks locked 2310 / 9001 MHz).**
-- Seven decoders compiled by our NAK path, with no register or memory spills.
+- Seven decoders compiled through the NAK path, with no register or memory spills.
 - 59 / 59 runs bit-identical to the CPU reference; the negative control changed exactly 1,000 voxels.
 - One 64³ decode: 45,648 ticks for the MLP (C16) against 65,264 for FP16 (A). The order was not investigated.
 
@@ -131,7 +131,7 @@ variants, 111 / 111 rows were bit-exact and 26 / 26 negatives were as predicted.
 - Code review for publication (CodeRabbit) and licence / NOTICE closure are open.
 
 The Sponza model is © 2010 Frank Meinl, Crytek, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). The grids and
-images here are adaptations with light computed by us.
+images here are adaptations with light computed in this project.
 
 ## Evidence identities
 

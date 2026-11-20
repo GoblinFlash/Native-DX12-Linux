@@ -8,7 +8,7 @@ Real-time lighting often stores precomputed light in a 3D grid: the scene is cut
 light that reaches it (colour, direct light, shadow, sky visibility). A full-resolution grid is large. Cube Matrix asks:
 
 1. How small can such a grid get when cells are stored in blocks and reconstructed on the GPU?
-2. Can the reconstruction run on **Tensor Cores** (`IMMA` / `HMMA` instructions) emitted by native compiler path
+2. Can the reconstruction run on **Tensor Cores** (`IMMA` / `HMMA` instructions) emitted by the native compiler path
    (DXIL → SPIR-V → NIR → NAK), not through Vulkan or CUDA?
 3. Does a smaller grid make the actual lighting pass faster on a real scene, or only smaller?
 
@@ -19,7 +19,7 @@ reproduce within a fixed error bound.
 ## Method
 
 - **Scene:** Sponza (Crytek Sponza via the Unity Classic Sponza remaster, CC BY 3.0, see *Licence* below).
-  Real geometry and materials, 264,754 triangles. The light is computed by our own CPU code (sun with shadows, 32 sky
+  Real geometry and materials, 264,754 triangles. The light is computed by the project's own CPU code (sun with shadows, 32 sky
   directions, one coloured diffuse bounce with 512 rays per cell), not Unity's baked lightmaps.
   Grids of 64³ cells (51.7 cm per cell) and 256³ cells (12.9 cm).
   At 64³, 8.9 % of the cells are occupied; at 256³, 3.0 %.
@@ -49,8 +49,8 @@ reproduce within a fixed error bound.
 
 ### 1. Tensor Cores work on the native path
 
-The pinned NAK compiler emits `imma.m16n8k32.i8.i8` from our SPIR-V. Tensor Core decoders produce results
-**bit-identical** to the CPU model on the RTX 4060 Ti and RTX 4090. Against our own scalar reconstruction of the *same*
+The pinned NAK compiler emits `imma.m16n8k32.i8.i8` from the project's SPIR-V. Tensor Core decoders produce results
+**bit-identical** to the CPU model on the RTX 4060 Ti and RTX 4090. Against a scalar reconstruction of the *same*
 model, the Tensor Core version was 3.0–3.1× faster on Sponza.
 
 ### 2. Sizes on Sponza (64³)
@@ -85,7 +85,7 @@ The two tables use different versions of the grid data and are not comparable wi
 
 - **Decoder alone.** The Hadamard decoder was 1.63× slower than a 2-bit reader written in the same thread shape
   (one group per block, empty blocks skipped).
-  - An earlier comparison against a reader in a weaker shape had shown the opposite (0.93×). We withdrew it after the fair
+  - An earlier comparison against a reader in a weaker shape had shown the opposite (0.93×). It was withdrawn after the fair
     control (stage 21).
   - The reader's shape alone changed its time by 1.75×.
 - **Decoder in front of the lighting pass.** On Sponza (1920 × 1080, G-buffer from the scene camera), decoding before
@@ -101,7 +101,7 @@ The two tables use different versions of the grid data and are not comparable wi
 
 A review of the NAK instruction listing pointed at the load kind. NAK emits `ld.global.constant` only when a NIR load
 carries `ACCESS_CAN_REORDER`; otherwise every buffer load is `ld.global.strong.gpu`. NVIDIA's Vulkan driver path in
-Mesa (NVK) sets that flag by running `nir_opt_access`; our adapter did not. **Every timing above was therefore measured
+Mesa (NVK) sets that flag by running `nir_opt_access`; the NDX12 adapter did not. **Every timing above was therefore measured
 with strong GPU-scope loads.**
 
 ![Cube Matrix on RTX 4090: strong vs constant buffer loads](charts/cube-matrix-constant-loads.svg)
@@ -127,8 +127,8 @@ programs it was neutral: new / old time 0.97–1.01, all outputs verified.
 
 ### 5. Scaling to 256³
 
-- The dense 256³ volume (128 MiB) does not fit the runtime's 128 MiB pool. We wrote a sparse pool of 23,424 occupied
-  blocks (12 MB) with a block table instead.
+- The dense 256³ volume (128 MiB) does not fit the runtime's 128 MiB pool. A sparse pool of 23,424 occupied
+  blocks (12 MB) with a block table is used instead.
 - Lighting at 256³ through the table is bit-exact. PSNR against the reference: 27.75 dB for D8O, 27.77 dB for Hadamard
   X50 and 27.40 dB for 4-bit.
 - With strong loads, the Tensor Core decoder was 1.85× slower than the scalar 4-bit decoder, and the frame 1.057× slower.
@@ -156,7 +156,7 @@ programs it was neutral: new / old time 0.97–1.01, all outputs verified.
   programs are SM89 builds.
 - **No Vulkan comparison** for these programs. NVK is cited as the source of the compiler pass, not as a measured
   baseline.
-- Hardware counters (L1 / L2 hit rates) are not available on our native RM path. Cache explanations are labelled
+- Hardware counters (L1 / L2 hit rates) are not available on the native RM path. Cache explanations are labelled
   inferred.
 - Code review for publication (CodeRabbit) and licence / NOTICE closure are open.
 
@@ -164,7 +164,7 @@ programs it was neutral: new / old time 0.97–1.01, all outputs verified.
 
 The Sponza model is © 2010 Frank Meinl, Crytek, licensed under
 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), obtained through the Unity Classic Sponza repository. The
-grids, light values and images in this experiment are **adaptations**: voxelised, with light computed by us. They are
+grids, light values and images in this experiment are **adaptations**: voxelised, with light computed in this project. They are
 not the original work.
 
 ## Evidence identities

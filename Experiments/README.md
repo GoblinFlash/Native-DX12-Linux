@@ -5,7 +5,7 @@
 <sub>17–20 November 2026 · RTX 4060 Ti / RTX 4090 · native GPU experiments · not part of a released benchmark</sub>
 
 Games often keep the light of a scene in a 3D grid of small cells, so they do not have to compute it again every frame.
-These two experiments ask how small such a grid can be and how fast native D3D12 path can read it back on the GPU.
+These two experiments ask how small such a grid can be and how fast the native D3D12 path can read it back on the GPU.
 
 - **[Cube Matrix](Cube-Matrix.md)** packs the grid into 4 × 4 × 4 blocks.
   - Some blocks are rebuilt on the GPU's Tensor Cores.
@@ -13,12 +13,12 @@ These two experiments ask how small such a grid can be and how fast native D3D12
 - **[Neural Grid](Neural-Grid.md)** tries a tiny neural network that rebuilds the cell values instead. It also compares
   the grid with tracing rays for light bouncing off walls.
 
-What we found, in short:
+Findings in short:
 
-- **The results are exact.** Every image and grid computed on the GPU matched our CPU reference to the last byte.
+- **The results are exact.** Every image and grid computed on the GPU matched the CPU reference to the last byte.
 - **Smaller is not always faster.** The compressed grids are much smaller, but on the test scene (Sponza) they did not
   make the frame faster: the whole scene already fits in the GPU cache.
-- **The biggest speed-up came from the compiler.** Our compiler treated every memory read as "might change at any
+- **The biggest speed-up came from the compiler.** The compiler path treated every memory read as "might change at any
   moment". Telling it which buffers are read-only made the lighting about 2× faster, and up to 3.4× in some programs,
   with identical images.
 - **A grid is cheap but blurrier.** Reading the light grid is about 33× cheaper than one ray per pixel, but the picture
