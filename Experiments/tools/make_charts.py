@@ -101,8 +101,8 @@ def chart(name, spec):
             o.append('<text x="%.1f" y="%d" font-size="12" fill="%s">%s</text>' % (left + w + 6, y + bar - 4, INK2, note))
     o.append('</svg>')
     svg = '\n'.join(o) + '\n'
-    (OUT / 'charts' / (name + '.svg')).write_text(svg)
-    with (OUT / 'data' / (name + '.csv')).open('w', newline='') as f:
+    (OUT / 'charts' / (name + '.svg')).write_text(svg, encoding='utf-8')
+    with (OUT / 'data' / (name + '.csv')).open('w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
         w.writerow(['case'] + [s for s, _ in spec['series']] + ['source'])
         for label, vals in spec['rows']:
