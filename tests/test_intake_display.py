@@ -75,7 +75,7 @@ class DisplayTests(unittest.TestCase):
                 self.assertNotIn('owner acceptance', managed)
                 self.assertNotIn('**UNVERIFIED**', managed)
         svg = api.blobs[entries[folder + '/chart.svg']['sha']]
-        self.assertIn('Raw units and independent scales', svg)
+        self.assertIn('Panels use independent scales', svg)
         self.assertEqual(api.blobs[entries[folder + '/record.json']['sha']], core.json_bytes(proposal).decode())
         self.assertIn('UNVERIFIED_SUBMISSION', proposal['warnings'])
         self.assertIn('NO_INDEPENDENT_GPU_RERUN', proposal['warnings'])

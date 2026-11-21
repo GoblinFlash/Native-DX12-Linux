@@ -17,9 +17,9 @@
 | Reported timestamp qualification | QUALIFIED in all four suites under the runner's cross-process clock model |
 | Clock policy | Unchanged; actual dispatch clocks were not independently measured |
 
-Representative medians from the exported tables (native results are **GPU ticks**, Vulkan results are **nanoseconds**; not raw shader-only timing):
+Representative medians from the exported tables (both paths use nanoseconds and measure the full work interval).
 
-| Workload | Native SYSMEM median GPU ticks | Vulkan reference median ns |
+| Workload | Native SYSMEM median (ns) | Vulkan reference median (ns) |
 | --- | ---: | ---: |
 | Affine | 15,776 | 10,112 |
 | ParallelSort N515 | 2,517,184 | 191,008 |

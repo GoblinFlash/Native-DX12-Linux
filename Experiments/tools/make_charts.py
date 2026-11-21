@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Charts and CSV tables for Experiments/Cube-Matrix.md and Experiments/Neural-Grid.md.
 
-Every number is a median of raw GPU timer ticks copied from the recorded campaigns named in SOURCES; nothing is
+Every number is a median GPU duration in nanoseconds copied from the recorded campaigns named in SOURCES; nothing is
 recomputed here. Palette: the benchmark charts' blue / orange / green (tools/nvidia_charts.py) on a white card.
 Green is below 3:1 contrast on white, so every bar carries its value and every chart has a CSV table.
 Static SVG for GitHub (no hover layer is possible in an <img>).
@@ -27,7 +27,7 @@ SOURCES = {   # public campaign identifiers (Evidence identities in the pages); 
 CHARTS = {
     'cube-matrix-constant-loads': dict(
         title='Cube Matrix on RTX 4090: strong vs constant buffer loads',
-        subtitle='Median raw GPU ticks per frame, lower is better. Same source, same data, bit-exact images.',
+        subtitle='Median GPU time per frame, lower is better. Same source, same data, bit-exact images.',
         series=[('Strong GPU-scope loads (before)', BLUE), ('Constant loads (nir_opt_access / CAN_REORDER)', GREEN)],
         rows=[('Lighting, dense 64³ grid', (124800, 62608)),
               ('Lighting, sparse 64³ via block table', (242400, 73136)),
@@ -36,7 +36,7 @@ CHARTS = {
               ('Frame: Tensor Core decoder + lighting', (513072, 271280))]),
     'neural-grid-tc-loads': dict(
         title='Neural Grid bounce programs on RTX 4090: load kinds',
-        subtitle='Median raw GPU ticks, 1920×1080, lower is better. Images bit-exact in all variants.',
+        subtitle='Median GPU time, 1920×1080, lower is better. Images bit-exact in all variants.',
         series=[('All loads strong (before)', BLUE), ('nir_opt_access (cmat loads stay strong)', ORANGE),
                 ('All loads constant, incl. cmat', GREEN)],
         rows=[('Ray march only', (2947808, 1321584, 1321584)),
@@ -46,8 +46,8 @@ CHARTS = {
               ('Tensor Core + march, rows', (9675600, 8211088, 4612160))]),
     'neural-grid-bounce-cost': dict(
         title='Indirect light on RTX 4060 Ti: cube lookup vs rays',
-        subtitle='Median raw GPU ticks, 1920×1080, lower is better (strong loads, before the compiler fix).',
-        series=[('Raw GPU ticks', BLUE)],
+        subtitle='Median GPU time, 1920×1080, lower is better (strong loads, before the compiler fix).',
+        series=[('GPU time', BLUE)],
         rows=[('4 rays per pixel + filter', (56919744,)),
               ('1 ray per pixel + filter', (22922640,)),
               ('Cube lookup, 13 cm voxels', (697344,)),
@@ -59,12 +59,16 @@ def esc(t):
     return t.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
-def fmt(v):
-    return '{:,}'.format(v)
+def format_duration(ns):
+    if ns < 1_000_000:
+        return f'{ns:,} ns'
+    hundredths = (ns + 5000) // 10_000
+    whole, fraction = divmod(hundredths, 100)
+    return f'{whole}.{fraction:02d}'.rstrip('0').rstrip('.') + ' ms'
 
 
 def chart(name, spec):
-    W, left, right = 860, 300, 110
+    W, left, right = 860, 300, 135
     bar, gap_bar, gap_row = 16, 2, 18
     n = len(spec['series'])
     top = 96 + 22 * ((n + 1) // 2) if n > 1 else 84    # a single series needs no legend
@@ -85,7 +89,7 @@ def chart(name, spec):
         x = left + (W - left - right) * g / 4
         o.append('<line x1="%.1f" y1="%d" x2="%.1f" y2="%d" stroke="%s"/>' % (x, top - 8, x, H - 26, GRID))
         o.append('<text x="%.1f" y="%d" font-size="11" fill="%s" text-anchor="middle">%s</text>'
-                 % (x, H - 10, INK3, fmt(int(round(vmax * g / 4, -3)))))
+                 % (x, H - 10, INK3, format_duration(int(round(vmax * g / 4, -3)))))
     o.append('<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="%s"/>' % (left, top - 8, left, H - 26, INK3))
     for r, (label, vals) in enumerate(spec['rows']):
         y0 = top + r * row_h
@@ -97,14 +101,14 @@ def chart(name, spec):
             colour = spec['series'][s][1]
             o.append('<path d="M%d,%d h%.1f a4,4 0 0 1 4,4 v%d a4,4 0 0 1 -4,4 h-%.1f z" fill="%s"/>'
                      % (left, y, w - 4, bar - 8, w - 4, colour))
-            note = fmt(v) if s == 0 else '%s  (%.2f×)' % (fmt(v), v / vals[0])
+            note = format_duration(v) if s == 0 else '%s  (%.2f×)' % (format_duration(v), v / vals[0])
             o.append('<text x="%.1f" y="%d" font-size="12" fill="%s">%s</text>' % (left + w + 6, y + bar - 4, INK2, note))
     o.append('</svg>')
     svg = '\n'.join(o) + '\n'
     (OUT / 'charts' / (name + '.svg')).write_text(svg, encoding='utf-8')
     with (OUT / 'data' / (name + '.csv')).open('w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
-        w.writerow(['case'] + [s for s, _ in spec['series']] + ['source'])
+        w.writerow(['case'] + [s + ' (ns)' for s, _ in spec['series']] + ['source'])
         for label, vals in spec['rows']:
             w.writerow([label] + list(vals) + [SOURCES[name]])
     if '--preview' in sys.argv:

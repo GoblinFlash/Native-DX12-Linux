@@ -297,7 +297,7 @@ L 846 558.36
    <text style="font-size: 9.3px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="484.048547" transform="rotate(-0 67.5 484.048547)">Host elapsed median increased by 55.40% (N129) and 54.36% (N515) with VRAM code.</text>
   </g>
   <g id="text_27">
-   <text style="font-size: 9.3px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="497.116547" transform="rotate(-0 67.5 497.116547)">GPU timer ticks improved, but total diagnostic host elapsed time became longer.</text>
+   <text style="font-size: 9.3px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="497.116547" transform="rotate(-0 67.5 497.116547)">GPU elapsed time decreased, but total diagnostic host elapsed time became longer.</text>
   </g>
   <g id="text_28">
    <text style="font-weight: 700; font-size: 11.7px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #142b45" x="67.5" y="521.512172" transform="rotate(-0 67.5 521.512172)">Scope and limitations</text>

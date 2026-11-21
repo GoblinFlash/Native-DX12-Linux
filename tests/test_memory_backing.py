@@ -61,9 +61,9 @@ class MemoryBackingTests(unittest.TestCase):
         catalog['v0.1.5']['archive_sha256'] = 'f'*64
         with mock.patch.object(core, 'catalog', return_value=catalog):
             p = core.prepare(fixtures.issue(), fixtures.bundle())
-            outputs = core.render(p)
-            metadata = json.loads(next(v for k, v in outputs.items() if k.endswith('/memory-backing.json')))
-            self.assertEqual(metadata['native_dx12']['backing'], 'UNKNOWN')
+            self.assertEqual(core.memory_backing(p)['native_dx12']['backing'], 'UNKNOWN')
+            with self.assertRaisesRegex(core.Refused, '^REPORT_TIMESTAMP_PROFILE$'):
+                core.render(p)
 
     def test_issue_and_archive_memory_prose_cannot_override_release_evidence(self):
         """Untrusted memory claims never select the label or enter the public metadata."""
@@ -116,7 +116,7 @@ class MemoryBackingTests(unittest.TestCase):
                 legend = root.find('.//{http://www.w3.org/2000/svg}g[@id="legend_1"]')
                 if legend is not None:
                     self.assertEqual([t.text for t in legend.iter('{http://www.w3.org/2000/svg}text')],
-                                     ['Native*', 'Vulkan reference'])
+                                     ['Native', 'Vulkan reference'])
 
     def test_curated_pages_label_existing_results_without_removing_negative_evidence(self):
         """Label every existing result page while keeping clock/contention caveats and values."""

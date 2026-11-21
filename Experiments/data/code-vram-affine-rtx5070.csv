@@ -1,4 +1,4 @@
-run,workload,pair,order,arm,gpu_ticks,empty_ticks,host_seconds,worker_seconds
+run,workload,pair,order,arm,gpu_ns,empty_ns,host_seconds,worker_seconds
 1,Affine N129,1,BA,B,5152,256,9.339283208,7.643166114
 2,Affine N129,1,BA,A,6016,224,6.010244549,4.323069931
 3,Affine N515,1,BA,B,5856,256,9.434347513,7.735360570

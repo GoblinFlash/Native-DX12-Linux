@@ -6,4 +6,4 @@ This index preserves the existing curated location for [Issue #5](https://github
 
 See [the existing issue-specific review](../issue-5.md). Full numeric variants and charts remain in [the centralized v0.1.4 report](../../../v0.1.4-submitted-data.md).
 
-All four timestamp checks are NOT_QUALIFIED; Native GPU ticks and Vulkan nanoseconds stay separate. Export consistency is not independent GPU qualification or owner acceptance. The intake writer detects an existing issue record in Benchmark Results and refuses to duplicate or overwrite it.
+All four host/GPU clock checks are NOT_QUALIFIED. Both paths report nanoseconds and use separate chart scales. Export consistency is not independent GPU qualification or owner acceptance. The intake writer detects an existing issue record in Benchmark Results and refuses to duplicate or overwrite it.

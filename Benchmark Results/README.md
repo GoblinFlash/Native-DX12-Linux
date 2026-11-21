@@ -19,7 +19,7 @@ Recorded GPU experiments, CPU-side development checks and community benchmark su
 <!-- ndx12:overview:v0.1.5:start -->
 4 submissions checked for **v0.1.5 / v21-r16**. 3 matching exports have measurements; refused submissions contribute no numeric results.
 
-| GPU | Exported process status | GPU tick-to-ns model | Important limitation |
+| GPU | Exported process status | Reported host/GPU clock check | Important limitation |
 | --- | --- | --- | --- |
 | [RTX 3060](v0.1.5-submitted-data.md#rtx-3060--issue-10) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 | [RTX 3090 (claimed)](https://github.com/GoblinFlash/Native-DX12-Linux/issues/11) | No imported values | NOT_RECORDED | GPU_MISMATCH: archive reports RTX 3060 |
@@ -38,7 +38,7 @@ These are **reported export statuses**, not independently repeated GPU qualifica
 
 Four NVIDIA GPU submissions were received for benchmark **v0.1.4 / v21-r14**. Their exported CSV and JSON files have been inspected and the workload medians recalculated.
 
-| GPU | Exported process status | GPU tick-to-ns model | Important limitation |
+| GPU | Exported process status | Reported host/GPU clock check | Important limitation |
 | --- | --- | --- | --- |
 | [RTX 3060](v0.1.4-submitted-data.md#rtx-3060--issue-4) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Maintainer acceptance pending |
 | [RTX 3060 Ti](v0.1.4-submitted-data.md#rtx-3060-ti--issue-3) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Background ONNX GPU activity |

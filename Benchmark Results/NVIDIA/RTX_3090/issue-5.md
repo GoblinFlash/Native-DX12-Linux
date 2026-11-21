@@ -14,12 +14,12 @@
 | Benchmark package | v0.1.4 / v21-r14; release archive SHA-256 `a4d707dd50fa9fa22d554732d4e97dfbb54c5ab4ce6fee225c7d554afd1f399a` |
 | Submitted results archive SHA-256 | `1728b58997966588d62b7e5f0d12d86d2f0aeab0013545f9613f46de9eba6d87` |
 | Process statuses in exported CSV | 189/189 VERIFIED: 119 native, 70 Vulkan reference; 0 FAIL, HELD, NOT_RUN, UNKNOWN |
-| Native tick-to-ns model | **NOT_QUALIFIED in all four suites**: `HOST_TIMESTAMP_BRACKET`, `GPU_AFTER_HOST_WINDOW` |
+| Reported host/GPU clock check | **NOT_QUALIFIED in all four suites**: `HOST_TIMESTAMP_BRACKET`, `GPU_AFTER_HOST_WINDOW` |
 | Clock policy | Unchanged |
 
-Representative medians from the exported tables. **Do not compare the two columns as performance ratios:** the native GPU tick duration was not qualified as nanoseconds.
+Representative medians from the exported tables. **Do not compare the two columns as performance ratios:** the reported host/GPU clock check failed in all four suites.
 
-| Workload | Native SYSMEM median GPU ticks (uncalibrated) | Vulkan reference median ns |
+| Workload | Native SYSMEM median (ns) | Vulkan reference median (ns) |
 | --- | ---: | ---: |
 | Affine | 23,488 | 11,648 |
 | ParallelSort N515 | 1,497,600 | 201,888 |

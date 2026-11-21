@@ -21,7 +21,7 @@ Community submissions are collected as public [Benchmark Results issues](https:/
 <!-- ndx12:overview:v0.1.5:start -->
 4 submissions checked for **v0.1.5 / v21-r16**. 3 matching exports have measurements; refused submissions contribute no numeric results.
 
-| GPU | Exported process status | GPU tick-to-ns model | Important limitation |
+| GPU | Exported process status | Reported host/GPU clock check | Important limitation |
 | --- | --- | --- | --- |
 | [RTX 3060](v0.1.5-submitted-data.md#rtx-3060--issue-10) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 | [RTX 3090 (claimed)](https://github.com/GoblinFlash/Native-DX12-Linux/issues/11) | No imported values | NOT_RECORDED | GPU_MISMATCH: archive reports RTX 3060 |
@@ -40,7 +40,7 @@ These are **reported export statuses**, not independently repeated GPU qualifica
 
 **[Benchmark v0.1.4 — charts and extracted results for RTX 3060, RTX 3060 Ti, RTX 3090 and RTX 4060 Laptop GPU](v0.1.4-submitted-data.md)**
 
-This report contains GPU-specific charts and median values recalculated from the four attached `share-results-v0.1.4.tar.gz` archives. The separate Native (GPU ticks) and Vulkan (nanoseconds) columns preserve the units, including the RTX 3090 run where conversion was **NOT_QUALIFIED**. Charts show four selected workloads per GPU; full numeric variants remain in the tables.
+This report contains GPU-specific charts and median values recalculated from the four attached `share-results-v0.1.4.tar.gz` archives. Both paths show ns below 1 ms and ms from 1 ms. The RTX 3090 host/GPU clock check was **NOT_QUALIFIED**. Charts show four selected workloads per GPU; full numeric variants remain in the tables.
 
 ## Existing curated GPU folders and review status
 
@@ -64,7 +64,7 @@ The intake workflow reads only a bounded, supported share-results data format an
 
 New records use `<vendor>/<exact_GPU>/<release>/issue-<number>/`. Ti, Laptop GPU, Super and D models remain distinct. Unknown GPUs and conflicting model/release identities go to `Pending_Classification/<release>/issue-<number>/`; unknown releases use `Unidentified_Version`. Strings from an Issue never become arbitrary paths.
 
-Supported, internally consistent archives produce sanitized process/measurement CSV, recalculated medians and a fresh chart with separate Native GPU-tick and Vulkan-nanosecond scales. Uploaded HTML, SVG, prose, system details and raw logs are not copied. A missing, malformed, unsupported or inconsistent archive produces only a clearly marked manual-review record, with no extracted measurements.
+Supported, internally consistent archives produce sanitized process/measurement CSV, recalculated medians and a fresh chart using ns below 1 ms and ms from 1 ms. Uploaded HTML, SVG, prose, system details and raw logs are not copied. A missing, malformed, unsupported or inconsistent archive produces only a clearly marked manual-review record, with no extracted measurements.
 
 Generated reports show **Export consistency: CHECKED** only after supported export checks pass; otherwise they show **REQUIRES_REVIEW**. **Owner acceptance: NOT_RECORDED** describes what intake records, not whether a maintainer has reviewed the result. Intake never infers acceptance from an Issue, label or merged PR. The machine-readable `UNVERIFIED_SUBMISSION` caveat remains, including for a reported 189/189 count or QUALIFIED clock status. The share export does not establish independent GPU execution, readback correctness, actual per-dispatch clocks, receipt provenance or absence of background contention. Review the source Issue and its caveats before approval.
 

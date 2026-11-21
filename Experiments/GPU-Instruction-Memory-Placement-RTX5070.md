@@ -18,7 +18,7 @@ Direct3D 12 execution path on Linux**, without Vulkan/VKD3D translation.
 It is an investigation of this implementation's behavior and costs, not a
 claim to have invented GPU code placement in VRAM.
 
-**Short answer:** GPU timer ticks decreased in these two workloads, but total
+**Short answer:** Elapsed GPU time decreased in these two workloads, but total
 host elapsed time increased. This is a trade-off, not an end-to-end speedup.
 
 The long-term goal is to improve the experimental native Linux Direct3D 12
@@ -73,20 +73,18 @@ cannot be attributed solely to physical placement or PCIe latency.
 
 All **32/32 native processes** completed with verified output buffers and
 resource retirement. The saved-evidence replay passed, with **zero new kernel
-records** during the recorded series. In both workloads, B used fewer GPU
-timer ticks in **all eight A/B pairs**.
+records** during the recorded series. In both workloads, B used less GPU time in **all eight A/B pairs**.
 
 #### GPU execution interval
 
-![Grouped bars comparing native GPU timer ticks for SYSMEM and VRAM code](charts/code-vram-gpu-ticks.svg)
+![Grouped bars comparing native GPU durations in ns for SYSMEM and VRAM code](charts/code-vram-gpu-ticks.svg)
 
-Lower is better. These are **native GPU timer ticks**, not calibrated
-nanoseconds or microseconds. The values are medians of eight processes per arm.
+Lower is better. Values are **native GPU durations in nanoseconds** and are medians of eight processes per arm.
 
 | Workload | A: SYSMEM code | B: VRAM code | Reduction in medians | Pairs with B lower |
 | --- | ---: | ---: | ---: | ---: |
-| Affine N129 | 5,792 ticks | 5,136 ticks | **11.33%** | 8/8 |
-| Affine N515 | 7,520 ticks | 5,856 ticks | **22.13%** | 8/8 |
+| Affine N129 | 5,792 ns | 5,136 ns | **11.33%** | 8/8 |
+| Affine N515 | 7,520 ns | 5,856 ns | **22.13%** | 8/8 |
 
 The median of eight *individual paired percentage reductions* was 10.74% for
 N129 and 21.49% for N515. That statistic differs from the percentage reduction
@@ -114,7 +112,7 @@ How much of the extra host cost comes from BAR1 transfers, repeated readback
 or other preparation remains to be isolated.
 
 The [32 process-level records](data/code-vram-affine-rtx5070.csv) include
-pair number, A/B order, raw GPU ticks, empty-bracket ticks, whole host time and
+pair number, A/B order, GPU duration and empty-bracket duration in ns, whole host time and
 worker time. No pair or outlier was removed. Chart bars are medians; whiskers
 show observed min–max ranges, not confidence intervals.
 
@@ -130,7 +128,7 @@ independent final experiment review have **not** been performed.
 This is one GPU model, one driver and two small compute workloads. It does not
 prove broader RTX performance, game compatibility, complete Direct3D 12
 support, a Vulkan comparison, or a universally faster native path. Any eventual
-GPU-tick reduction must be weighed against CPU-side upload/readback cost.
+GPU time reduction must be weighed against CPU-side upload/readback cost.
 
 **Next question:** can the instruction buffer be uploaded once and reused across
 dispatches, or transferred more efficiently without weakening validation? Do

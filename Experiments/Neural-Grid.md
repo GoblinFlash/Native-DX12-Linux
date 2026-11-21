@@ -47,7 +47,7 @@ values on the GPU. Two questions:
 **GPU (RTX 4060 Ti, SM89, clocks locked 2310 / 9001 MHz).**
 - Seven decoders compiled through the NAK path, with no register or memory spills.
 - 59 / 59 runs bit-identical to the CPU reference; the negative control changed exactly 1,000 voxels.
-- One 64³ decode: 45,648 ticks for the MLP (C16) against 65,264 for FP16 (A). The order was not investigated.
+- One 64³ decode: 45,648 ns for the MLP (C16) against 65,264 ns for FP16 (A). The order was not investigated.
 
 **On the real scene.** The MLP fits the Sponza light grid well (57.0 dB against the lossless grid). A linear PCA decoder
 with the same bytes does better (60.0 dB), and storing the three light channels at 8 bits for occupied cells alone
@@ -124,7 +124,7 @@ variants, 111 / 111 rows were bit-exact and 26 / 26 negatives were as predicted.
 ## Limits
 
 - Synthetic data sets for steps 1–3. One real scene (Sponza) for the rest.
-- **Raw GPU ticks, uncalibrated.** RTX 4060 Ti and RTX 4090 results are not compared in absolute ticks.
+- **GPU durations in ns below 1 ms, ms from 1 ms.** Compare variants within the same GPU campaign.
 - The step 1–3 and bounce timings on the RTX 4060 Ti used strong loads, before the compiler fix. Only the 3B programs
   were re-measured with constant loads, on the RTX 4090.
 - **No Vulkan comparison.** No hardware cache counters on the native RM path.

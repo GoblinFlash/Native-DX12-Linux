@@ -19,7 +19,7 @@ class VersionReportTests(unittest.TestCase):
         text = (ROOT / 'Benchmark Results/README.md').read_text()
         section = text.split('## Community Benchmark Data — v0.1.5\n', 1)[1].split(
             '## Community Benchmark Data — v0.1.4\n', 1)[0]
-        self.assertIn('| GPU | Exported process status | GPU tick-to-ns model | Important limitation |', section)
+        self.assertIn('| GPU | Exported process status | Reported host/GPU clock check | Important limitation |', section)
         for gpu in ('RTX 3060', 'RTX 4060', 'RTX 4090'):
             self.assertIn('[' + gpu + ']', section)
         self.assertIn('v0.1.5-submitted-data.md', section)
@@ -43,7 +43,29 @@ class VersionReportTests(unittest.TestCase):
         for label in ('Compute · Affine', 'D4 · 128×128', 'K uint4 · 64×64',
                       'WaveForm uint4 · 64×64', 'What is being compared?', 'Scope and limitations'):
             self.assertIn(label, text)
-        self.assertIn('CLOCK QUALIFIED 4/4 · conditional tick-to-ns model', text)
+        self.assertIn('HOST/GPU CLOCK CHECK QUALIFIED 4/4', text)
+
+    def test_display_threshold_and_lossless_csv(self):
+        for raw, shown in ((999999, '999999 ns'), (1000000, '1 ms'),
+                           (1005000, '1.01 ms'), (2610752, '2.61 ms')):
+            with self.subTest(raw=raw):
+                self.assertEqual(core.format_gpu_duration(raw), shown)
+
+        proposal = core.prepare(issue(), bundle())
+        native = next(row for row in proposal['measurements']
+                      if row['path'] == 'native' and row['case'] == 'affine')
+        for row in proposal['measurements']:
+            if row['path'] == 'native' and row['case'] == 'affine':
+                row['value'] = 2610752
+        outputs = core.render(proposal)
+        folder = core.record_folder(proposal)
+        self.assertEqual(native['unit'], 'GPU_TICKS')
+        self.assertEqual(json.loads(outputs[folder + '/record.json']), proposal)
+        saved = list(csv.DictReader(io.StringIO(outputs[folder + '/measurements.csv'].decode())))
+        matching = [row for row in saved if row['path'] == 'native' and row['case'] == 'affine']
+        self.assertEqual({(row['unit'], row['value']) for row in matching}, {('NS', '2610752')})
+        self.assertIn(b'2.61 ms', outputs[folder + '/chart.svg'])
+        self.assertIn(b'2.61 ms', outputs[folder + '/README.md'])
 
     def test_chart_driver_label_does_not_infer_driver_type(self):
         """Both published layouts label numeric driver versions without asserting Open."""
@@ -95,7 +117,7 @@ class VersionReportTests(unittest.TestCase):
                 self.assertEqual(len(proposal['run']['steps']), count)
                 output = core.render(proposal)
                 svg = ET.fromstring(next(v for k, v in output.items() if k.endswith('/chart.svg')))
-                self.assertIn(f'CLOCK: 0/{count} reported QUALIFIED — separate timer units',
+                self.assertIn(f'CLOCK: 0/{count} reported QUALIFIED — independent scales',
                               ''.join(svg.itertext()))
 
     def test_report_refuses_mixed_versions_and_duplicate_issues(self):
@@ -137,7 +159,7 @@ class VersionReportTests(unittest.TestCase):
             self.assertIn('Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-' +
                           str(number) + '/record.json', outputs)
 
-    def test_unqualified_clock_keeps_published_separate_raw_unit_panels(self):
+    def test_unqualified_clock_keeps_independent_scales(self):
         """The old unqualified design retains both data series without a shared time axis."""
         output = core.render(core.prepare(issue(), bundle()))
         root = ET.fromstring(next(v for k, v in output.items() if k.endswith('/chart.svg')))
@@ -145,8 +167,8 @@ class VersionReportTests(unittest.TestCase):
         self.assertEqual([x.get('id') for x in root.iter(ns + 'g')
                           if x.get('id', '').startswith('axes_')], ['axes_1', 'axes_2'])
         text = ''.join(root.itertext())
-        self.assertIn('Native — GPU timer ticks', text)
-        self.assertIn('Vulkan reference — nanoseconds', text)
+        self.assertIn('Native — GPU time', text)
+        self.assertIn('Vulkan reference — GPU time', text)
         self.assertIn('Do not compare these panels', text)
 
 

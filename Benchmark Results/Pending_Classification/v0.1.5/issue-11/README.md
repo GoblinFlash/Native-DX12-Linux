@@ -27,7 +27,7 @@ Model/PCI field consistency is checked against pinned vendor data; this is not h
 The source Issue and attachment are untrusted reports. Matching catalog fields and recalculated
 medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.
 Review background contention and all reporter notes in the Issue; they are not copied here.
-Actual per-dispatch clocks are not proven. Native GPU ticks and Vulkan nanoseconds stay separate.
+Actual per-dispatch clocks are not proven. GPU durations are shown in ns below 1 ms and in ms from 1 ms.
 A reported 189/189 VERIFIED count is not independent GPU qualification.
 
 No numeric result or uploaded chart is proposed while this refusal remains unresolved.

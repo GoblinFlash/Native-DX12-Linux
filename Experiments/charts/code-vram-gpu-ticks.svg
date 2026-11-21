@@ -118,7 +118,7 @@ L 846 189.570857
      </g>
     </g>
     <g id="text_9">
-     <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #142b45" x="53.899844" y="275.022" transform="rotate(-90 53.899844 275.022)">Native GPU timer ticks</text>
+     <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #142b45" x="53.899844" y="275.022" transform="rotate(-90 53.899844 275.022)">Native GPU time (ns)</text>
     </g>
    </g>
    <g id="patch_3">
@@ -295,10 +295,10 @@ L 846 558.36
    <text style="font-size: 9.3px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="536.914547" transform="rotate(-0 67.5 536.914547)">VRAM shader code is established practice; the test measures it in this native DX12 Linux path.</text>
   </g>
   <g id="text_29">
-   <text style="font-size: 9.3px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="549.982547" transform="rotate(-0 67.5 549.982547)">Uncalibrated GPU ticks, not microseconds. No cross-GPU, gaming FPS or end-to-end speedup claim.</text>
+   <text style="font-size: 9.3px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="549.982547" transform="rotate(-0 67.5 549.982547)">Durations come from GPU timestamps. No cross-GPU, gaming FPS or end-to-end speedup claim.</text>
   </g>
   <g id="text_30">
-   <text style="font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="571.56675" transform="rotate(-0 67.5 571.56675)">TERMS  ·  GPU ticks = uncalibrated timer units; whiskers = observed min-max; SYSMEM = system memory; VRAM = video memory.</text>
+   <text style="font-size: 8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3c5874" x="67.5" y="571.56675" transform="rotate(-0 67.5 571.56675)">TERMS  ·  ns = nanoseconds; whiskers = observed min-max; SYSMEM = system memory; VRAM = video memory.</text>
   </g>
   <g id="text_31">
    <text style="font-size: 7.8px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #6f8499" x="846" y="579.903844" transform="rotate(-0 846 579.903844)">DATA: CODE-VRAM-001 / AFFINE-PAIRS  ·  8 AB/BA pairs per workload</text>

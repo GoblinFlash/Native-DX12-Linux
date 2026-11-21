@@ -25,7 +25,7 @@ Backing is classified from documented release identity, not independently observ
 The source Issue and attachment are untrusted reports. Matching catalog fields and recalculated
 medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.
 Review background contention and all reporter notes in the Issue; they are not copied here.
-Actual per-dispatch clocks are not proven. Native GPU ticks and Vulkan nanoseconds stay separate.
+Actual per-dispatch clocks are not proven. GPU durations are shown in ns below 1 ms and in ms from 1 ms.
 A reported 189/189 VERIFIED count is not independent GPU qualification.
 
 Reported overall state: `COMPLETE`; failure marker present: `false`.
@@ -44,35 +44,35 @@ Reported overall state: `COMPLETE`; failure marker present: `false`.
 Medians below are calculated from exported per-process values, not from uploaded prose or charts.
 Frame-suite values are medians of process medians. No uploaded HTML, image or raw log is reused.
 
-| Suite | Case | Variant | Path | Unit | n | Median |
-| --- | --- | --- | --- | --- | ---: | ---: |
-| compute | affine |  | native | GPU_TICKS | 7 | 22176 |
-| compute | affine |  | vulkan | NS | 7 | 8320 |
-| compute | affine515 |  | native | GPU_TICKS | 7 | 21408 |
-| compute | affine515 |  | vulkan | NS | 7 | 8256 |
-| compute | parallel-sort |  | native | GPU_TICKS | 7 | 2599104 |
-| compute | parallel-sort |  | vulkan | NS | 7 | 150816 |
-| d4 | 128x128 |  | vulkan | NS | 7 | 6896 |
-| d4 | 128x128 | B | native | GPU_TICKS | 7 | 26848 |
-| d4 | 128x128 | D4 | native | GPU_TICKS | 7 | 20336 |
-| d4 | 16x1024 |  | vulkan | NS | 7 | 14048 |
-| d4 | 16x1024 | B | native | GPU_TICKS | 7 | 118592 |
-| d4 | 16x1024 | D4 | native | GPU_TICKS | 7 | 63760 |
-| d4 | 32x512 |  | vulkan | NS | 7 | 9968 |
-| d4 | 32x512 | B | native | GPU_TICKS | 7 | 64864 |
-| d4 | 32x512 | D4 | native | GPU_TICKS | 7 | 37696 |
-| k | 127x65 |  | vulkan | NS | 7 | 15152 |
-| k | 127x65 | root-scalar | native | GPU_TICKS | 7 | 320272 |
-| k | 127x65 | root-uint4 | native | GPU_TICKS | 7 | 265264 |
-| k | 64x64 |  | vulkan | NS | 7 | 10496 |
-| k | 64x64 | root-scalar | native | GPU_TICKS | 7 | 141152 |
-| k | 64x64 | root-uint4 | native | GPU_TICKS | 7 | 111664 |
-| kw | 127x65 |  | vulkan | NS | 7 | 9264 |
-| kw | 127x65 | wave-root-scalar | native | GPU_TICKS | 7 | 157984 |
-| kw | 127x65 | wave-root-uint4 | native | GPU_TICKS | 7 | 154960 |
-| kw | 64x64 |  | vulkan | NS | 7 | 9120 |
-| kw | 64x64 | wave-root-scalar | native | GPU_TICKS | 7 | 86336 |
-| kw | 64x64 | wave-root-uint4 | native | GPU_TICKS | 7 | 83488 |
+| Suite | Case | Variant | Path | n | Median GPU time |
+| --- | --- | --- | --- | ---: | ---: |
+| compute | affine |  | native | 7 | 22176 ns |
+| compute | affine |  | vulkan | 7 | 8320 ns |
+| compute | affine515 |  | native | 7 | 21408 ns |
+| compute | affine515 |  | vulkan | 7 | 8256 ns |
+| compute | parallel-sort |  | native | 7 | 2.6 ms |
+| compute | parallel-sort |  | vulkan | 7 | 150816 ns |
+| d4 | 128x128 |  | vulkan | 7 | 6896 ns |
+| d4 | 128x128 | B | native | 7 | 26848 ns |
+| d4 | 128x128 | D4 | native | 7 | 20336 ns |
+| d4 | 16x1024 |  | vulkan | 7 | 14048 ns |
+| d4 | 16x1024 | B | native | 7 | 118592 ns |
+| d4 | 16x1024 | D4 | native | 7 | 63760 ns |
+| d4 | 32x512 |  | vulkan | 7 | 9968 ns |
+| d4 | 32x512 | B | native | 7 | 64864 ns |
+| d4 | 32x512 | D4 | native | 7 | 37696 ns |
+| k | 127x65 |  | vulkan | 7 | 15152 ns |
+| k | 127x65 | root-scalar | native | 7 | 320272 ns |
+| k | 127x65 | root-uint4 | native | 7 | 265264 ns |
+| k | 64x64 |  | vulkan | 7 | 10496 ns |
+| k | 64x64 | root-scalar | native | 7 | 141152 ns |
+| k | 64x64 | root-uint4 | native | 7 | 111664 ns |
+| kw | 127x65 |  | vulkan | 7 | 9264 ns |
+| kw | 127x65 | wave-root-scalar | native | 7 | 157984 ns |
+| kw | 127x65 | wave-root-uint4 | native | 7 | 154960 ns |
+| kw | 64x64 |  | vulkan | 7 | 9120 ns |
+| kw | 64x64 | wave-root-scalar | native | 7 | 86336 ns |
+| kw | 64x64 | wave-root-uint4 | native | 7 | 83488 ns |
 
 ![Exported measurements for Issue #15](chart.svg)
 

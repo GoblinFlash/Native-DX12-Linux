@@ -14,11 +14,11 @@ input values in the range 0–255, stored as 32-bit integers. The GPU counts the
 occurrences of each value. All three cases contain the same number of values;
 their different width-by-height arrangements change the GPU work distribution.
 
-| Input arrangement | Original (µs) | Changed (µs) | Paired median time reduction |
+| Input arrangement | Original (ns) | Changed (ns) | Paired median time reduction |
 | --- | ---: | ---: | ---: |
-| 128×128 | 3.392 | 2.624 | 22.64% |
-| 32×512 | 7.936 | 4.848 | 39.01% |
-| 16×1024 | 14.112 | 7.872 | 44.22% |
+| 128×128 | 3,392 | 2,624 | 22.64% |
+| 32×512 | 7,936 | 4,848 | 39.01% |
+| 16×1024 | 14,112 | 7,872 | 44.22% |
 
 The change groups four repeated load/atomic operations and changes how guards
 are represented. The intervals cover the complete histogram GPU dispatch, not
@@ -35,10 +35,10 @@ program reads four adjacent histogram values in one operation rather than
 loading each separately. The other three programs and the work ordering are
 unchanged.
 
-| Input arrangement | Original native path (µs) | Changed native path (µs) | Whole-chain time reduction |
+| Input arrangement | Original native path (ns) | Changed native path (ns) | Whole-chain time reduction |
 | --- | ---: | ---: | ---: |
-| 64×64 | 4.608 | 4.336 | 5.90% |
-| 127×65 | 5.632 | 5.344 | 5.11% |
+| 64×64 | 4,608 | 4,336 | 5.90% |
+| 127×65 | 5,632 | 5,344 | 5.11% |
 
 These times cover the complete four-program GPU interval, including the
 necessary synchronization between programs, not application startup or CPU
