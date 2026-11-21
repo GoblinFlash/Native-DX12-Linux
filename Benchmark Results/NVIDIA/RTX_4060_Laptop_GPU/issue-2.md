@@ -29,4 +29,4 @@ Representative medians from the exported tables (native results are **GPU ticks*
 
 These measurements apply only to the reported machine and run. For this submission the runner reports no clear Affine difference in 7 paired repeats, even though the median changes; do not treat its median difference alone as a qualified speedup or slowdown. The report's clock model is conditional on a stable GPU timestamp relationship. Original device submissions and buffer readbacks were not independently inspected.
 
-[Community GPU index](../../README.md)
+[Submitted results index](../../SUBMISSIONS.md)

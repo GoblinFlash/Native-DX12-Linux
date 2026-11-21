@@ -53,7 +53,7 @@ def observations(proposal):
             'Reported ' + run['overall'] + '; original GPU receipts unavailable')
 
 
-def overview(version, proposals, prefix='Community/'):
+def overview(version, proposals, prefix=''):
     """Return the same four-column overview used for the previous release."""
     lines = ['| GPU | Exported process status | GPU tick-to-ns model | Important limitation |',
              '| --- | --- | --- | --- |']

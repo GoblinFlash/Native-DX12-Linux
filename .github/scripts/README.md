@@ -36,7 +36,7 @@ Only the `ndx12-share.v2` layouts cataloged for `v0.1.4` and `v0.1.5` are suppor
 
 Attachment names may be `share-results.tar.gz`, `share-results-v0.1.5.tar.gz`, or the same names with a three- or four-digit numeric prefix whose first digit is nonzero, followed by a hyphen: for example, `3090-share-results-v0.1.5.tar.gz`. Filename version components are limited to three digits each. Other prefix forms such as `RTX-3090-` or `3090-ti-` are unsupported and require manual handling. The prefix and filename version are discovery hints only: GPU classification and release checks use the Issue fields and actual `run.json`/catalog fields. A filename starting `3090-` cannot classify a bundle as RTX 3090. The internal archive root/member allowlist stays `ndx12-results/`; no filename is used as an output path.
 
-Outputs use `Benchmark Results/Community/<vendor>/<exact_GPU>/<release>/issue-N/`. Categories come from a fixed dictionary. Ti, Super, Laptop GPU and D suffixes remain distinct. Unknown GPUs use `Pending_Classification`; mismatched GPU/release/catalog identities also go there. Unknown releases use the literal `Unidentified_Version`. Issue numbers are bounded positive integers. No string from a submission becomes an arbitrary path.
+Outputs use `Benchmark Results/<vendor>/<exact_GPU>/<release>/issue-N/`. Categories come from a fixed dictionary. Ti, Super, Laptop GPU and D suffixes remain distinct. Unknown GPUs use `Pending_Classification`; mismatched GPU/release/catalog identities also go there. Unknown releases use the literal `Unidentified_Version`. Issue numbers are bounded positive integers. No string from a submission becomes an arbitrary path.
 
 | Limit | Maximum |
 | --- | ---: |
@@ -80,7 +80,7 @@ Existing published records are not rewritten by this schema transition.
 
 The draft writer also proposes updates to **both public result indexes**:
 [`Benchmark Results/README.md`](../../Benchmark%20Results/README.md) and
-[`Benchmark Results/Community/README.md`](../../Benchmark%20Results/Community/README.md).
+[`Benchmark Results/SUBMISSIONS.md`](../../Benchmark%20Results/SUBMISSIONS.md).
 The writer may also refresh guarded release reports and GPU/version indexes as described below. Issue-specific files remain additive. Index blobs are fetched from the exact base Git tree and verified by Git object SHA,
 size, UTF-8 format and managed section markers before any Git write. New entries link the exact
 GPU/release/Issue folder; reports show export consistency and owner acceptance separately; historic v0.1.4 measurements are preserved.

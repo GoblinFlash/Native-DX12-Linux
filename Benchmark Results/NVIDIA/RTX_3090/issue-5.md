@@ -29,4 +29,4 @@ Representative medians from the exported tables. **Do not compare the two column
 
 The reporting defect for native clock `NOT_QUALIFIED` concerns time unit comparability, **not** whether Vulkan executed. The shared CSV includes all 70 Vulkan reference processes and the exported statuses mark them VERIFIED. No native-vs-Vulkan percentage or superiority claim is made for this submission.
 
-[Community GPU index](../../README.md)
+[Submitted results index](../../SUBMISSIONS.md)

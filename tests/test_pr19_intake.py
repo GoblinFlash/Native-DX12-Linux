@@ -48,7 +48,7 @@ class PR19Tests(unittest.TestCase):
         """Real writer bootstraps both pinned historical indexes with their prose intact."""
         api = FakeAPI(); original = {}
         for path, (_anchor, prefix) in writer.INDEXES.items():
-            name = 'results' if prefix else 'community'
+            name = 'results' if prefix == 'results' else 'community'
             raw = (ROOT/'tests/fixtures'/('pre-index-'+name+'.md')).read_bytes()
             original[path] = raw
             object_id = writer.git_blob(raw)

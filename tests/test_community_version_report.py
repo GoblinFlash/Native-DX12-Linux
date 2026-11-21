@@ -22,7 +22,7 @@ class VersionReportTests(unittest.TestCase):
         self.assertIn('| GPU | Exported process status | GPU tick-to-ns model | Important limitation |', section)
         for gpu in ('RTX 3060', 'RTX 4060', 'RTX 4090'):
             self.assertIn('[' + gpu + ']', section)
-        self.assertIn('Community/v0.1.5-submitted-data.md', section)
+        self.assertIn('v0.1.5-submitted-data.md', section)
 
     def test_new_numeric_chart_reuses_published_four_panel_design(self):
         """New intake charts use the actual prior release's axes, colors and type styles."""
@@ -112,7 +112,7 @@ class VersionReportTests(unittest.TestCase):
         refused = core.prepare(issue(gpu='RTX 3060'), bundle())
         self.assertEqual(refused['reason'], 'GPU_MISMATCH')
         outputs = report.render('v0.1.5', [refused])
-        self.assertEqual(list(outputs), ['Benchmark Results/Community/v0.1.5-submitted-data.md'])
+        self.assertEqual(list(outputs), ['Benchmark Results/v0.1.5-submitted-data.md'])
         text = next(iter(outputs.values())).decode()
         self.assertIn('GPU_MISMATCH', text)
         self.assertIn('No measurements or chart', text)
@@ -131,10 +131,10 @@ class VersionReportTests(unittest.TestCase):
         first = core.prepare(issue(12), bundle())
         second = core.prepare(issue(13), bundle())
         outputs = report.render('v0.1.5', [first, second])
-        index = outputs['Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/README.md'].decode()
+        index = outputs['Benchmark Results/NVIDIA/RTX_3090/v0.1.5/README.md'].decode()
         for number in (12, 13):
             self.assertIn('#rtx-3090--issue-' + str(number), index)
-            self.assertIn('Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-' +
+            self.assertIn('Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-' +
                           str(number) + '/record.json', outputs)
 
     def test_unqualified_clock_keeps_published_separate_raw_unit_panels(self):

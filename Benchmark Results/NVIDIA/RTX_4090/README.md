@@ -6,4 +6,4 @@ No community submission has been approved for inclusion here yet.
 
 Submit a result using the [Benchmark Results form](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new/choose). The GitHub Issue remains the original report; a reviewed summary can be added here only after maintainer approval.
 
-[Community results index](../../README.md)
+[Submitted results index](../../SUBMISSIONS.md)

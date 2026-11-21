@@ -27,7 +27,7 @@ COLORS = ('fill: #0c80bd', 'fill: #ef7100')
 def template(qualified):
     """Read only the exact project template; reject unexplained layout changes."""
     name, expected = TEMPLATES[qualified]
-    path = Path(__file__).resolve().parents[2] / 'Benchmark Results/Community/charts' / name
+    path = Path(__file__).resolve().parents[2] / 'Benchmark Results/charts' / name
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != expected:
         raise ValueError('CHART_TEMPLATE_IDENTITY')

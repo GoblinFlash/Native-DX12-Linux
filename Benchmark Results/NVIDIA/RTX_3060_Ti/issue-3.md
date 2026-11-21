@@ -31,4 +31,4 @@ Representative medians from the exported tables (native results are **GPU ticks*
 
 The archive's GPU identity agrees with Issue #3. Issue #4 was initially misidentified as RTX 3060 Ti, but its reporter later confirmed the tested model is a regular RTX 3060; it is documented [separately](../RTX_3060/README.md) with its own acceptance status.
 
-[Complete extracted v0.1.4 data](../../v0.1.4-submitted-data.md) · [Community GPU index](../../README.md)
+[Complete extracted v0.1.4 data](../../v0.1.4-submitted-data.md) · [Submitted results index](../../SUBMISSIONS.md)

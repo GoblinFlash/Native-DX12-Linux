@@ -6,4 +6,4 @@ This index preserves the existing curated location for [Issue #2](https://github
 
 See [the existing issue-specific review](../issue-2.md). Full numeric variants and charts remain in [the centralized v0.1.4 report](../../../v0.1.4-submitted-data.md).
 
-Archive-consistency review; no independent GPU rerun. Export consistency is not independent GPU qualification or owner acceptance. The intake writer detects an existing issue record anywhere in Community and refuses to duplicate or overwrite it.
+Archive-consistency review; no independent GPU rerun. Export consistency is not independent GPU qualification or owner acceptance. The intake writer detects an existing issue record within Benchmark Results and refuses to duplicate or overwrite it.

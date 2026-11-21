@@ -163,7 +163,7 @@ INDEX_FIXTURES = Path(__file__).resolve().parent / 'fixtures'
 def index_fixture(path):
     """Read a fixed post-migration index scenario independent of live community content."""
     names = {'Benchmark Results/README.md': 'index-results.md',
-             'Benchmark Results/Community/README.md': 'index-community.md'}
+             'Benchmark Results/SUBMISSIONS.md': 'index-community.md'}
     return (INDEX_FIXTURES/names[path]).read_bytes()
 
 
@@ -1007,7 +1007,7 @@ class PublisherTests(unittest.TestCase):
         p = ready()
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
-                name = 'results' if prefix else 'community'
+                name = 'results' if prefix == 'results' else 'community'
                 prior = (ROOT/'tests/fixtures'/('pre-index-'+name+'.md')).read_bytes()
                 self.assertEqual(writer.git_blob(prior), writer.INDEX_BOOTSTRAP[prefix][0])
                 old_anchor = writer.INDEX_BOOTSTRAP[prefix][1]

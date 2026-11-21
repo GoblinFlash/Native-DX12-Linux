@@ -78,7 +78,7 @@ class AggregateTests(unittest.TestCase):
         result = writer.publish(ready(), api, 12)
         self.assertEqual(result['status'], 'DRAFT_PR_CREATED')
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        report = 'Benchmark Results/Community/v0.1.5-submitted-data.md'
+        report = 'Benchmark Results/v0.1.5-submitted-data.md'
         self.assertIn(report, entries)
         self.assertIn('Issue #12', api.blobs[entries[report]['sha']])
         root = api.blobs[entries['Benchmark Results/README.md']['sha']]
@@ -346,8 +346,8 @@ class AggregateTests(unittest.TestCase):
                     self.assertEqual(len(proposals), 3)
                     for name, (raw, key) in aggregate.document_set('v0.1.5', proposals, core).items():
                         files[name] = aggregate.wrap(raw, key)
-                    for name, prefix in [('Benchmark Results/README.md', 'Community/'),
-                                         (core.ROOT + 'README.md', '')]:
+                    for name in ('Benchmark Results/README.md', 'Benchmark Results/SUBMISSIONS.md'):
+                        prefix = ''
                         files[name] = aggregate.wrap(aggregate.overview('v0.1.5', proposals, prefix, core),
                                                      'overview:v0.1.5')
                 else:

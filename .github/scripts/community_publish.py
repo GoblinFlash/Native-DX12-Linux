@@ -50,7 +50,7 @@ def tree_entries(api, tree_sha):
 
 def existing_issue(entries, issue_number):
     """Report whether tree entries contain an existing legacy or versioned Issue record."""
-    pattern = re.compile(r'^Benchmark Results/Community/(?:[^/]+/)*issue-' + str(issue_number) +
+    pattern = re.compile(r'^Benchmark Results/(?:[^/]+/)*issue-' + str(issue_number) +
                          r'(?:-submission)?(?:\.md|/(?:README\.md|record\.json))$')
     return any(type(row.get('path')) is str and pattern.fullmatch(row['path']) for row in entries)
 
@@ -60,19 +60,22 @@ INDEX_END = '<!-- ndx12-community-intake:end -->'
 INDEX_NOTE = ('Export consistency and owner acceptance are separate: intake checks exported data '
               'but does not record owner acceptance or infer it from a merged PR. '
               'Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.')
+# The second tuple item is an index identity, not a directory/link prefix.
+# Both indexes now reside directly under Benchmark Results.
 INDEXES = {
-    'Benchmark Results/README.md': ('\n## Curated community benchmark data — v0.1.4\n', 'Community/'),
-    'Benchmark Results/Community/README.md': ('\n## Curated v0.1.4 report\n', ''),
+    'Benchmark Results/README.md': ('\n## Curated community benchmark data — v0.1.4\n', 'results'),
+    'Benchmark Results/SUBMISSIONS.md': ('\n## Curated v0.1.4 report\n', 'submissions'),
 }
-# Exact public main 8e720506 index blobs, before managed-section migration.
+# Exact historical bootstrap blobs. They are immutable fixtures predating the layout change.
 INDEX_BOOTSTRAP = {
-    'Community/': ('c594a30eb9c6b74ecde7bd3b38fd7ac840b70006',
-                   '\n## Latest community benchmark data — v0.1.4\n'),
-    '': ('9ac283a9f673501c90f838b09ccb4ee001d0c66a', '\n## Latest submitted data\n'),
+    'results': ('c594a30eb9c6b74ecde7bd3b38fd7ac840b70006',
+                '\n## Latest community benchmark data — v0.1.4\n'),
+    'submissions': ('9ac283a9f673501c90f838b09ccb4ee001d0c66a',
+                    '\n## Latest submitted data\n'),
 }
 
 
-def index_entry(proposal, prefix):
+def index_entry(proposal, index_id):
     """Format one plain report link from validated catalogue identity and a fixed path."""
     folder = intake.record_folder(proposal)
     gpu = proposal['claimed_gpu']
@@ -81,7 +84,8 @@ def index_entry(proposal, prefix):
     else:
         label = 'Pending classification'
     version = proposal['claimed_version'] or 'Unidentified release'
-    relative = prefix + folder[len(intake.ROOT):] + '/README.md'
+    intake.need(index_id in INDEX_BOOTSTRAP, 'INDEX_FORMAT')
+    relative = folder[len(intake.ROOT):] + '/README.md'
     return f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative})'
 
 
@@ -116,7 +120,7 @@ def update_index(source, proposal, anchor, prefix):
     markers = (') — **UNVERIFIED** (',
                ') — export consistency **CHECKED**; owner acceptance **NOT_RECORDED** (`DATA_READY`).',
                ') — export consistency **REQUIRES_REVIEW**; owner acceptance **NOT_RECORDED** (`MANUAL_REVIEW`).')
-    plain = re.compile(r'- \[[^\]\r\n]{1,200}\]\((?:Community/)?(?:[A-Za-z0-9_]+/){1,2}'
+    plain = re.compile(r'- \[[^\]\r\n]{1,200}\]\((?:[A-Za-z0-9_]+/){1,2}'
                        r'(?:v[0-9]+\.[0-9]+\.[0-9]+|Unidentified_Version)/issue-[0-9]+/README\.md\)')
     intake.need(not entries or all(plain.fullmatch(line) or
                                    (line.startswith('- [') and any(marker in line for marker in markers))

@@ -2,21 +2,48 @@
 import unittest
 import xml.etree.ElementTree as ET
 
-from test_community_intake import FakeAPI, bundle, core, index_fixture, issue, ready, writer
+from test_community_intake import ROOT, FakeAPI, bundle, core, index_fixture, issue, ready, writer
 
 
 class DisplayTests(unittest.TestCase):
+    def test_nvidia_index_reaches_submitted_4090_report(self):
+        """A GPU-model link must reach the actual release report, not a placeholder."""
+        index = (ROOT / 'Benchmark Results/NVIDIA/README.md').read_text()
+        self.assertIn('[GeForce RTX 4090](RTX_4090/v0.1.5/README.md)', index)
+        report = (ROOT / 'Benchmark Results/NVIDIA/RTX_4090/v0.1.5/README.md').read_text()
+        self.assertIn('Issue #14: full measurements and chart', report)
+        self.assertIn('not independent GPU qualification', report)
+
+    def test_flat_vendor_layout_preserves_classification_and_existing_issues(self):
+        """Results route into GPU folders directly, without a Community directory."""
+        self.assertFalse((ROOT / 'Benchmark Results/Community').exists())
+        self.assertEqual(core.record_folder(ready()),
+                         'Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-12')
+        self.assertEqual(core.gpu_category('AMD Radeon RX 7900 XTX'), 'AMD/RX_7900_XTX')
+        self.assertEqual(core.gpu_category('Intel Arc A770'), 'Intel/Arc_A770')
+        mismatch = core.prepare(issue(gpu='RTX 3060'), bundle())
+        self.assertEqual(core.record_folder(mismatch),
+                         'Benchmark Results/Pending_Classification/v0.1.5/issue-12')
+        paths = [
+            'Benchmark Results/NVIDIA/RTX_3090/issue-5.md',
+            'Benchmark Results/NVIDIA/RTX_3060/v0.1.5/issue-10/record.json',
+        ]
+        records = [{'path': path, 'type': 'blob'} for path in paths]
+        self.assertTrue(writer.existing_issue(records, 5))
+        self.assertTrue(writer.existing_issue(records, 10))
+        self.assertFalse(writer.existing_issue(records, 12))
+
     def test_publisher_embeds_chart_in_report_and_links_both_indexes(self):
         """Keep the prior release's flow: index links lead to a report with its chart."""
         api = FakeAPI()
         writer.publish(ready(), api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        folder = 'Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-12'
+        folder = 'Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-12'
         self.assertIn('![Exported measurements for Issue #12](chart.svg)',
                       api.blobs[entries[folder + '/README.md']['sha']])
         expected = {
-            'Benchmark Results/README.md': 'Community/NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
-            'Benchmark Results/Community/README.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
+            'Benchmark Results/README.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
+            'Benchmark Results/SUBMISSIONS.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
         }
         for path, relative in expected.items():
             with self.subTest(path=path):
@@ -35,7 +62,7 @@ class DisplayTests(unittest.TestCase):
         api = FakeAPI(current=source)
         writer.publish(proposal, api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        folder = 'Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-12'
+        folder = 'Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-12'
         report = api.blobs[entries[folder + '/README.md']['sha']]
         self.assertIn('**Export consistency: CHECKED**', report)
         self.assertIn('**Owner acceptance: NOT_RECORDED**', report)
@@ -80,7 +107,7 @@ class DisplayTests(unittest.TestCase):
         next_proposal = core.prepare(issue(13), bundle())
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
-                legacy = (f'- [NVIDIA RTX 3090 / v0.1.5 / Issue #9]({prefix}'
+                legacy = (f'- [NVIDIA RTX 3090 / v0.1.5 / Issue #9]('
                           'NVIDIA/RTX_3090/v0.1.5/issue-9/README.md) '
                           '— **UNVERIFIED** (`DATA_READY`); maintainer review required.\n')
                 source = index_fixture(path).replace(
