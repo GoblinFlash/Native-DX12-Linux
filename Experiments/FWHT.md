@@ -18,7 +18,7 @@ sessions; a separate RTX 5070 pilot examines data/code placement.
 
 The transform itself is established mathematics, not a novel algorithm.
 **Cache Arena is software-managed session and resource reuse**, not a claim
-of improved GPU hardware-cache behavior. Host elapsed time, raw GPU ticks
+of improved GPU hardware-cache behavior. Host elapsed time, GPU elapsed time
 and independent GPU qualifications remain distinct evidence categories.
 
 The tested block is **128 × 128 u32 values (16,384 elements)**. Dispatch 1
@@ -31,10 +31,9 @@ input/guard regions, resource retirement and saved driver/control evidence.
 
 **Device:** GeForce RTX 5070, SM120, NVIDIA Open 620.70.06.
 Each configuration was run in **one process**, with 14 frames; the reported
-median uses 12 frames. Values are **raw, uncalibrated GPU timer ticks**, not
-nanoseconds or microseconds.
+median uses 12 frames. Values are elapsed GPU time in nanoseconds.
 
-| Data backing | Program backing | Median raw ticks per frame | Recorded status |
+| Data backing | Program backing | Median GPU time per frame (ns) | Recorded status |
 | --- | --- | ---: | --- |
 | SYSMEM | Control arena | 856,480 | GPU series accepted; saved output checked |
 | VRAM | Control arena | 32,096 | GPU series accepted; saved output checked |
@@ -46,11 +45,10 @@ on-VM audit rejected it because its tool expected 14 QMD entries instead of
 the 28 launches actually recorded. A corrected auditor accepted the saved
 data on the CPU; **that corrected auditor has not been rerun on the GPU VM**.
 
-The large SYSMEM/VRAM tick separation is specific to this workload and its
+The large difference in GPU time between SYSMEM and VRAM is specific to this workload and its
 memory profiles. Code placement, transfers, cache behavior and launch details
 are not independently isolated. With one process per configuration, unlocked
-clocks and uncalibrated ticks, this is **not** a qualified end-to-end speedup
-or a general GPU comparison.
+clocks, the measurements cover this workload and the individual GPU intervals.
 
 ## RTX 4090 — retained-session pilot
 
@@ -82,8 +80,7 @@ The saved-data checks accepted both FWHT tasks and the recorded control,
 allocation and lifetime evidence. A second reviewer recalculated the timings
 and checked saved bytes; this does **not** independently establish live GPU
 clock behavior, review the entire Rust consumer or qualify the production API.
-Raw GPU ticks were not converted into time units. There was no Vulkan
-comparison in this Arena pilot.
+There was no Vulkan comparison in this Arena pilot.
 
 ## Tested pilot identities and evidence
 

@@ -17,9 +17,9 @@
 | Reported timestamp qualification | QUALIFIED in all four suites under the runner's cross-process clock model |
 | Clock policy | Unchanged |
 
-Representative medians from the exported tables (native results are **GPU ticks**, Vulkan results are **nanoseconds**; whole-work measurements, not shader-only):
+Representative medians from the exported tables (both paths use nanoseconds and measure the full work interval).
 
-| Workload | Native SYSMEM median GPU ticks | Vulkan reference median ns |
+| Workload | Native SYSMEM median (ns) | Vulkan reference median (ns) |
 | --- | ---: | ---: |
 | Affine | 6,720 | 10,336 |
 | ParallelSort N515 | 477,184 | 194,560 |
@@ -27,7 +27,7 @@ Representative medians from the exported tables (native results are **GPU ticks*
 | K root uint4, 64×64 | 27,632 | 16,912 |
 | WaveForm uint4, 64×64 | 22,096 | 10,624 |
 
-**Important limitation:** The reporter states that an always-on ONNX object-detection process was using the same GPU throughout the run. These times therefore include potential GPU contention, and they must not be pooled with idle-GPU benchmarks or promoted as a universal performance ranking. A conditional tick-to-nanosecond model and 7 paired samples per comparison do not eliminate that limitation.
+**Important limitation:** The reporter states that an always-on ONNX object-detection process was using the same GPU throughout the run. These times therefore include potential GPU contention, and they must not be pooled with idle-GPU benchmarks or promoted as a universal performance ranking. The reported host/GPU clock check and 7 paired samples per comparison do not eliminate that limitation.
 
 The archive's GPU identity agrees with Issue #3. Issue #4 was initially misidentified as RTX 3060 Ti, but its reporter later confirmed the tested model is a regular RTX 3060; it is documented [separately](../RTX_3060/README.md) with its own acceptance status.
 

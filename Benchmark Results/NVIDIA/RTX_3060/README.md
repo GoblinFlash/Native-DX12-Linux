@@ -6,7 +6,7 @@
 
 [Issue #4](https://github.com/GoblinFlash/Native-DX12-Linux/issues/4) was originally submitted as RTX 3060 Ti, but the v0.1.4 archive identifies **NVIDIA GeForce RTX 3060 (PCI `10de:2503`)**. The reporter subsequently checked the physical card and confirmed that it is the regular RTX 3060.
 
-The attached export reports **189/189 VERIFIED** process statuses, including 119 native and 70 Vulkan reference processes. All four conditional native tick-to-nanosecond checks are reported QUALIFIED. These are exported statuses, not independently repeated GPU execution.
+The attached export reports **189/189 VERIFIED** process statuses, including 119 native and 70 Vulkan reference processes. All four host/GPU clock checks are reported QUALIFIED. These are exported statuses, not independently repeated GPU execution.
 
 One exported row has `kernel_records=1` (compute / affine515 / native / repeat 4). The reporter identified it as an `hrtimer` interrupt-latency message, unrelated to GPU faults, and reported no Xid/ECC/NVRM errors. The original kernel log line is not included in the shared archive; the explanation is **reporter-provided**, not independently verified.
 

@@ -34,15 +34,15 @@ Both are mature, game-oriented projects. A translation layer introduces an API b
 
 The campaign used a **16,384-sample, 256-bin histogram** on an NVIDIA GeForce **RTX 4060 Ti**. Earlier dynamic-clock tests showed P8 power-state readings after Native runs, so the comparison was repeated with **locked clocks** (2310 MHz core / 9001 MHz memory). Recorded monitoring samples during the locked-clock campaign showed P0 / 2310 / 9001 MHz.
 
-**All 67 campaign runs completed**, with bit-exact output validation reported by the campaign author. The following results are medians of four processes for each workload. **Native values are GPU ticks; Vulkan values are nanoseconds.**
+**All 67 campaign runs completed**, with bit-exact output validation reported by the campaign author. The following results are medians of four processes for each workload. **Both paths report elapsed GPU time in nanoseconds (ns) for these results. At 1,000,000 ns and above, reports display ms to at most two decimal places.**
 
-| Workload Variant | 256×64 Native (ticks) | 256×64 NVIDIA Vulkan (ns) | 16×1024 Native (ticks) | 16×1024 NVIDIA Vulkan (ns) |
+| Workload Variant | 256×64 Native (ns) | 256×64 NVIDIA Vulkan (ns) | 16×1024 Native (ns) | 16×1024 NVIDIA Vulkan (ns) |
 | :--- | ---: | ---: | ---: | ---: |
 | **Empty Kernel (Baseline)** | **4,480** | 6,792 | **4,424** | 6,792 |
 | **D4 (Reference)** | **5,032** | 8,160 | **10,864** | 15,680 |
 | **Q8PL (Packed INT8 Opt.)** | **4,816** | 7,992 | **7,344** | 9,152 |
 
-**Measurement limitations:** The Native GPU tick counter has **not** been calibrated to nanoseconds. The Native and Vulkan timing windows differ, and Native buffers use VRAM while the Vulkan reference uses system memory. Therefore, the numbers above are **independent experimental observations**, not directly comparable execution times or evidence of a specific cross-API speedup. The empty-kernel measurements also include their respective measurement/submission brackets; they do not isolate API translation overhead. Independent review is pending.
+**Measurement limitations:** The Native and Vulkan timing windows differ, and Native buffers use VRAM while the Vulkan reference uses system memory. Therefore, the numbers above are **independent experimental observations**, not directly comparable execution times or evidence of a specific cross-API speedup. The empty-kernel measurements also include their respective measurement/submission brackets; they do not isolate API translation overhead. Independent review is pending.
 
 
 ## Current Progress

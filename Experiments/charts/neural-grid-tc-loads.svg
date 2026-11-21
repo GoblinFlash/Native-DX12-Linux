@@ -2,55 +2,55 @@
 <title>Neural Grid bounce programs on RTX 4090: load kinds</title>
 <rect width="860" height="520" rx="10" fill="#ffffff" stroke="#e3e8ef"/>
 <text x="24" y="36" font-size="19" font-weight="700" fill="#0f2440">Neural Grid bounce programs on RTX 4090: load kinds</text>
-<text x="24" y="60" font-size="13" fill="#41536b">Median raw GPU ticks, 1920×1080, lower is better. Images bit-exact in all variants.</text>
+<text x="24" y="60" font-size="13" fill="#41536b">Median GPU time, 1920×1080, lower is better. Images bit-exact in all variants.</text>
 <rect x="24" y="78" width="12" height="12" rx="3" fill="#2a78d6"/>
 <text x="42" y="88" font-size="13" fill="#41536b">All loads strong (before)</text>
 <rect x="424" y="78" width="12" height="12" rx="3" fill="#eb6834"/>
 <text x="442" y="88" font-size="13" fill="#41536b">nir_opt_access (cmat loads stay strong)</text>
 <rect x="24" y="100" width="12" height="12" rx="3" fill="#1baf7a"/>
 <text x="42" y="110" font-size="13" fill="#41536b">All loads constant, incl. cmat</text>
-<line x1="412.5" y1="132" x2="412.5" y2="494" stroke="#e3e8ef"/>
-<text x="412.5" y="510" font-size="11" fill="#66758a" text-anchor="middle">2,419,000</text>
-<line x1="525.0" y1="132" x2="525.0" y2="494" stroke="#e3e8ef"/>
-<text x="525.0" y="510" font-size="11" fill="#66758a" text-anchor="middle">4,838,000</text>
-<line x1="637.5" y1="132" x2="637.5" y2="494" stroke="#e3e8ef"/>
-<text x="637.5" y="510" font-size="11" fill="#66758a" text-anchor="middle">7,257,000</text>
-<line x1="750.0" y1="132" x2="750.0" y2="494" stroke="#e3e8ef"/>
-<text x="750.0" y="510" font-size="11" fill="#66758a" text-anchor="middle">9,676,000</text>
+<line x1="406.2" y1="132" x2="406.2" y2="494" stroke="#e3e8ef"/>
+<text x="406.2" y="510" font-size="11" fill="#66758a" text-anchor="middle">2.42 ms</text>
+<line x1="512.5" y1="132" x2="512.5" y2="494" stroke="#e3e8ef"/>
+<text x="512.5" y="510" font-size="11" fill="#66758a" text-anchor="middle">4.84 ms</text>
+<line x1="618.8" y1="132" x2="618.8" y2="494" stroke="#e3e8ef"/>
+<text x="618.8" y="510" font-size="11" fill="#66758a" text-anchor="middle">7.26 ms</text>
+<line x1="725.0" y1="132" x2="725.0" y2="494" stroke="#e3e8ef"/>
+<text x="725.0" y="510" font-size="11" fill="#66758a" text-anchor="middle">9.68 ms</text>
 <line x1="300" y1="132" x2="300" y2="494" stroke="#66758a"/>
 <text x="290" y="170.0" font-size="13" fill="#0f2440" text-anchor="end">Ray march only</text>
-<path d="M300,140 h133.1 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-133.1 z" fill="#2a78d6"/>
-<text x="443.1" y="152" font-size="12" fill="#41536b">2,947,808</text>
-<path d="M300,158 h57.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-57.5 z" fill="#eb6834"/>
-<text x="367.5" y="170" font-size="12" fill="#41536b">1,321,584  (0.45×)</text>
-<path d="M300,176 h57.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-57.5 z" fill="#1baf7a"/>
-<text x="367.5" y="188" font-size="12" fill="#41536b">1,321,584  (0.45×)</text>
+<path d="M300,140 h125.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-125.5 z" fill="#2a78d6"/>
+<text x="435.5" y="152" font-size="12" fill="#41536b">2.95 ms</text>
+<path d="M300,158 h54.1 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-54.1 z" fill="#eb6834"/>
+<text x="364.1" y="170" font-size="12" fill="#41536b">1.32 ms  (0.45×)</text>
+<path d="M300,176 h54.1 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-54.1 z" fill="#1baf7a"/>
+<text x="364.1" y="188" font-size="12" fill="#41536b">1.32 ms  (0.45×)</text>
 <text x="290" y="240.0" font-size="13" fill="#0f2440" text-anchor="end">Tensor Core, B by columns</text>
-<path d="M300,210 h182.1 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-182.1 z" fill="#2a78d6"/>
-<text x="492.1" y="222" font-size="12" fill="#41536b">4,002,048</text>
-<path d="M300,228 h182.2 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-182.2 z" fill="#eb6834"/>
-<text x="492.2" y="240" font-size="12" fill="#41536b">4,003,376  (1.00×)</text>
-<path d="M300,246 h51.4 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-51.4 z" fill="#1baf7a"/>
-<text x="361.4" y="258" font-size="12" fill="#41536b">1,191,952  (0.30×)</text>
+<path d="M300,210 h171.8 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-171.8 z" fill="#2a78d6"/>
+<text x="481.8" y="222" font-size="12" fill="#41536b">4 ms</text>
+<path d="M300,228 h171.8 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-171.8 z" fill="#eb6834"/>
+<text x="481.8" y="240" font-size="12" fill="#41536b">4 ms  (1.00×)</text>
+<path d="M300,246 h48.4 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-48.4 z" fill="#1baf7a"/>
+<text x="358.4" y="258" font-size="12" fill="#41536b">1.19 ms  (0.30×)</text>
 <text x="290" y="310.0" font-size="13" fill="#0f2440" text-anchor="end">Tensor Core, B by rows</text>
-<path d="M300,280 h374.7 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-374.7 z" fill="#2a78d6"/>
-<text x="684.7" y="292" font-size="12" fill="#41536b">8,143,376</text>
-<path d="M300,298 h374.6 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-374.6 z" fill="#eb6834"/>
-<text x="684.6" y="310" font-size="12" fill="#41536b">8,140,640  (1.00×)</text>
-<path d="M300,316 h161.7 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-161.7 z" fill="#1baf7a"/>
-<text x="471.7" y="328" font-size="12" fill="#41536b">3,561,872  (0.44×)</text>
+<path d="M300,280 h353.7 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-353.7 z" fill="#2a78d6"/>
+<text x="663.7" y="292" font-size="12" fill="#41536b">8.14 ms</text>
+<path d="M300,298 h353.6 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-353.6 z" fill="#eb6834"/>
+<text x="663.6" y="310" font-size="12" fill="#41536b">8.14 ms  (1.00×)</text>
+<path d="M300,316 h152.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-152.5 z" fill="#1baf7a"/>
+<text x="462.5" y="328" font-size="12" fill="#41536b">3.56 ms  (0.44×)</text>
 <text x="290" y="380.0" font-size="13" fill="#0f2440" text-anchor="end">Tensor Core + march, columns</text>
-<path d="M300,350 h262.9 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-262.9 z" fill="#2a78d6"/>
-<text x="572.9" y="362" font-size="12" fill="#41536b">5,738,160</text>
-<path d="M300,368 h187.2 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-187.2 z" fill="#eb6834"/>
-<text x="497.2" y="380" font-size="12" fill="#41536b">4,110,448  (0.72×)</text>
-<path d="M300,386 h103.1 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-103.1 z" fill="#1baf7a"/>
-<text x="413.1" y="398" font-size="12" fill="#41536b">2,302,256  (0.40×)</text>
+<path d="M300,350 h248.0 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-248.0 z" fill="#2a78d6"/>
+<text x="558.0" y="362" font-size="12" fill="#41536b">5.74 ms</text>
+<path d="M300,368 h176.6 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-176.6 z" fill="#eb6834"/>
+<text x="486.6" y="380" font-size="12" fill="#41536b">4.11 ms  (0.72×)</text>
+<path d="M300,386 h97.1 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-97.1 z" fill="#1baf7a"/>
+<text x="407.1" y="398" font-size="12" fill="#41536b">2.3 ms  (0.40×)</text>
 <text x="290" y="450.0" font-size="13" fill="#0f2440" text-anchor="end">Tensor Core + march, rows</text>
-<path d="M300,420 h446.0 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-446.0 z" fill="#2a78d6"/>
-<text x="756.0" y="432" font-size="12" fill="#41536b">9,675,600</text>
-<path d="M300,438 h377.9 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-377.9 z" fill="#eb6834"/>
-<text x="687.9" y="450" font-size="12" fill="#41536b">8,211,088  (0.85×)</text>
-<path d="M300,456 h210.5 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-210.5 z" fill="#1baf7a"/>
-<text x="520.5" y="468" font-size="12" fill="#41536b">4,612,160  (0.48×)</text>
+<path d="M300,420 h421.0 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-421.0 z" fill="#2a78d6"/>
+<text x="731.0" y="432" font-size="12" fill="#41536b">9.68 ms</text>
+<path d="M300,438 h356.7 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-356.7 z" fill="#eb6834"/>
+<text x="666.7" y="450" font-size="12" fill="#41536b">8.21 ms  (0.85×)</text>
+<path d="M300,456 h198.6 a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h-198.6 z" fill="#1baf7a"/>
+<text x="508.6" y="468" font-size="12" fill="#41536b">4.61 ms  (0.48×)</text>
 </svg>

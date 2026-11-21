@@ -6,7 +6,6 @@ fonts, colors, panels, legend and explanatory blocks come from those files.
 import hashlib
 import json
 import math
-from decimal import Decimal
 from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
@@ -16,8 +15,8 @@ TAG = '{' + NS + '}'
 ET.register_namespace('', NS)
 ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
 TEMPLATES = {
-    True: ('rtx-3060.svg', 'eb01174073f7b69b6e3a6207212cc7a90a39f9e18ab3f6aaaafc0ef19ca17dc0'),
-    False: ('rtx-3090.svg', '49fbfd291538cea210bc5ce970df15952863531f57d6d9488d041a05bac241ac'),
+    True: ('rtx-3060.svg', 'e765440716271ad13aeba960fb5bdc92080fd029d77f1ba2db64385d0f5775ec'),
+    False: ('rtx-3090.svg', 'ea85da0bb463f299ba938716a67fafbdd265df939c6cea8027c62ce0f05833b2'),
 }
 SELECTED = (('compute', 'affine', ''), ('d4', '128x128', 'D4'),
             ('k', '64x64', 'root-uint4'), ('kw', '64x64', 'wave-root-uint4'))
@@ -48,14 +47,9 @@ def move_text(node, y):
     node.set('transform', f'rotate(-0 {node.get("x")} {y:.6f})')
 
 
-def exact_label(value):
-    """Format exact integer/decimal summaries without rounding raw timer values."""
-    text = format(Decimal(str(value)), ',f')
-    return text.rstrip('0').rstrip('.') if '.' in text else text
-
-
-def rescale(axis, values, conditional, raw_labels=None):
+def rescale(axis, medians, format_duration):
     """Update only bars, tick values and numeric labels inside an existing panel."""
+    values = [float(value) if value is not None else None for value in medians]
     paths = list(axis.iter(TAG + 'path'))
     background = next(x for x in paths if x.get('style') == 'fill: #ffffff')
     x0, bottom, x1, _, _, top, _, _ = coordinates(background)
@@ -73,21 +67,23 @@ def rescale(axis, values, conditional, raw_labels=None):
         if i * step > maximum:
             group.set('style', 'display: none')
             continue
+        if group.get('style') == 'display: none':
+            del group.attrib['style']
         y = bottom - (bottom - top) * i * step / maximum
         label = next(group.iter(TAG + 'text'))
-        label.text = f'{i * step:g}'
+        label.text = format_duration(f'{i * step:.12g}')
         grid = next(group.iter(TAG + 'path'))
         old_y = float(re.findall(r'-?\d+(?:\.\d+)?', grid.get('d'))[1])
         offset = float(label.get('y')) - old_y
         move_text(label, y + offset)
         grid.set('d', f'M {x0} {y:.6f} L {x1} {y:.6f}')
     texts = list(axis.iter(TAG + 'text'))
-    for i, (bar, value) in enumerate(zip(bars, values)):
+    for bar, value, median in zip(bars, values, medians):
         left, base, right, _, _, old_top, _, _ = coordinates(bar)
         center = (left + right) / 2
         annotation = next(t for t in texts if t.get('x') is not None and
                           abs(float(t.get('x')) - center) < 0.001
-                          and re.fullmatch(r'~?[\d,.]+', t.text or ''))
+                          and re.fullmatch(r'~?[\d,.]+(?: ns| ms)?', t.text or ''))
         offset = float(annotation.get('y')) - old_top
         y = bottom if value is None else bottom - value / maximum * (bottom - top)
         if value is None:
@@ -95,14 +91,13 @@ def rescale(axis, values, conditional, raw_labels=None):
             bar.set('style', 'fill: none')
             annotation.text = 'NOT_RECORDED'
         else:
-            annotation.text = ('~' if conditional and i == 0 else '') + (
-                f'{value:.2f}' if conditional else raw_labels[i])
+            annotation.text = format_duration(median, group=True)
         move_text(annotation, y + offset)
         bar.set('d', f'M {left} {base} L {right} {base} L {right} {y:.6f} L {left} {y:.6f} z')
 
 
-def render(proposal, rows, context, package_id):
-    """Render validated summaries using the prior release's qualified/raw-unit designs."""
+def render(proposal, rows, context, package_id, format_duration):
+    """Render validated summaries using the prior release's shared and independent scale designs."""
     lookup = {(r['suite'], r['case'], r['variant'], r['path']): r for r in rows}
     chosen = []
     for suite, case, variant in SELECTED:
@@ -117,14 +112,13 @@ def render(proposal, rows, context, package_id):
                      s['reported_ns_per_tick_envelope'][1] for s in steps))
     root = template(qualified)
     axes = [g for g in root.iter(TAG + 'g') if g.get('id', '').startswith('axes_')]
-    values = [[float(r['median']) if r else None for r in pair] for pair in chosen]
+    values = [[r['median'] if r else None for r in pair] for pair in chosen]
     if qualified:
         for axis, pair in zip(axes, values):
-            rescale(axis, [v / 1000 for v in pair], True)
+            rescale(axis, pair, format_duration)
     else:
         for i, axis in enumerate(axes):
-            labels = [exact_label(pair[i]['median']) if pair[i] else None for pair in chosen]
-            rescale(axis, [pair[i] for pair in values], False, labels)
+            rescale(axis, [pair[i] for pair in values], format_duration)
     gpu = proposal['claimed_gpu'].split('/')[-1].replace('_', ' ')
     version, issue = proposal['claimed_version'], proposal['issue']
     backing = context['native_dx12']['backing']
@@ -145,12 +139,12 @@ def render(proposal, rows, context, package_id):
         if value.startswith('Seven exported values per median;'):
             value = f'{sample_text} exported values per displayed median; {counts["verified"]}/{counts["expected"]} statuses VERIFIED. Original GPU receipts unavailable.'
         if value in ('Model clarified by reporter; maintainer acceptance pending.',
-                     'Clock conversion NOT_QUALIFIED for all four suites.'):
+                     'Host/GPU clock check NOT_QUALIFIED for all four suites.'):
             value = 'Reported ' + proposal['run']['overall'] + '; see source Issue for context. No independent GPU rerun.'
         if not qualified and value.startswith('CLOCK NOT QUALIFIED'):
-            value = f'CLOCK: {qualified_count}/{len(steps)} reported QUALIFIED — separate timer units'
-        if not qualified and value.startswith('Timer model NOT_QUALIFIED'):
-            value = 'Raw units and independent scales; no conversion, cross-API ratio or cross-GPU ranking. Missing values are not zero.'
+            value = f'CLOCK: {qualified_count}/{len(steps)} reported QUALIFIED — independent scales'
+        if not qualified and value.startswith('Host/GPU clock check NOT_QUALIFIED;'):
+            value = 'Panels use independent scales. No cross-API ratio or cross-GPU ranking. Missing values are not zero.'
         text.text = value
     # Keep the same visible design while replacing the old template's memory evidence.
     for node in list(root):

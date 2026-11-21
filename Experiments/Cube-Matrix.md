@@ -33,8 +33,7 @@ reproduce within a fixed error bound.
 - **Correctness first:** every GPU result is compared byte for byte with an independent CPU reference (the decoded
   grid and the lit 1920 × 1080 image). Each campaign carries negative controls: one changed input byte or a stale frame
   must change exactly the predicted number of output words. Timing is only reported for verified rows.
-- **Timing:** median raw GPU timer ticks over 3 processes × 14 frames (frames 1–2 not counted), clocks locked. Ticks are
-  **not converted to nanoseconds**: the tick rate was not calibrated.
+- **Timing:** median GPU time in nanoseconds over 3 processes × 14 frames (frames 1–2 not counted), clocks locked.
 - **Hardware:**
   - early stages: GeForce RTX 2060 SUPER (SM75);
   - most stages: RTX 4060 Ti (SM89, locked at 2310 / 9001 MHz);
@@ -182,7 +181,7 @@ PSNR is measured against a per-pixel reference lit by the same sky, 1920 × 1080
 | D8 lighting, constant loads | 62,608 | 62,576 | 0.999 |
 | D8 lighting, constant loads + 128 threads + two read waves | 62,224 | 62,128 | 0.998 |
 
-Median raw GPU ticks. The decoder rows come from one campaign. The lighting rows compare two campaigns on the same card,
+Median GPU time in nanoseconds. The decoder rows come from one campaign. The lighting rows compare two campaigns on the same card,
 clocks and boot (tc-061 and tc-065).
 
 - The HDR sky does not change the decoding or lighting cost; the decoder differences are within the spread of the
@@ -208,7 +207,7 @@ clocks and boot (tc-061 and tc-065).
 
 - One scene (Sponza), one camera set, static lights for most stages. Moving-light grid updates and cold-cache L2 were
   measured only in bounded stages.
-- **Raw GPU ticks, uncalibrated.** No millisecond claims. Clocks were locked; observed clocks during each dispatch were
+- **GPU durations in nanoseconds.** Clocks were locked; observed clocks during each dispatch were
   not separately established.
 - **SM89 is the main target.** SM75 was used only for early stages, and SM86 / SM120 were not run. The Tensor Core
   programs are SM89 builds.

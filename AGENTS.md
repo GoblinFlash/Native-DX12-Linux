@@ -51,7 +51,7 @@ AI assistance is welcome and should be disclosed. A human submitter remains resp
 
 - **Build PASS is not GPU PASS.** Compilation, CPU simulations, shader code generation and a successful GitHub workflow do not prove GPU execution.
 - GPU claims require actual submission, synchronization/completion and checked output on the identified hardware. Do not promote a reported archive status to independent GPU qualification.
-- Preserve timing units and clock qualification. Native GPU ticks and Vulkan nanoseconds are not directly comparable without a qualified conversion model. State memory backing (e.g. SYSMEM/VRAM) only when supported by the specific artifact.
+- Use nanoseconds for stored GPU durations when the timer time base is established. Display ns below 1 ms and ms rounded to at most two decimal places from 1 ms. The released NVIDIA benchmark reads native semaphore timestamps in nanoseconds. Preserve the reported host/GPU clock check and compare only equivalent measurement windows and memory placement. State memory backing (e.g. SYSMEM/VRAM) only when supported by the specific artifact.
 - Keep NVIDIA, AMD and Intel findings separated by hardware lane. Do not generalize one GPU's results to other models or drivers.
 - Benchmark submissions from external testers should use the [Benchmark Results Issue form](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml). Intake labels and generated Draft PRs do **not** mean that a result is accepted.
 

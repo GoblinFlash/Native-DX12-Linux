@@ -1,4 +1,4 @@
-case,Strong GPU-scope loads (before),Constant loads (nir_opt_access / CAN_REORDER),source
+case,Strong GPU-scope loads (before) (ns),Constant loads (nir_opt_access / CAN_REORDER) (ns),source
 "Lighting, dense 64³ grid",124800,62608,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"
 "Lighting, sparse 64³ via block table",242400,73136,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"
 "Lighting, sparse 256³ via block table",124240,75040,"campaigns tc-061 (lighting) and tc-063 (decoder + lighting frame), RTX 4090"

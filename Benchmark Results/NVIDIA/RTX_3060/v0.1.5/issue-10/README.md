@@ -27,7 +27,7 @@ Model/PCI field consistency is checked against pinned vendor data; this is not h
 The source Issue and attachment are untrusted reports. Matching catalog fields and recalculated
 medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.
 Review background contention and all reporter notes in the Issue; they are not copied here.
-Actual per-dispatch clocks are not proven. Native GPU ticks and Vulkan nanoseconds stay separate.
+Actual per-dispatch clocks are not proven. GPU durations are shown in ns below 1 ms and in ms from 1 ms.
 A reported 189/189 VERIFIED count is not independent GPU qualification.
 
 Reported overall state: `COMPLETE`; failure marker present: `false`.
@@ -46,35 +46,35 @@ Reported overall state: `COMPLETE`; failure marker present: `false`.
 Medians below are calculated from exported per-process values, not from uploaded prose or charts.
 Frame-suite values are medians of process medians. No uploaded HTML, image or raw log is reused.
 
-| Suite | Case | Variant | Path | Unit | n | Median |
-| --- | --- | --- | --- | --- | ---: | ---: |
-| compute | affine |  | native | GPU_TICKS | 7 | 20416 |
-| compute | affine |  | vulkan | NS | 7 | 9856 |
-| compute | affine515 |  | native | GPU_TICKS | 7 | 32416 |
-| compute | affine515 |  | vulkan | NS | 7 | 9664 |
-| compute | parallel-sort |  | native | GPU_TICKS | 7 | 2610240 |
-| compute | parallel-sort |  | vulkan | NS | 7 | 182336 |
-| d4 | 128x128 |  | vulkan | NS | 7 | 7680 |
-| d4 | 128x128 | B | native | GPU_TICKS | 7 | 27568 |
-| d4 | 128x128 | D4 | native | GPU_TICKS | 7 | 20688 |
-| d4 | 16x1024 |  | vulkan | NS | 7 | 15840 |
-| d4 | 16x1024 | B | native | GPU_TICKS | 7 | 121104 |
-| d4 | 16x1024 | D4 | native | GPU_TICKS | 7 | 66544 |
-| d4 | 32x512 |  | vulkan | NS | 7 | 10976 |
-| d4 | 32x512 | B | native | GPU_TICKS | 7 | 67408 |
-| d4 | 32x512 | D4 | native | GPU_TICKS | 7 | 40208 |
-| k | 127x65 |  | vulkan | NS | 7 | 143552 |
-| k | 127x65 | root-scalar | native | GPU_TICKS | 7 | 240496 |
-| k | 127x65 | root-uint4 | native | GPU_TICKS | 7 | 211920 |
-| k | 64x64 |  | vulkan | NS | 7 | 74208 |
-| k | 64x64 | root-scalar | native | GPU_TICKS | 7 | 117584 |
-| k | 64x64 | root-uint4 | native | GPU_TICKS | 7 | 108160 |
-| kw | 127x65 |  | vulkan | NS | 7 | 10496 |
-| kw | 127x65 | wave-root-scalar | native | GPU_TICKS | 7 | 113264 |
-| kw | 127x65 | wave-root-uint4 | native | GPU_TICKS | 7 | 110160 |
-| kw | 64x64 |  | vulkan | NS | 7 | 10208 |
-| kw | 64x64 | wave-root-scalar | native | GPU_TICKS | 7 | 77008 |
-| kw | 64x64 | wave-root-uint4 | native | GPU_TICKS | 7 | 74352 |
+| Suite | Case | Variant | Path | n | Median GPU time |
+| --- | --- | --- | --- | ---: | ---: |
+| compute | affine |  | native | 7 | 20416 ns |
+| compute | affine |  | vulkan | 7 | 9856 ns |
+| compute | affine515 |  | native | 7 | 32416 ns |
+| compute | affine515 |  | vulkan | 7 | 9664 ns |
+| compute | parallel-sort |  | native | 7 | 2.61 ms |
+| compute | parallel-sort |  | vulkan | 7 | 182336 ns |
+| d4 | 128x128 |  | vulkan | 7 | 7680 ns |
+| d4 | 128x128 | B | native | 7 | 27568 ns |
+| d4 | 128x128 | D4 | native | 7 | 20688 ns |
+| d4 | 16x1024 |  | vulkan | 7 | 15840 ns |
+| d4 | 16x1024 | B | native | 7 | 121104 ns |
+| d4 | 16x1024 | D4 | native | 7 | 66544 ns |
+| d4 | 32x512 |  | vulkan | 7 | 10976 ns |
+| d4 | 32x512 | B | native | 7 | 67408 ns |
+| d4 | 32x512 | D4 | native | 7 | 40208 ns |
+| k | 127x65 |  | vulkan | 7 | 143552 ns |
+| k | 127x65 | root-scalar | native | 7 | 240496 ns |
+| k | 127x65 | root-uint4 | native | 7 | 211920 ns |
+| k | 64x64 |  | vulkan | 7 | 74208 ns |
+| k | 64x64 | root-scalar | native | 7 | 117584 ns |
+| k | 64x64 | root-uint4 | native | 7 | 108160 ns |
+| kw | 127x65 |  | vulkan | 7 | 10496 ns |
+| kw | 127x65 | wave-root-scalar | native | 7 | 113264 ns |
+| kw | 127x65 | wave-root-uint4 | native | 7 | 110160 ns |
+| kw | 64x64 |  | vulkan | 7 | 10208 ns |
+| kw | 64x64 | wave-root-scalar | native | 7 | 77008 ns |
+| kw | 64x64 | wave-root-uint4 | native | 7 | 74352 ns |
 
 ![Exported measurements for Issue #10](chart.svg)
 

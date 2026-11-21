@@ -24,8 +24,7 @@ Findings in short:
 - **A grid is cheap but blurrier.** Reading the light grid is about 33× cheaper than one ray per pixel, but the picture
   is about 5 dB worse.
 
-All timings are raw GPU clock ticks on locked clocks, not milliseconds. These are development results, not a released
-benchmark.
+GPU durations use ns below 1 ms and ms from 1 ms. These runs used locked GPU clocks. These are development results.
 
 ## Current experiment: Fast Walsh–Hadamard Transform (FWHT)
 
@@ -70,7 +69,7 @@ qualified.
 **Current observation:** On RTX 4090, the retained Arena recorded
 **42.39% lower median operational host time** across two tasks, based on
 two observations per arm and checked outputs. On RTX 5070, VRAM data backing
-recorded fewer **uncalibrated GPU timer ticks** than SYSMEM. These pilots
+recorded shorter **GPU durations** than SYSMEM. These pilots
 measure different effects on different GPUs, not a general performance
 ranking or a Vulkan comparison.
 
@@ -86,7 +85,7 @@ Two independent pilot designs are retained:
 
 | Pilot | Variable | Fixed / checked | Reported metric |
 | --- | --- | --- | --- |
-| RTX 5070 | SYSMEM or VRAM data; separate VRAM code in a third profile | Same FWHT shape, two dispatches per frame and saved full-output checks | Raw GPU timer ticks |
+| RTX 5070 | SYSMEM or VRAM data; separate VRAM code in a third profile | Same FWHT shape, two dispatches per frame and saved full-output checks | GPU elapsed time (ns) |
 | RTX 4090 | Fresh sessions (A) or a retained session (B) | Same two FWHT tasks, full output checks and VRAM data/code allocations | Host elapsed time |
 
 An instruction buffer's backing and a data buffer's backing are distinct
@@ -97,8 +96,7 @@ effect, and their timing units must not be mixed.
 
 - **RTX 5070:** SM120; NVIDIA Open 620.70.06. Three memory-placement
   configurations, each in one GPU process with 14 frames. The reported
-  median uses 12 frames. Clocks were not locked, and raw GPU ticks were
-  **not calibrated** to nanoseconds or microseconds.
+  median uses 12 frames. GPU clocks were unlocked.
 - **RTX 4090:** SM89; NVIDIA Open 620.70.06. One canary followed by an
   A–B–B–A comparison: 7 sessions, 20 dispatches and 10 FWHT tasks across
   the captures. Two observations per arm. A opens/closes a session per task;
@@ -110,21 +108,21 @@ effect, and their timing units must not be mixed.
 
 ### Results and charts
 
-#### RTX 5070 — data placement and raw GPU ticks
+#### RTX 5070 — data placement and GPU time in ns
 
-![FWHT RTX 5070 raw GPU ticks for SYSMEM data, VRAM data and VRAM data with separate VRAM code](charts/fwht-rtx5070-memory-ticks.svg)
+![FWHT RTX 5070 GPU time in ns for SYSMEM data, VRAM data and VRAM data with separate VRAM code](charts/fwht-rtx5070-memory-ticks.svg)
 
-Lower is better, but these values are **raw GPU timer ticks**. Each profile
+Lower is better. Values show GPU time per frame in ns. Each profile
 has only one process, so the chart is a bounded observation rather than a
 repeatable cross-hardware performance claim.
 
-| Data backing | Program backing | Median raw ticks/frame | Evidence status |
+| Data backing | Program backing | Median GPU time per frame (ns) | Evidence status |
 | --- | --- | ---: | --- |
 | SYSMEM | Control arena | 856,480 | GPU series accepted; saved output checked |
 | VRAM | Control arena | 32,096 | GPU series accepted; saved output checked |
 | VRAM | Separate 1 MiB VRAM code buffer | 32,064 | GPU process finished; VM audit refused; saved data rechecked on CPU |
 
-The two accepted series show a **26.7× difference in raw tick medians**
+The two accepted series show a **26.7× difference in median GPU durations**
 between SYSMEM and VRAM data backing in this specific workload. That ratio
 is **not** a wall-clock speedup, and the third row does not independently
 establish an advantage from placing code in VRAM.
@@ -189,7 +187,7 @@ The transform is known; what is being studied here is its behavior within
 this particular experimental native Direct3D 12 execution path. The results
 do **not** prove complete D3D12 support, game compatibility, GPU-wide
 qualification, general performance superiority or an advantage over Vulkan.
-Raw GPU ticks cannot be directly compared with host seconds.
+GPU timestamps and host elapsed time cover different intervals.
 
 **Next question:** Can the complete FWHT Test 4 execute reproducibly from the
 final pinned benchmark package on identified NVIDIA hardware, including
@@ -203,7 +201,7 @@ failures, evidence levels and remaining checks.
 ### Experiment history
 
 - [Campaign 019 — RTX 4060 Ti locked-clock histogram measurements](Campaign-019-RTX4060Ti.md)
-  — bit-exact Native/Vulkan histogram runs at locked clocks, separate GPU tick/ns
+  — bit-exact Native/Vulkan histogram runs at locked clocks, separate GPU timing
   charts, evidence identities and explicit cross-API limits (15 November 2026).
 
 - [GPU instruction memory placement (SYSMEM vs VRAM) — RTX 5070](GPU-Instruction-Memory-Placement-RTX5070.md)

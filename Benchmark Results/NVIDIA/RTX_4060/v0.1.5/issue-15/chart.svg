@@ -30,7 +30,7 @@
     <g id="xtick_1">
      <g id="line2d_1" />
      <g id="text_1">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="256.229778" transform="rotate(-0 193.4685 256.229778)">Native* (SYSMEM)</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="256.229778" transform="rotate(-0 193.4685 256.229778)">Native (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_2">
@@ -47,7 +47,7 @@
      </g>
      <g id="line2d_4" />
      <g id="text_3">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="244.772489" transform="rotate(-0 83.424 244.772489)">0</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="244.772489" transform="rotate(-0 83.424 244.772489)">0 ns</text>
      </g>
     </g>
     <g id="ytick_2">
@@ -56,7 +56,7 @@
      </g>
      <g id="line2d_6" />
      <g id="text_4">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="224.913598" transform="rotate(-0 83.424 224.913598)">6</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="224.913598" transform="rotate(-0 83.424 224.913598)">6000 ns</text>
      </g>
     </g>
     <g id="ytick_3">
@@ -65,7 +65,7 @@
      </g>
      <g id="line2d_8" />
      <g id="text_5">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="205.054707" transform="rotate(-0 83.424 205.054707)">12</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="205.054707" transform="rotate(-0 83.424 205.054707)">12000 ns</text>
      </g>
     </g>
     <g id="ytick_4">
@@ -74,7 +74,7 @@
      </g>
      <g id="line2d_10" />
      <g id="text_6">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="185.195816" transform="rotate(-0 83.424 185.195816)">18</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="185.195816" transform="rotate(-0 83.424 185.195816)">18000 ns</text>
      </g>
     </g>
     <g id="ytick_5">
@@ -83,11 +83,11 @@
      </g>
      <g id="line2d_12" />
      <g id="text_7">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="165.336925" transform="rotate(-0 83.424 165.336925)">24</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="165.336925" transform="rotate(-0 83.424 165.336925)">24000 ns</text>
      </g>
     </g>
     <g id="text_8">
-     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="63.681375" y="193.6062" transform="rotate(-90 63.681375 193.6062)">µs</text>
+     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="63.681375" y="193.6062" transform="rotate(-90 63.681375 193.6062)" />
     </g>
    </g>
    <g id="patch_3">
@@ -100,10 +100,10 @@
     <path d="M 298.99935 241.3152 L 385.20765 241.3152 L 385.20765 213.777538 L 298.99935 213.777538 z" clip-path="url(#pf90b617112)" style="fill: #ef7100" />
    </g>
    <g id="text_9">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="162.513323" transform="rotate(-0 193.4685 162.513323)">~22.18</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="162.513323" transform="rotate(-0 193.4685 162.513323)">22,176 ns</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="342.1035" y="208.374123" transform="rotate(-0 342.1035 208.374123)">8.32</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="342.1035" y="208.374123" transform="rotate(-0 342.1035 208.374123)">8,320 ns</text>
    </g>
    <g id="text_11">
     <text style="font-weight: 700; font-size: 12.7px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="267.786" y="133.8972" transform="rotate(-0 267.786 133.8972)">Compute · Affine</text>
@@ -117,7 +117,7 @@
     <g id="xtick_3">
      <g id="line2d_13" />
      <g id="text_12">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="256.229778" transform="rotate(-0 663.9165 256.229778)">Native* (SYSMEM)</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="256.229778" transform="rotate(-0 663.9165 256.229778)">Native (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_4">
@@ -134,7 +134,7 @@
      </g>
      <g id="line2d_16" />
      <g id="text_14">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="244.772489" transform="rotate(-0 553.872 244.772489)">0</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="244.772489" transform="rotate(-0 553.872 244.772489)">0 ns</text>
      </g>
     </g>
     <g id="ytick_7">
@@ -143,7 +143,7 @@
      </g>
      <g id="line2d_18" />
      <g id="text_15">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="223.116767" transform="rotate(-0 553.872 223.116767)">6</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="223.116767" transform="rotate(-0 553.872 223.116767)">6000 ns</text>
      </g>
     </g>
     <g id="ytick_8">
@@ -152,7 +152,7 @@
      </g>
      <g id="line2d_20" />
      <g id="text_16">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="201.461044" transform="rotate(-0 553.872 201.461044)">12</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="201.461044" transform="rotate(-0 553.872 201.461044)">12000 ns</text>
      </g>
     </g>
     <g id="ytick_9">
@@ -161,7 +161,7 @@
      </g>
      <g id="line2d_22" />
      <g id="text_17">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="179.805322" transform="rotate(-0 553.872 179.805322)">18</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="179.805322" transform="rotate(-0 553.872 179.805322)">18000 ns</text>
      </g>
     </g>
     <g id="ytick_10">
@@ -170,11 +170,11 @@
      </g>
      <g id="line2d_24" />
      <g id="text_18">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="158.149600" transform="rotate(-0 553.872 158.149600)">24</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="158.149600" transform="rotate(-0 553.872 158.149600)">24000 ns</text>
      </g>
     </g>
     <g id="text_19">
-     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="534.129375" y="193.6062" transform="rotate(-90 534.129375 193.6062)">µs</text>
+     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="534.129375" y="193.6062" transform="rotate(-90 534.129375 193.6062)" />
     </g>
    </g>
    <g id="patch_7">
@@ -187,10 +187,10 @@
     <path d="M 769.44735 241.3152 L 855.65565 241.3152 L 855.65565 216.425556 L 769.44735 216.425556 z" clip-path="url(#p47ffd843cd)" style="fill: #ef7100" />
    </g>
    <g id="text_20">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="162.513323" transform="rotate(-0 663.9165 162.513323)">~20.34</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="162.513323" transform="rotate(-0 663.9165 162.513323)">20,336 ns</text>
    </g>
    <g id="text_21">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="812.5515" y="211.022141" transform="rotate(-0 812.5515 211.022141)">6.90</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="812.5515" y="211.022141" transform="rotate(-0 812.5515 211.022141)">6,896 ns</text>
    </g>
    <g id="text_22">
     <text style="font-weight: 700; font-size: 12.7px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="738.234" y="133.8972" transform="rotate(-0 738.234 133.8972)">D4 · 128×128</text>
@@ -204,7 +204,7 @@
     <g id="xtick_5">
      <g id="line2d_25" />
      <g id="text_23">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="407.667378" transform="rotate(-0 193.4685 407.667378)">Native* (SYSMEM)</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="407.667378" transform="rotate(-0 193.4685 407.667378)">Native (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_6">
@@ -221,7 +221,7 @@
      </g>
      <g id="line2d_28" />
      <g id="text_25">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="396.210089" transform="rotate(-0 83.424 396.210089)">0</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="396.210089" transform="rotate(-0 83.424 396.210089)">0 ns</text>
      </g>
     </g>
     <g id="ytick_12">
@@ -230,7 +230,7 @@
      </g>
      <g id="line2d_30" />
      <g id="text_26">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="376.490628" transform="rotate(-0 83.424 376.490628)">30</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="376.490628" transform="rotate(-0 83.424 376.490628)">30000 ns</text>
      </g>
     </g>
     <g id="ytick_13">
@@ -239,7 +239,7 @@
      </g>
      <g id="line2d_32" />
      <g id="text_27">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="356.771168" transform="rotate(-0 83.424 356.771168)">60</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="356.771168" transform="rotate(-0 83.424 356.771168)">60000 ns</text>
      </g>
     </g>
     <g id="ytick_14">
@@ -248,7 +248,7 @@
      </g>
      <g id="line2d_34" />
      <g id="text_28">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="337.051707" transform="rotate(-0 83.424 337.051707)">90</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="337.051707" transform="rotate(-0 83.424 337.051707)">90000 ns</text>
      </g>
     </g>
     <g id="ytick_15">
@@ -257,11 +257,11 @@
      </g>
      <g id="line2d_36" />
      <g id="text_29">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="317.332247" transform="rotate(-0 83.424 317.332247)">120</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="83.424" y="317.332247" transform="rotate(-0 83.424 317.332247)">120000 ns</text>
      </g>
     </g>
     <g id="text_30">
-     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="57.8915" y="345.0438" transform="rotate(-90 57.8915 345.0438)">µs</text>
+     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="57.8915" y="345.0438" transform="rotate(-90 57.8915 345.0438)" />
     </g>
    </g>
    <g id="patch_11">
@@ -274,10 +274,10 @@
     <path d="M 298.99935 392.7528 L 385.20765 392.7528 L 385.20765 385.853618 L 298.99935 385.853618 z" clip-path="url(#p87162da46b)" style="fill: #ef7100" />
    </g>
    <g id="text_31">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="313.950923" transform="rotate(-0 193.4685 313.950923)">~111.66</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="193.4685" y="313.950923" transform="rotate(-0 193.4685 313.950923)">111,664 ns</text>
    </g>
    <g id="text_32">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="342.1035" y="380.450203" transform="rotate(-0 342.1035 380.450203)">10.50</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="342.1035" y="380.450203" transform="rotate(-0 342.1035 380.450203)">10,496 ns</text>
    </g>
    <g id="text_33">
     <text style="font-weight: 700; font-size: 12.7px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="267.786" y="285.3348" transform="rotate(-0 267.786 285.3348)">K uint4 · 64×64</text>
@@ -291,7 +291,7 @@
     <g id="xtick_7">
      <g id="line2d_37" />
      <g id="text_34">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="407.667378" transform="rotate(-0 663.9165 407.667378)">Native* (SYSMEM)</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="407.667378" transform="rotate(-0 663.9165 407.667378)">Native (SYSMEM)</text>
      </g>
     </g>
     <g id="xtick_8">
@@ -308,7 +308,7 @@
      </g>
      <g id="line2d_40" />
      <g id="text_36">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="396.210089" transform="rotate(-0 553.872 396.210089)">0</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="396.210089" transform="rotate(-0 553.872 396.210089)">0 ns</text>
      </g>
     </g>
     <g id="ytick_17">
@@ -317,7 +317,7 @@
      </g>
      <g id="line2d_42" />
      <g id="text_37">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="374.231343" transform="rotate(-0 553.872 374.231343)">25</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="374.231343" transform="rotate(-0 553.872 374.231343)">25000 ns</text>
      </g>
     </g>
     <g id="ytick_18">
@@ -326,7 +326,7 @@
      </g>
      <g id="line2d_44" />
      <g id="text_38">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="352.252597" transform="rotate(-0 553.872 352.252597)">50</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="352.252597" transform="rotate(-0 553.872 352.252597)">50000 ns</text>
      </g>
     </g>
     <g id="ytick_19">
@@ -335,7 +335,7 @@
      </g>
      <g id="line2d_46" />
      <g id="text_39">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="330.273851" transform="rotate(-0 553.872 330.273851)">75</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="330.273851" transform="rotate(-0 553.872 330.273851)">75000 ns</text>
      </g>
     </g>
     <g id="ytick_20">
@@ -344,11 +344,11 @@
      </g>
      <g id="line2d_48" />
      <g id="text_40">
-      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="308.295105" transform="rotate(-0 553.872 308.295105)">100</text>
+      <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #152e4c" x="553.872" y="308.295105" transform="rotate(-0 553.872 308.295105)">100000 ns</text>
      </g>
     </g>
     <g id="text_41">
-     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="534.129375" y="345.0438" transform="rotate(-90 534.129375 345.0438)">µs</text>
+     <text style="font-size: 10.4px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="534.129375" y="345.0438" transform="rotate(-90 534.129375 345.0438)" />
     </g>
    </g>
    <g id="patch_15">
@@ -361,10 +361,10 @@
     <path d="M 769.44735 392.7528 L 855.65565 392.7528 L 855.65565 384.734953 L 769.44735 384.734953 z" clip-path="url(#pd8f88adcad)" style="fill: #ef7100" />
    </g>
    <g id="text_42">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="313.950923" transform="rotate(-0 663.9165 313.950923)">~83.49</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="663.9165" y="313.950923" transform="rotate(-0 663.9165 313.950923)">83,488 ns</text>
    </g>
    <g id="text_43">
-    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="812.5515" y="379.331538" transform="rotate(-0 812.5515 379.331538)">9.12</text>
+    <text style="font-size: 10.1px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="812.5515" y="379.331538" transform="rotate(-0 812.5515 379.331538)">9,120 ns</text>
    </g>
    <g id="text_44">
     <text style="font-weight: 700; font-size: 12.7px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #152e4c" x="738.234" y="285.3348" transform="rotate(-0 738.234 285.3348)">WaveForm uint4 · 64×64</text>
@@ -386,16 +386,16 @@
    <text style="font-size: 14.8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="56.0196" transform="rotate(-0 59.292 56.0196)">Whole-workload measurements — selected v0.1.5 medians</text>
   </g>
   <g id="text_47">
-   <text style="font-size: 9.9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="76.95" transform="rotate(-0 59.292 76.95)">NVIDIA Open 615.78.08  |  v21-r16  |  Four submitted suites  |  Lower is better within a workload</text>
+   <text style="font-size: 9.9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="76.95" transform="rotate(-0 59.292 76.95)">NVIDIA driver 615.78.08  |  v21-r16  |  Four submitted suites  |  Lower is better within a workload</text>
   </g>
   <g id="text_48">
-   <text style="font-weight: 700; font-size: 10.7px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #00796e" x="59.292" y="110.1924" transform="rotate(-0 59.292 110.1924)">CLOCK QUALIFIED 4/4 · conditional tick-to-ns model</text>
+   <text style="font-weight: 700; font-size: 10.7px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #00796e" x="59.292" y="110.1924" transform="rotate(-0 59.292 110.1924)">HOST/GPU CLOCK CHECK QUALIFIED 4/4</text>
   </g>
   <g id="text_49">
    <text style="font-weight: 700; font-size: 11.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="446.9256" transform="rotate(-0 59.292 446.9256)">What is being compared?</text>
   </g>
   <g id="text_50">
-   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="462.3156" transform="rotate(-0 59.292 462.3156)">One selected workload per suite: Native GPU timer ticks versus Vulkan reference nanoseconds.</text>
+   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="462.3156" transform="rotate(-0 59.292 462.3156)">GPU durations for a shared workload use ns below 1 ms and ms from 1 ms.</text>
   </g>
   <g id="text_51">
    <text style="font-weight: 700; font-size: 11.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="484.4772" transform="rotate(-0 59.292 484.4772)">Measured data and correctness</text>
@@ -407,13 +407,13 @@
    <text style="font-weight: 700; font-size: 11.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="522.0288" transform="rotate(-0 59.292 522.0288)">Scope and limitations</text>
   </g>
   <g id="text_54">
-   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="537.4188" transform="rotate(-0 59.292 537.4188)">* Native uses conditional ~1 ns/tick conversion; each mini-chart resets its vertical scale. No speedup or GPU ranking is inferred.</text>
+   <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="537.4188" transform="rotate(-0 59.292 537.4188)">Each workload has its own scale. Use the timing, clock and memory caveats when reading each panel.</text>
   </g>
   <g id="text_55">
    <text style="font-size: 9.1px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="555.8868" transform="rotate(-0 59.292 555.8868)">Reported COMPLETE; see source Issue for context. No independent GPU rerun.</text>
   </g>
   <g id="text_56">
-   <text style="font-size: 8.2px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="584.82" transform="rotate(-0 59.292 584.82)">TERMS  ·  D4 = four-pass unroll; K / WaveForm = selected uint4 variants; µs = microseconds.</text>
+   <text style="font-size: 8.2px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #3f5875" x="59.292" y="584.82" transform="rotate(-0 59.292 584.82)">TERMS  ·  D4 = four-pass unroll; K / WaveForm = selected uint4 variants; ns = nanoseconds. ms = milliseconds.</text>
   </g>
   <g id="text_57">
    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #3f5875" x="912.708" y="600.8256" transform="rotate(-0 912.708 600.8256)">DATA: ISSUE #15 · SUBMITTED CSV · PREVIEW</text>
@@ -423,7 +423,7 @@
     <path d="M 711.579406 114.243544  L 724.299406 114.243544  L 724.299406 106.823544  L 711.579406 106.823544  z " style="fill: #0c80bd" />
    </g>
    <g id="text_58">
-    <text style="font-size: 10.6px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="732.779406" y="114.243544" transform="rotate(-0 732.779406 114.243544)">Native*</text>
+    <text style="font-size: 10.6px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="732.779406" y="114.243544" transform="rotate(-0 732.779406 114.243544)">Native</text>
    </g>
    <g id="patch_19">
     <path d="M 793.601875 114.243544  L 806.321875 114.243544  L 806.321875 106.823544  L 793.601875 106.823544  z " style="fill: #ef7100" />
@@ -448,4 +448,4 @@
   </clipPath>
  </defs>
 </g>
-<metadata id="submitted-measurements">{"bundle_sha256": "1f353838bc9a83488a261f9f31adaa4baf33058fb3ffd7e0a269ef5b1e7ce817", "issue": 15, "release": "v0.1.5", "selected": [[{"case": "affine", "maximum": 26848, "median": 22176, "minimum": 20832, "n": 7, "path": "native", "suite": "compute", "unit": "GPU_TICKS", "variant": ""}, {"case": "affine", "maximum": 8512, "median": 8320, "minimum": 8160, "n": 7, "path": "vulkan", "suite": "compute", "unit": "NS", "variant": ""}], [{"case": "128x128", "maximum": 20400, "median": 20336, "minimum": 20256, "n": 7, "path": "native", "suite": "d4", "unit": "GPU_TICKS", "variant": "D4"}, {"case": "128x128", "maximum": 7072, "median": 6896, "minimum": 6848, "n": 7, "path": "vulkan", "suite": "d4", "unit": "NS", "variant": ""}], [{"case": "64x64", "maximum": 121728, "median": 111664, "minimum": 89600, "n": 7, "path": "native", "suite": "k", "unit": "GPU_TICKS", "variant": "root-uint4"}, {"case": "64x64", "maximum": 10592, "median": 10496, "minimum": 10400, "n": 7, "path": "vulkan", "suite": "k", "unit": "NS", "variant": ""}], [{"case": "64x64", "maximum": 83600, "median": 83488, "minimum": 16160, "n": 7, "path": "native", "suite": "kw", "unit": "GPU_TICKS", "variant": "wave-root-uint4"}, {"case": "64x64", "maximum": 9296, "median": 9120, "minimum": 9056, "n": 7, "path": "vulkan", "suite": "kw", "unit": "NS", "variant": ""}]]}</metadata></svg>
+<metadata id="submitted-measurements">{"bundle_sha256": "1f353838bc9a83488a261f9f31adaa4baf33058fb3ffd7e0a269ef5b1e7ce817", "issue": 15, "release": "v0.1.5", "selected": [[{"case": "affine", "maximum": 26848, "median": 22176, "minimum": 20832, "n": 7, "path": "native", "suite": "compute", "unit": "NS", "variant": ""}, {"case": "affine", "maximum": 8512, "median": 8320, "minimum": 8160, "n": 7, "path": "vulkan", "suite": "compute", "unit": "NS", "variant": ""}], [{"case": "128x128", "maximum": 20400, "median": 20336, "minimum": 20256, "n": 7, "path": "native", "suite": "d4", "unit": "NS", "variant": "D4"}, {"case": "128x128", "maximum": 7072, "median": 6896, "minimum": 6848, "n": 7, "path": "vulkan", "suite": "d4", "unit": "NS", "variant": ""}], [{"case": "64x64", "maximum": 121728, "median": 111664, "minimum": 89600, "n": 7, "path": "native", "suite": "k", "unit": "NS", "variant": "root-uint4"}, {"case": "64x64", "maximum": 10592, "median": 10496, "minimum": 10400, "n": 7, "path": "vulkan", "suite": "k", "unit": "NS", "variant": ""}], [{"case": "64x64", "maximum": 83600, "median": 83488, "minimum": 16160, "n": 7, "path": "native", "suite": "kw", "unit": "NS", "variant": "wave-root-uint4"}, {"case": "64x64", "maximum": 9296, "median": 9120, "minimum": 9056, "n": 7, "path": "vulkan", "suite": "kw", "unit": "NS", "variant": ""}]]}</metadata></svg>

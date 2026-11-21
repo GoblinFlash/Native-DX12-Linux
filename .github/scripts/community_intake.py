@@ -3,7 +3,7 @@
 import argparse
 import collections
 import csv
-from decimal import Decimal, localcontext
+from decimal import Decimal, ROUND_HALF_UP, localcontext
 from fractions import Fraction
 import hashlib
 import importlib.util
@@ -941,6 +941,41 @@ def record_folder(proposal):
     return ROOT + (gpu or 'Pending_Classification') + '/' + (version or 'Unidentified_Version') + '/issue-' + str(proposal['issue'])
 
 
+# These exact archives use NVIDIA semaphore timestamps with a nanosecond time base.
+NATIVE_NANOSECOND_ARCHIVES = frozenset((
+    'a4d707dd50fa9fa22d554732d4e97dfbb54c5ab4ce6fee225c7d554afd1f399a',  # v0.1.4
+    'eed38c254c8e8cc8310c8fc84fbca6081696f114aadcb63cc584cb2828b448a5',  # v0.1.5
+))
+
+
+def format_gpu_duration(value, group=False):
+    """Display nanoseconds below 1 ms and milliseconds at or above 1 ms."""
+    duration = Fraction(value)
+    if duration >= 1_000_000:
+        milliseconds = Decimal(exact_timing_number(duration / 1_000_000))
+        rounded = milliseconds.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        return format(rounded, 'f').rstrip('0').rstrip('.') + ' ms'
+    number = exact_timing_number(duration)
+    if group:
+        number = format(Decimal(str(number)), ',f')
+    return f'{number} ns'
+
+
+def report_measurements(proposal):
+    """Project validated release measurements into nanoseconds without changing evidence.
+
+    The catalogued NVIDIA packages emit semaphore timestamps in nanoseconds.
+    Their historical share schema calls the native field GPU_TICKS.
+    """
+    validate_proposal(proposal)
+    if proposal['state'] != 'DATA_READY':
+        return []
+    version = proposal['archive_version']
+    need(catalog()[version]['archive_sha256'] in NATIVE_NANOSECOND_ARCHIVES,
+         'REPORT_TIMESTAMP_PROFILE')
+    return [dict(row, unit='NS') for row in proposal['measurements']]
+
+
 def summaries(proposal):
     """Group validated measurements and return exact count/median/min/max rows.
 
@@ -949,7 +984,7 @@ def summaries(proposal):
     medians of exported process medians, not independent GPU qualification.
     """
     groups = collections.defaultdict(list)
-    for row in proposal['measurements']:
+    for row in report_measurements(proposal):
         groups[(row['suite'], row['case'], row['variant'], row['path'], row['unit'])].append(Fraction(row['value']))
     return [{'suite': key[0], 'case': key[1], 'variant': key[2], 'path': key[3], 'unit': key[4],
              'n': len(values), 'median': exact_timing_number(statistics.median(values)),
@@ -1005,14 +1040,14 @@ def chart(proposal, rows):
     """Reuse pinned project v0.1.4 layouts with new numeric summaries and evidence.
 
     Qualified complete exports use its four workload panels; other exports use
-    its separate raw-unit panels. No uploaded graphics or filesystem writes.
+    its panels with independent scales. No uploaded graphics or filesystem writes.
     """
     spec = importlib.util.spec_from_file_location('community_chart_renderer',
                                                   Path(__file__).with_name('community_charts.py'))
     renderer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(renderer)
     return renderer.render(proposal, rows, memory_backing(proposal),
-                           catalog()[proposal['claimed_version']]['package_id'])
+                           catalog()[proposal['claimed_version']]['package_id'], format_gpu_duration)
 
 
 def render(proposal):
@@ -1049,7 +1084,7 @@ def render(proposal):
         'The source Issue and attachment are untrusted reports. Matching catalog fields and recalculated',
         'medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.',
         'Review background contention and all reporter notes in the Issue; they are not copied here.',
-        'Actual per-dispatch clocks are not proven. Native GPU ticks and Vulkan nanoseconds stay separate.',
+        'Actual per-dispatch clocks are not proven. GPU durations are shown in ns below 1 ms and in ms from 1 ms.',
         'A reported 189/189 VERIFIED count is not independent GPU qualification.', '']
     public = {folder+'/record.json': json_bytes(proposal),
               folder+'/memory-backing.json': json_bytes(context)}
@@ -1066,14 +1101,15 @@ def render(proposal):
         lines += ['', '## Recalculated exported measurements', '',
             'Medians below are calculated from exported per-process values, not from uploaded prose or charts.',
             'Frame-suite values are medians of process medians. No uploaded HTML, image or raw log is reused.', '',
-            '| Suite | Case | Variant | Path | Unit | n | Median |', '| --- | --- | --- | --- | --- | ---: | ---: |']
+            '| Suite | Case | Variant | Path | n | Median GPU time |', '| --- | --- | --- | --- | ---: | ---: |']
         for row in rows:
-            lines.append('| ' + ' | '.join(str(row[k]) for k in ('suite', 'case', 'variant', 'path', 'unit', 'n', 'median')) + ' |')
+            fields = [str(row[k]) for k in ('suite', 'case', 'variant', 'path', 'n')]
+            lines.append('| ' + ' | '.join(fields + [format_gpu_duration(row['median'])]) + ' |')
         lines += ['', f'![Exported measurements for Issue #{issue}](chart.svg)', '',
                   '[Open SVG](chart.svg). Full sanitized data: [measurements.csv](measurements.csv),',
                   '[summary.csv](summary.csv), [processes.csv](processes.csv).', '']
         public[folder+'/processes.csv'] = csv_text(proposal['processes'], PROCESS_COLUMNS)
-        public[folder+'/measurements.csv'] = csv_text(proposal['measurements'],
+        public[folder+'/measurements.csv'] = csv_text(report_measurements(proposal),
             ['suite', 'case', 'variant', 'path', 'repeat', 'value', 'unit', 'clock_mode', 'telemetry'])
         public[folder+'/summary.csv'] = csv_text(rows,
             ['suite', 'case', 'variant', 'path', 'unit', 'n', 'median', 'minimum', 'maximum'])

@@ -1,4 +1,4 @@
-case,All loads strong (before),nir_opt_access (cmat loads stay strong),"All loads constant, incl. cmat",source
+case,All loads strong (before) (ns),nir_opt_access (cmat loads stay strong) (ns),"All loads constant, incl. cmat (ns)",source
 Ray march only,2947808,1321584,1321584,"campaign ngb-4090-054, RTX 4090, 1920x1080"
 "Tensor Core, B by columns",4002048,4003376,1191952,"campaign ngb-4090-054, RTX 4090, 1920x1080"
 "Tensor Core, B by rows",8143376,8140640,3561872,"campaign ngb-4090-054, RTX 4090, 1920x1080"

@@ -4,7 +4,6 @@ Inputs are bounded, sanitized intake proposals, never uploaded code or graphics.
 Writes are explicit, local and create-only; this command has no GitHub client.
 """
 import argparse
-from decimal import Decimal
 import importlib.util
 from pathlib import Path
 
@@ -55,7 +54,7 @@ def observations(proposal):
 
 def overview(version, proposals, prefix=''):
     """Return the same four-column overview used for the previous release."""
-    lines = ['| GPU | Exported process status | GPU tick-to-ns model | Important limitation |',
+    lines = ['| GPU | Exported process status | Reported host/GPU clock check | Important limitation |',
              '| --- | --- | --- | --- |']
     for proposal in proposals:
         name = gpu_name(proposal)
@@ -92,9 +91,9 @@ def render(version, proposals, existing_issues=()):
              'this is not an independent GPU rerun or blanket acceptance.', '',
              '## Submission overview', '', overview(version, proposals, ''), '',
              '## How to read these numbers', '',
-             '- Native values are GPU timer ticks; Vulkan values are nanoseconds. Charts use the same conditional '
-             '~1 ns/tick presentation as v0.1.4 only for complete exports with all four reported clock checks '
-             'QUALIFIED and envelopes containing 1 ns/tick. Other cases retain separate raw-unit panels.',
+             '- Native and Vulkan GPU durations use ns below 1 ms and ms from 1 ms. Charts share a scale '
+             'within a workload only for complete exports with all four reported host/GPU clock checks qualified '
+             'and all four envelopes including the nominal timer rate. Other exports use separate scales.',
              '- Each table value is the median of exported process values. D4, K and WaveForm use medians '
              'of process medians; the full-work timing includes synchronization, not isolated shader timing.',
              '- The same four workload selections, panel layout, fonts, blue/orange series and explanations '
@@ -133,7 +132,7 @@ def render(version, proposals, existing_issues=()):
             outputs[folder + '/chart.svg'] = rendered[folder + '/chart.svg']
         context = core.memory_backing(proposal)
         lines += ['GPU PCI ID: `' + proposal['pci'] + '` · Driver: `' + proposal['driver'] +
-                  '` · Export: **' + status + '** · Clock model: **' + clock + '**.', '',
+                  '` · Export: **' + status + '** · Host/GPU clock check: **' + clock + '**.', '',
                   '**' + core.memory_label(context) + '**. [Release evidence](' +
                   context['native_dx12'].get('evidence_url', 'https://github.com/' + core.REPOSITORY + '/releases') + ').', '',
                   '![' + gpu_name(proposal) + ' selected workload medians](' + folder[len(core.ROOT):] + '/chart.svg)', '',
@@ -144,11 +143,10 @@ def render(version, proposals, existing_issues=()):
             value = lookup.get(key)
             if value is None:
                 return 'NOT_RECORDED'
-            text = format(Decimal(str(value)), ',f')
-            return text.rstrip('0').rstrip('.') if '.' in text else text
+            return core.format_gpu_duration(value, group=True)
         for suite, title, variants in SUITES:
             lines += ['### ' + title, '', '| Workload / native variant | Native ' +
-                      context['native_dx12']['backing'] + ' median (GPU ticks) | Vulkan median (ns) |',
+                      context['native_dx12']['backing'] + ' median GPU time | Vulkan median GPU time |',
                       '| --- | ---: | ---: |']
             for case, variant, label in variants:
                 lines.append('| ' + label + ' | ' + number((suite, case, variant, 'native')) +

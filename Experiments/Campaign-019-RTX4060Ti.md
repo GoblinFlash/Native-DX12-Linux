@@ -36,21 +36,20 @@ overhead reduction.**
   campaign artifacts and were replay-verified by the campaign author. No
   separate independent hardware rerun or reviewer qualification is claimed.
 
-## Results — separate units and axes
+## Results — nanoseconds on independent axes
 
-The charts have **independent horizontal scales**. A Native GPU tick is **not
-established to equal one nanosecond**. Never compare bar lengths between the
-Native and Vulkan panels.
+Both paths report elapsed GPU time in nanoseconds (ns). The charts have
+**independent horizontal scales**. Compare bar lengths within each panel.
 
 ### `256×64`
 
-![Campaign 019, 256 by 64: Native GPU ticks and NVIDIA Vulkan nanoseconds on separate axes](charts/campaign019-rtx4060ti-256x64.svg)
+![Campaign 019, 256 by 64: Native and NVIDIA Vulkan GPU times in ns on separate axes](charts/campaign019-rtx4060ti-256x64.svg)
 
 ### `16×1024`
 
-![Campaign 019, 16 by 1024: Native GPU ticks and NVIDIA Vulkan nanoseconds on separate axes](charts/campaign019-rtx4060ti-16x1024.svg)
+![Campaign 019, 16 by 1024: Native and NVIDIA Vulkan GPU times in ns on separate axes](charts/campaign019-rtx4060ti-16x1024.svg)
 
-| Variant | 256×64 Native (ticks) | 256×64 Vulkan (ns) | 16×1024 Native (ticks) | 16×1024 Vulkan (ns) |
+| Variant | 256×64 Native (ns) | 256×64 Vulkan (ns) | 16×1024 Native (ns) | 16×1024 Vulkan (ns) |
 | --- | ---: | ---: | ---: | ---: |
 | Empty E0 / Z | 4,480 | 6,792 | 4,424 | 6,792 |
 | D4 A1 / V1 | 5,032 | 8,160 | 10,864 | 15,680 |
@@ -63,8 +62,8 @@ two D4 variants are kept separate rather than merging their medians. The
 each series' observed process-level range and its four median inputs; it is
 derived from retained private GPU receipts, not a replacement for them.
 
-Within the **Native** path, Q8PL recorded 216 fewer ticks than D4 A1 on
-`256×64` (5,032 → 4,816) and 3,520 fewer ticks on `16×1024`
+Within the **Native** path, Q8PL recorded 216 ns less than D4 A1 on
+`256×64` (5,032 → 4,816) and 3,520 ns less on `16×1024`
 (10,864 → 7,344). Within the **Vulkan** path, the corresponding V1-to-W
 medians changed from 8,160 to 7,992 ns and from 15,680 to 9,152 ns.
 These are within-path descriptive differences, not cross-API speedups.
@@ -84,9 +83,8 @@ The campaign's recorded measurement-noise floor was about 1.77%, with a
 
 ## Limits and next checks
 
-- **Uncalibrated clocks:** Native reports GPU ticks; Vulkan reports GPU
-  nanoseconds (`timestampPeriod = 1 ns` on this device). No validated
-  Native tick-to-nanosecond conversion exists for this campaign.
+- **Timer units:** Native semaphore timestamps are in nanoseconds. Vulkan
+  timestamps use `timestampPeriod = 1 ns` on this device.
 - **Different timing boundaries:** Native includes launch-to-flush,
   wait-for-idle and memory-barrier work; Vulkan timestamps bracket the frame
   commands. Empty measurements are **not** pure shader or API overhead.
@@ -98,11 +96,10 @@ The campaign's recorded measurement-noise floor was about 1.77%, with a
   cannot exclude shorter clock transients. No claim about commercial games,
   general D3D12 support or performance superiority follows.
 - **Review:** Saved evidence was checked by the campaign author; independent
-  review and a matching calibrated cross-API experiment remain **NOT_RUN**.
+  review and a matched cross-API experiment remain **NOT_RUN**.
 
-**Next question:** Can the Native timer domain be established and calibrated,
-with matched timing brackets and matched GPU-memory backing, before any
-quantitative Native-versus-Vulkan execution-time claim is made?
+**Next question:** Can both paths use matched timing brackets and GPU-memory backing
+for a controlled Native-versus-Vulkan execution-time comparison?
 
 ## Evidence identities
 

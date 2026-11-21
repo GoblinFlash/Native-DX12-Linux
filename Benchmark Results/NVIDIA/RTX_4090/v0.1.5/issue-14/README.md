@@ -27,7 +27,7 @@ Model/PCI field consistency is checked against pinned vendor data; this is not h
 The source Issue and attachment are untrusted reports. Matching catalog fields and recalculated
 medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.
 Review background contention and all reporter notes in the Issue; they are not copied here.
-Actual per-dispatch clocks are not proven. Native GPU ticks and Vulkan nanoseconds stay separate.
+Actual per-dispatch clocks are not proven. GPU durations are shown in ns below 1 ms and in ms from 1 ms.
 A reported 189/189 VERIFIED count is not independent GPU qualification.
 
 Reported overall state: `COMPLETE`; failure marker present: `false`.
@@ -46,35 +46,35 @@ Reported overall state: `COMPLETE`; failure marker present: `false`.
 Medians below are calculated from exported per-process values, not from uploaded prose or charts.
 Frame-suite values are medians of process medians. No uploaded HTML, image or raw log is reused.
 
-| Suite | Case | Variant | Path | Unit | n | Median |
-| --- | --- | --- | --- | --- | ---: | ---: |
-| compute | affine |  | native | GPU_TICKS | 7 | 10336 |
-| compute | affine |  | vulkan | NS | 7 | 9120 |
-| compute | affine515 |  | native | GPU_TICKS | 7 | 9984 |
-| compute | affine515 |  | vulkan | NS | 7 | 8800 |
-| compute | parallel-sort |  | native | GPU_TICKS | 7 | 2158528 |
-| compute | parallel-sort |  | vulkan | NS | 7 | 150176 |
-| d4 | 128x128 |  | vulkan | NS | 7 | 7216 |
-| d4 | 128x128 | B | native | GPU_TICKS | 7 | 21104 |
-| d4 | 128x128 | D4 | native | GPU_TICKS | 7 | 14976 |
-| d4 | 16x1024 |  | vulkan | NS | 7 | 14560 |
-| d4 | 16x1024 | B | native | GPU_TICKS | 7 | 104496 |
-| d4 | 16x1024 | D4 | native | GPU_TICKS | 7 | 55520 |
-| d4 | 32x512 |  | vulkan | NS | 7 | 10272 |
-| d4 | 32x512 | B | native | GPU_TICKS | 7 | 56448 |
-| d4 | 32x512 | D4 | native | GPU_TICKS | 7 | 32128 |
-| k | 127x65 |  | vulkan | NS | 7 | 148576 |
-| k | 127x65 | root-scalar | native | GPU_TICKS | 7 | 165856 |
-| k | 127x65 | root-uint4 | native | GPU_TICKS | 7 | 163856 |
-| k | 64x64 |  | vulkan | NS | 7 | 76080 |
-| k | 64x64 | root-scalar | native | GPU_TICKS | 7 | 92160 |
-| k | 64x64 | root-uint4 | native | GPU_TICKS | 7 | 89232 |
-| kw | 127x65 |  | vulkan | NS | 7 | 9632 |
-| kw | 127x65 | wave-root-scalar | native | GPU_TICKS | 7 | 57680 |
-| kw | 127x65 | wave-root-uint4 | native | GPU_TICKS | 7 | 55136 |
-| kw | 64x64 |  | vulkan | NS | 7 | 9424 |
-| kw | 64x64 | wave-root-scalar | native | GPU_TICKS | 7 | 49744 |
-| kw | 64x64 | wave-root-uint4 | native | GPU_TICKS | 7 | 47168 |
+| Suite | Case | Variant | Path | n | Median GPU time |
+| --- | --- | --- | --- | ---: | ---: |
+| compute | affine |  | native | 7 | 10336 ns |
+| compute | affine |  | vulkan | 7 | 9120 ns |
+| compute | affine515 |  | native | 7 | 9984 ns |
+| compute | affine515 |  | vulkan | 7 | 8800 ns |
+| compute | parallel-sort |  | native | 7 | 2.16 ms |
+| compute | parallel-sort |  | vulkan | 7 | 150176 ns |
+| d4 | 128x128 |  | vulkan | 7 | 7216 ns |
+| d4 | 128x128 | B | native | 7 | 21104 ns |
+| d4 | 128x128 | D4 | native | 7 | 14976 ns |
+| d4 | 16x1024 |  | vulkan | 7 | 14560 ns |
+| d4 | 16x1024 | B | native | 7 | 104496 ns |
+| d4 | 16x1024 | D4 | native | 7 | 55520 ns |
+| d4 | 32x512 |  | vulkan | 7 | 10272 ns |
+| d4 | 32x512 | B | native | 7 | 56448 ns |
+| d4 | 32x512 | D4 | native | 7 | 32128 ns |
+| k | 127x65 |  | vulkan | 7 | 148576 ns |
+| k | 127x65 | root-scalar | native | 7 | 165856 ns |
+| k | 127x65 | root-uint4 | native | 7 | 163856 ns |
+| k | 64x64 |  | vulkan | 7 | 76080 ns |
+| k | 64x64 | root-scalar | native | 7 | 92160 ns |
+| k | 64x64 | root-uint4 | native | 7 | 89232 ns |
+| kw | 127x65 |  | vulkan | 7 | 9632 ns |
+| kw | 127x65 | wave-root-scalar | native | 7 | 57680 ns |
+| kw | 127x65 | wave-root-uint4 | native | 7 | 55136 ns |
+| kw | 64x64 |  | vulkan | 7 | 9424 ns |
+| kw | 64x64 | wave-root-scalar | native | 7 | 49744 ns |
+| kw | 64x64 | wave-root-uint4 | native | 7 | 47168 ns |
 
 ![Exported measurements for Issue #14](chart.svg)
 

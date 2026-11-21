@@ -12,9 +12,9 @@ These are recorded GPU compute experiments. The two performance charts compare a
 
 | Arrangement of the same 16,384 values | Before | After | Less time |
 | --- | ---: | ---: | ---: |
-| 128×128 | 3.392 µs | 2.624 µs | 22.64% |
-| 32×512 | 7.936 µs | 4.848 µs | 39.01% |
-| 16×1024 | 14.112 µs | 7.872 µs | 44.22% |
+| 128×128 | 3,392 ns | 2,624 ns | 22.64% |
+| 32×512 | 7,936 ns | 4,848 ns | 39.01% |
+| 16×1024 | 14,112 ns | 7,872 ns | 44.22% |
 
 The arrangements describe how the generated values were organized for the test. They are not display resolutions. The recorded experiment passed 2,880 full output-buffer comparisons.
 
@@ -28,8 +28,8 @@ The arrangements describe how the generated values were organized for the test. 
 
 | Generated input | Before | After | Less time for all four programs |
 | --- | ---: | ---: | ---: |
-| 64×64 (4,096 values) | 4.608 µs | 4.336 µs | 5.90% |
-| 127×65 (8,255 values) | 5.632 µs | 5.344 µs | 5.11% |
+| 64×64 (4,096 values) | 4,608 ns | 4,336 ns | 5.90% |
+| 127×65 (8,255 values) | 5,632 ns | 5,344 ns | 5.11% |
 
 This measures the complete four-program GPU sequence, not just the changed final program. The recorded experiment passed 2,620 full output-buffer comparisons. Vulkan and CUDA appear on the chart as separate reference measurements, not a universal speed ranking.
 
