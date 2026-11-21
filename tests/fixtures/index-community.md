@@ -55,4 +55,4 @@ Existing curated records stay in place. Version indexes link to those records an
 
 One Issue has one stable intake branch and draft PR. Duplicate, edited or reopened events never overwrite an existing review, PR or curated record. The source is checked immediately before creating a new branch ref. A later Issue change is shown in the draft body as `STALE`, with prepared/observed source fingerprints and the pinned snapshot commit; an unavailable final observation is `UNKNOWN`. Reviewers reconcile these observations before acceptance. Recovery of a pre-existing orphan still requires matching source, permission and exact branch bytes. See [the intake operator guide](../../.github/scripts/README.md) for permissions, limits, tests, failure handling and the owner approval gate.
 
-[All experiment results](../README.md)
+[All benchmark results](../README.md)

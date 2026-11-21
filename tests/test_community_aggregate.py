@@ -26,7 +26,7 @@ def put(api, name, data):
 def seeded():
     """Use the current exported candidate as the consumer's base-tree fixture."""
     api = FakeAPI()
-    for path in (ROOT / 'Experiment Results').rglob('*'):
+    for path in (ROOT / 'Benchmark Results').rglob('*'):
         if path.is_file() and path.suffix in ('.md', '.json', '.csv', '.svg'):
             put(api, path.relative_to(ROOT).as_posix(), path.read_bytes())
     return api
@@ -78,10 +78,10 @@ class AggregateTests(unittest.TestCase):
         result = writer.publish(ready(), api, 12)
         self.assertEqual(result['status'], 'DRAFT_PR_CREATED')
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        report = 'Experiment Results/Community/v0.1.5-submitted-data.md'
+        report = 'Benchmark Results/Community/v0.1.5-submitted-data.md'
         self.assertIn(report, entries)
         self.assertIn('Issue #12', api.blobs[entries[report]['sha']])
-        root = api.blobs[entries['Experiment Results/README.md']['sha']]
+        root = api.blobs[entries['Benchmark Results/README.md']['sha']]
         self.assertIn('| GPU | Exported process status |', root)
         self.assertIn('v0.1.5-submitted-data.md', root)
 
@@ -172,7 +172,7 @@ class AggregateTests(unittest.TestCase):
         files = draft_files(api)
         self.assertIn(b'Native DX12 memory backing: UNKNOWN',
                       files[core.ROOT + 'v0.1.6-submitted-data.md'])
-        root = files['Experiment Results/README.md']
+        root = files['Benchmark Results/README.md']
         self.assertIn('## Community Benchmark Data — v0.1.6'.encode(), root)
         self.assertIn('## Community Benchmark Data — v0.1.5'.encode(), root)
         self.assertIn(b'Individual intake records (all benchmark versions)', root)
@@ -199,10 +199,10 @@ class AggregateTests(unittest.TestCase):
         self.assertIn('## RTX 3090 — [Issue #12]'.encode(), report)
         for name, raw in before.items():
             self.assertEqual(files[name], raw, name)
-        for name in ('Experiment Results/README.md', core.ROOT + 'README.md'):
+        for name in ('Benchmark Results/README.md', core.ROOT + 'README.md'):
             old = (ROOT / name).read_bytes()
             heading = (b'\n## Community Benchmark Data ' + '— v0.1.4'.encode() if
-                       name.startswith('Experiment Results/README') else b'\n## Curated v0.1.4 report')
+                       name.startswith('Benchmark Results/README') else b'\n## Curated v0.1.4 report')
             self.assertEqual(files[name][files[name].index(heading):], old[old.index(heading):])
 
     def test_unknown_release_remains_individual_manual_record(self):
@@ -346,7 +346,7 @@ class AggregateTests(unittest.TestCase):
                     self.assertEqual(len(proposals), 3)
                     for name, (raw, key) in aggregate.document_set('v0.1.5', proposals, core).items():
                         files[name] = aggregate.wrap(raw, key)
-                    for name, prefix in [('Experiment Results/README.md', 'Community/'),
+                    for name, prefix in [('Benchmark Results/README.md', 'Community/'),
                                          (core.ROOT + 'README.md', '')]:
                         files[name] = aggregate.wrap(aggregate.overview('v0.1.5', proposals, prefix, core),
                                                      'overview:v0.1.5')

@@ -2,7 +2,7 @@
 
 This folder contains test programs, checks and sample workloads for Native DX12 Linux. **It is not a collection of GPU benchmark results.**
 
-For measured experiments and recorded results, see [Experiment Results](../Experiment%20Results/README.md).
+For measured experiments and recorded results, see [Benchmark Results](../Benchmark%20Results/README.md).
 
 ## What is in this folder?
 
@@ -39,6 +39,6 @@ Replace `/path/to/build` with the actual external build directory. For prerequis
 
 ## GPU tests and results
 
-Passing these CPU checks does not demonstrate game compatibility or a GPU performance improvement. The recorded [NVIDIA RTX 4090 results](../Experiment%20Results/NVIDIA/README.md) are documented separately. A simpler public GPU benchmark runner is still in development.
+Passing these CPU checks does not demonstrate game compatibility or a GPU performance improvement. The recorded [NVIDIA RTX 4090 results](../Benchmark%20Results/NVIDIA/README.md) are documented separately. A simpler public GPU benchmark runner is still in development.
 
 Third-party files retain their own terms. See [MiniEngine notices](third_party/miniengine/NOTICE.md) and its upstream license.

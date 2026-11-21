@@ -1,4 +1,4 @@
-# Intel — Experiment Results
+# Intel — Benchmark Results
 
 **Early development hardware:** Intel Iris Xe.
 
@@ -20,4 +20,4 @@ These files describe test workloads. Their presence alone does not establish a s
 
 **Next step:** publish clearly identified Intel GPU test results and measurements when available.
 
-[All experiment results](../README.md) · [Project home](../../README.md)
+[All benchmark results](../README.md) · [Project home](../../README.md)

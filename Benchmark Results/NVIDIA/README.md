@@ -1,4 +1,4 @@
-# NVIDIA — Experiment Results
+# NVIDIA — Benchmark Results
 
 **Test hardware:** GeForce RTX 4090 (Ada Lovelace).
 
@@ -50,4 +50,4 @@ Work is underway to make GPU benchmarks easier to run on another Linux machine. 
 
 For the recorded hardware, methods, source identities and limitations, see [measurement and execution details](measurement-details.md). Build and CPU checks are documented [separately](../../docs/validation.md).
 
-[All experiment results](../README.md) · [Project home](../../README.md)
+[All benchmark results](../README.md) · [Project home](../../README.md)

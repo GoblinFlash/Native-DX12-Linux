@@ -2,12 +2,12 @@
 
 This page explains how the source package is built and checked on the CPU, and what those checks do and do not establish. GPU experiment measurements and their original charts are organized separately:
 
-- [NVIDIA RTX 4090 — measured experiments and execution checks](../Experiment%20Results/NVIDIA/README.md)
-- [AMD — CPU-side adapter checks](../Experiment%20Results/AMD/README.md)
-- [Intel — early Iris Xe development and test programs](../Experiment%20Results/Intel/README.md)
+- [NVIDIA RTX 4090 — measured experiments and execution checks](../Benchmark%20Results/NVIDIA/README.md)
+- [AMD — CPU-side adapter checks](../Benchmark%20Results/AMD/README.md)
+- [Intel — early Iris Xe development and test programs](../Benchmark%20Results/Intel/README.md)
 
 The [`tests/` folder](../tests/README.md) contains test code and sample workloads, not the experiment
-results. The NVIDIA, AMD and Intel results are under `Experiment Results/`.
+results. The NVIDIA, AMD and Intel results are under `Benchmark Results/`.
 
 ## CPU build
 
@@ -93,7 +93,7 @@ integrity boundary, not an OS sandbox for arbitrary native code or existing FDs.
 There is currently no documented public plan generator or end-to-end NVIDIA
 benchmark runner in this source export. `native_bootstrap.py` consumes an explicitly
 pinned host/workload plan; a copied development plan is not a portable example.
-The [recorded NVIDIA measurements](../Experiment%20Results/NVIDIA/measurement-details.md)
+The [recorded NVIDIA measurements](../Benchmark%20Results/NVIDIA/measurement-details.md)
 therefore cannot be replayed as a public one-command demo yet.
 The build container exposes no GPU devices and never enables execution.
 

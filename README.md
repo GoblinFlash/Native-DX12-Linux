@@ -13,7 +13,7 @@
 <p>
   <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.5" height="54"></a>
   <a href="NDX12_GPU_Benchmark/HOW_TO_RUN.md"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
-  <a href="Experiment%20Results/README.md"><img src=".github/readme-assets/button-results.svg" alt="Results" height="54"></a>
+  <a href="Benchmark%20Results/README.md"><img src=".github/readme-assets/button-results.svg" alt="Results" height="54"></a>
   <a href="Experiments/README.md"><img src=".github/readme-assets/button-experiments.svg" alt="Experiments" height="54"></a>
 </p>
 
@@ -89,7 +89,7 @@ This roadmap shows **development focus**, not a percentage of Direct3D 12 comple
 
 - [Benchmark details and supported hardware](NDX12_GPU_Benchmark/README.md) — workloads, requirements and hardware-specific validation records.
 - [Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml) — community submissions, including partial or failed runs.
-- [Experiment Results](Experiment%20Results/README.md) — technical measurements, comparisons and recorded outcomes.
+- [Benchmark Results](Benchmark%20Results/README.md) — technical measurements, comparisons and recorded outcomes.
 - [Build the source](container/README.md) — CPU-side build instructions; a successful build is not a GPU test.
 - [Native pipeline overview](docs/native_dx12_linux_pipeline.svg) — experimental NVIDIA execution path.
 - [NVIDIA Developer Forums discussion](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938) — public progress and feedback.

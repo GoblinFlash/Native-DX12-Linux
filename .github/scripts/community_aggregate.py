@@ -201,8 +201,8 @@ def derive(proposal, api, entries, files, core):
         else:
             core.need(path not in expected, 'AGGREGATE_SOURCE_MISSING')
             files[path] = wrap(content, key)
-    for path, prefix in [('Experiment Results/README.md', 'Community/'),
-                         ('Experiment Results/Community/README.md', '')]:
+    for path, prefix in [('Benchmark Results/README.md', 'Community/'),
+                         ('Benchmark Results/Community/README.md', '')]:
         files[path] = update_overview(files[path], version, combined, previous, prefix, core)
     return modified
 
@@ -272,7 +272,7 @@ def verify(root, core=None):
                 documents.append(path)
     core.need(len(documents) <= 512, 'AGGREGATE_DOCUMENT_LIMIT')
     discovered = {}
-    overview_paths = ('Experiment Results/README.md', core.ROOT + 'README.md')
+    overview_paths = ('Benchmark Results/README.md', core.ROOT + 'README.md')
     for name in list(overview_paths) + [
             p.relative_to(root).as_posix() for p in documents]:
         for match in managed.finditer(local_file(name)):
@@ -289,8 +289,8 @@ def verify(root, core=None):
         for path, (content, key) in expected.items():
             raw = local_file(path)
             replace_region(raw, content, content, key, core)
-        for path, prefix in [('Experiment Results/README.md', 'Community/'),
-                             ('Experiment Results/Community/README.md', '')]:
+        for path, prefix in [('Benchmark Results/README.md', 'Community/'),
+                             ('Benchmark Results/Community/README.md', '')]:
             content = overview(version, proposals, prefix, core)
             replace_region(local_file(path), content, content, 'overview:' + version, core)
     return {'status': 'AGGREGATES_CURRENT', 'versions': sorted(versions)}

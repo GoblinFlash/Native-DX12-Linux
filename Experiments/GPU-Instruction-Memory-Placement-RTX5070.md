@@ -2,7 +2,7 @@
 
 This folder documents ongoing development experiments, including why a change was
 tried, how it was measured, what actually happened, and what remains unproven.
-It is separate from the [community benchmark submissions](../Experiment%20Results/README.md).
+It is separate from the [community benchmark submissions](../Benchmark%20Results/README.md).
 
 ## Current experiment: GPU instruction memory placement (SYSMEM vs VRAM)
 

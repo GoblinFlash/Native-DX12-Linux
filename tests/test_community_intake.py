@@ -162,8 +162,8 @@ INDEX_FIXTURES = Path(__file__).resolve().parent / 'fixtures'
 
 def index_fixture(path):
     """Read a fixed post-migration index scenario independent of live community content."""
-    names = {'Experiment Results/README.md': 'index-results.md',
-             'Experiment Results/Community/README.md': 'index-community.md'}
+    names = {'Benchmark Results/README.md': 'index-results.md',
+             'Benchmark Results/Community/README.md': 'index-community.md'}
     return (INDEX_FIXTURES/names[path]).read_bytes()
 
 

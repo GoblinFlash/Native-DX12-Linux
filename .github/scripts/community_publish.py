@@ -50,7 +50,7 @@ def tree_entries(api, tree_sha):
 
 def existing_issue(entries, issue_number):
     """Report whether tree entries contain an existing legacy or versioned Issue record."""
-    pattern = re.compile(r'^Experiment Results/Community/(?:[^/]+/)*issue-' + str(issue_number) +
+    pattern = re.compile(r'^Benchmark Results/Community/(?:[^/]+/)*issue-' + str(issue_number) +
                          r'(?:-submission)?(?:\.md|/(?:README\.md|record\.json))$')
     return any(type(row.get('path')) is str and pattern.fullmatch(row['path']) for row in entries)
 
@@ -61,8 +61,8 @@ INDEX_NOTE = ('Export consistency and owner acceptance are separate: intake chec
               'but does not record owner acceptance or infer it from a merged PR. '
               'Export consistency does not prove GPU execution or permit Native-versus-Vulkan rankings.')
 INDEXES = {
-    'Experiment Results/README.md': ('\n## Curated community benchmark data — v0.1.4\n', 'Community/'),
-    'Experiment Results/Community/README.md': ('\n## Curated v0.1.4 report\n', ''),
+    'Benchmark Results/README.md': ('\n## Curated community benchmark data — v0.1.4\n', 'Community/'),
+    'Benchmark Results/Community/README.md': ('\n## Curated v0.1.4 report\n', ''),
 }
 # Exact public main 8e720506 index blobs, before managed-section migration.
 INDEX_BOOTSTRAP = {

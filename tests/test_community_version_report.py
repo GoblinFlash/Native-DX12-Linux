@@ -16,7 +16,7 @@ SPEC.loader.exec_module(report)
 class VersionReportTests(unittest.TestCase):
     def test_v15_has_its_own_gpu_table_and_full_report_link(self):
         """The v0.1.5 overview must match the existing table-and-report navigation."""
-        text = (ROOT / 'Experiment Results/README.md').read_text()
+        text = (ROOT / 'Benchmark Results/README.md').read_text()
         section = text.split('## Community Benchmark Data — v0.1.5\n', 1)[1].split(
             '## Community Benchmark Data — v0.1.4\n', 1)[0]
         self.assertIn('| GPU | Exported process status | GPU tick-to-ns model | Important limitation |', section)
@@ -112,7 +112,7 @@ class VersionReportTests(unittest.TestCase):
         refused = core.prepare(issue(gpu='RTX 3060'), bundle())
         self.assertEqual(refused['reason'], 'GPU_MISMATCH')
         outputs = report.render('v0.1.5', [refused])
-        self.assertEqual(list(outputs), ['Experiment Results/Community/v0.1.5-submitted-data.md'])
+        self.assertEqual(list(outputs), ['Benchmark Results/Community/v0.1.5-submitted-data.md'])
         text = next(iter(outputs.values())).decode()
         self.assertIn('GPU_MISMATCH', text)
         self.assertIn('No measurements or chart', text)
@@ -131,10 +131,10 @@ class VersionReportTests(unittest.TestCase):
         first = core.prepare(issue(12), bundle())
         second = core.prepare(issue(13), bundle())
         outputs = report.render('v0.1.5', [first, second])
-        index = outputs['Experiment Results/Community/NVIDIA/RTX_3090/v0.1.5/README.md'].decode()
+        index = outputs['Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/README.md'].decode()
         for number in (12, 13):
             self.assertIn('#rtx-3090--issue-' + str(number), index)
-            self.assertIn('Experiment Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-' +
+            self.assertIn('Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-' +
                           str(number) + '/record.json', outputs)
 
     def test_unqualified_clock_keeps_published_separate_raw_unit_panels(self):

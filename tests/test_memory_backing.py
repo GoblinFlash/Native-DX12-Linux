@@ -100,7 +100,7 @@ class MemoryBackingTests(unittest.TestCase):
 
     def test_curated_charts_expose_native_label_and_separate_vulkan_metadata(self):
         """Every existing community chart carries visible Native-only backing and version evidence."""
-        charts = sorted((ROOT/'Experiment Results/Community/charts').glob('*.svg'))
+        charts = sorted((ROOT/'Benchmark Results/Community/charts').glob('*.svg'))
         self.assertEqual(len(charts), 4)
         for path in charts:
             with self.subTest(chart=path.name):
@@ -120,7 +120,7 @@ class MemoryBackingTests(unittest.TestCase):
 
     def test_curated_pages_label_existing_results_without_removing_negative_evidence(self):
         """Label every existing result page while keeping clock/contention caveats and values."""
-        root = ROOT/'Experiment Results/Community'
+        root = ROOT/'Benchmark Results/Community'
         pages = ['README.md', 'v0.1.4-submitted-data.md']
         for gpu in ('RTX_3060', 'RTX_3060_Ti', 'RTX_3090', 'RTX_4060_Laptop_GPU'):
             pages += ['NVIDIA/' + gpu + '/README.md', 'NVIDIA/' + gpu + '/v0.1.4/README.md']
@@ -140,7 +140,7 @@ class MemoryBackingTests(unittest.TestCase):
         outputs = core.render(proposal)
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
-            shutil.copytree(ROOT/'Experiment Results/Community', target/'Experiment Results/Community')
+            shutil.copytree(ROOT/'Benchmark Results/Community', target/'Benchmark Results/Community')
             for name, data in outputs.items():
                 path = target/name
                 path.parent.mkdir(parents=True, exist_ok=True)

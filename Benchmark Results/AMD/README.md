@@ -1,4 +1,4 @@
-# AMD — Experiment Results
+# AMD — Benchmark Results
 
 **Current public evidence:** CPU-side checks of the RadeonSI adapter. An AMD GPU benchmark has not yet been qualified in this release.
 
@@ -18,4 +18,4 @@ The recorded checks also produced four output images. These are CPU-side results
 
 **Next step:** native AMD GPU execution and measurements with a clearly identified device, driver and test workload.
 
-[All experiment results](../README.md) · [Project home](../../README.md)
+[All benchmark results](../README.md) · [Project home](../../README.md)

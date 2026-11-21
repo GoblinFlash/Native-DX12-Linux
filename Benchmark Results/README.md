@@ -1,4 +1,4 @@
-# Experiment Results
+# Benchmark Results
 
 Recorded GPU experiments, CPU-side development checks and community benchmark submissions. Each result is tied to its hardware, benchmark revision and measurement method.
 

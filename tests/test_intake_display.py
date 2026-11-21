@@ -11,12 +11,12 @@ class DisplayTests(unittest.TestCase):
         api = FakeAPI()
         writer.publish(ready(), api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        folder = 'Experiment Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-12'
+        folder = 'Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-12'
         self.assertIn('![Exported measurements for Issue #12](chart.svg)',
                       api.blobs[entries[folder + '/README.md']['sha']])
         expected = {
-            'Experiment Results/README.md': 'Community/NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
-            'Experiment Results/Community/README.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
+            'Benchmark Results/README.md': 'Community/NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
+            'Benchmark Results/Community/README.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
         }
         for path, relative in expected.items():
             with self.subTest(path=path):
@@ -35,7 +35,7 @@ class DisplayTests(unittest.TestCase):
         api = FakeAPI(current=source)
         writer.publish(proposal, api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        folder = 'Experiment Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-12'
+        folder = 'Benchmark Results/Community/NVIDIA/RTX_3090/v0.1.5/issue-12'
         report = api.blobs[entries[folder + '/README.md']['sha']]
         self.assertIn('**Export consistency: CHECKED**', report)
         self.assertIn('**Owner acceptance: NOT_RECORDED**', report)

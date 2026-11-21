@@ -21,7 +21,7 @@ import urllib.request
 import zlib
 
 REPOSITORY = 'GoblinFlash/Native-DX12-Linux'
-ROOT = 'Experiment Results/Community/'
+ROOT = 'Benchmark Results/Community/'
 MAX_COMPRESSED = 8 * 1024 * 1024
 MAX_EXPANDED = 16 * 1024 * 1024
 MAX_MEMBER = 2 * 1024 * 1024
