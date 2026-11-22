@@ -1,52 +1,48 @@
 # NVIDIA — Benchmark Results
 
-**Test hardware:** GeForce RTX 4090 (Ada Lovelace).
+**Recorded test hardware:** GeForce RTX 4090 (Ada Lovelace), with separate community submissions linked below.
 
-These are recorded GPU compute experiments. The two performance charts compare a version before a specific change with a version after it. Both versions were checked for correct output.
+The historical results in this section are bounded GPU compute experiments. They are not game benchmarks, complete Direct3D 12 qualification or a general ranking of graphics APIs. The published tables preserve measurement values and correctness scope; additional internal implementation notes are not part of this overview.
 
-## Test 1 — Faster histogram calculations
+## Histogram experiment
 
-**What does it do?** The GPU counts how often each number from 0 to 255 appears in 16,384 generated values, similar to counting brightness levels in an image.
+The GPU counted occurrences of values 0–255 in a generated 16,384-element input. The two code revisions were measured on the same recorded hardware. The table reports the historical experiment's paired-process median reductions.
 
-**What changed?** Four repeated operations were grouped together in the experimental NVIDIA shader compiler path.
-
-| Arrangement of the same 16,384 values | Before | After | Less time |
+| Input arrangement (not a display resolution) | Original | Updated | Recorded time reduction |
 | --- | ---: | ---: | ---: |
 | 128×128 | 3,392 ns | 2,624 ns | 22.64% |
 | 32×512 | 7,936 ns | 4,848 ns | 39.01% |
 | 16×1024 | 14,112 ns | 7,872 ns | 44.22% |
 
-The arrangements describe how the generated values were organized for the test. They are not display resolutions. The recorded experiment passed 2,880 full output-buffer comparisons.
+The campaign reported **2,880 complete output-buffer comparisons** with expected results. The figures measure the GPU dispatch interval of this workload, not an isolated compiler pass.
 
-![RTX 4090 histogram experiment — original before-and-after chart](rtx4090-d4-original.png)
+![RTX 4090 histogram experiment](rtx4090-d4-original.png)
 
-## Test 2 — Four GPU programs working together
+## Four-program compute chain
 
-**What does it do?** Four connected GPU programs prepare generated numbers, count them and combine the counts into a final result.
+The second experiment used four dependent GPU programs to process generated 32-bit input values. Timing covers the **complete GPU chain**, including required coordination between its programs.
 
-**What changed?** The final program reads four neighboring counts together instead of reading them one at a time.
-
-| Generated input | Before | After | Less time for all four programs |
+| Input arrangement | Original | Updated | Recorded whole-chain time reduction |
 | --- | ---: | ---: | ---: |
 | 64×64 (4,096 values) | 4,608 ns | 4,336 ns | 5.90% |
 | 127×65 (8,255 values) | 5,632 ns | 5,344 ns | 5.11% |
 
-This measures the complete four-program GPU sequence, not just the changed final program. The recorded experiment passed 2,620 full output-buffer comparisons. Vulkan and CUDA appear on the chart as separate reference measurements, not a universal speed ranking.
+The campaign reported **2,620 complete output-buffer comparisons** against expected data. Independently timed Vulkan and CUDA implementations appear only as reference observations; differences in timing boundaries, resource placement and synchronization prevent a general cross-backend ranking.
 
-![RTX 4090 full GPU sequence — original chart](rtx4090-fullbench-original.png)
+![RTX 4090 four-program sequence](rtx4090-fullbench-original.png)
 
-## Other recorded RTX 4090 execution tests
+## Other recorded checks
 
-| Test | What was checked | Result in the recorded run |
-| --- | --- | --- |
-| Affine u32 | A small numerical calculation and its complete output | GPU work completed; output matched the independent expected result |
-| FidelityFX ParallelSort | Sorting 515 values across 40 GPU dispatches | GPU work completed; the final sorting and permutation checks passed |
+| Test | Recorded status |
+| --- | --- |
+| Affine u32 | GPU execution completed; the complete numerical output was compared against expected values |
+| FidelityFX ParallelSort N515 | GPU execution completed; final sorting and permutation checks passed |
 
-These two execution checks do not include a qualified performance comparison.
+The latter checks did not constitute a qualified performance comparison.
 
-## Submitted benchmark results by GPU model
+## Submitted results
 
-Reports from external contributors are organized under the exact GPU model. They are distinct from the maintainer-recorded experiments above; export checks do not imply independent GPU execution or owner acceptance.
+Community submissions are organized by exact GPU model and retain their recorded evidence limitations:
 
 - [GeForce RTX 3060](RTX_3060/README.md)
 - [GeForce RTX 3060 Ti](RTX_3060_Ti/README.md)
@@ -55,12 +51,10 @@ Reports from external contributors are organized under the exact GPU model. They
 - [GeForce RTX 4060 Laptop GPU](RTX_4060_Laptop_GPU/README.md)
 - [GeForce RTX 4090](RTX_4090/v0.1.5/README.md)
 
-[All submissions and review status](../SUBMISSIONS.md). Unresolved GPU identities remain in [Pending Classification](../Pending_Classification/v0.1.5/issue-11/README.md) rather than being assigned to a model.
+[All submissions and review status](../SUBMISSIONS.md). A reported export status is not independent GPU reproduction or owner acceptance.
 
-## Reproducing the results
+## Reproducibility and limits
 
-Work is underway to make GPU benchmarks easier to run on another Linux machine. The public source release does not yet contain a ready-to-run version of these exact benchmark campaigns. The underlying development evidence for the charts is retained privately.
-
-For the recorded hardware, methods, source identities and limitations, see [measurement and execution details](measurement-details.md). Build and CPU checks are documented [separately](../../docs/validation.md).
+The public source release does not currently offer a ready-to-run reproduction of these exact historical experiments. Private development evidence is retained. Hardware, timings and evidence scope are summarized in [measurement details](measurement-details.md); see also [CPU build and validation](../../docs/validation.md).
 
 [All benchmark results](../README.md) · [Project home](../../README.md)

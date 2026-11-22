@@ -1,216 +1,25 @@
 # Experiments — Native DX12 Linux
 
-## <img src="charts/cube-matrix.svg" width="40" align="center" alt=""> Cube Matrix and Neural Grid
+Experimental research into native GPU compute and rendering on Linux, without a Vulkan/VKD3D translation runtime in the NVIDIA execution path.
 
-<sub>17–20 November 2026 · RTX 4060 Ti / RTX 4090 · native GPU experiments · not part of a released benchmark</sub>
+These pages summarize **what was investigated, what was observed, and what remains unverified**. They are development reports, not claims of full Direct3D 12 support, game compatibility, a production renderer, or general superiority over another graphics API.
 
-Games often keep the light of a scene in a 3D grid of small cells, so they do not have to compute it again every frame.
-These two experiments ask how small such a grid can be and how fast the native D3D12 path can read it back on the GPU.
+## Research areas
 
-- **[Cube Matrix](Cube-Matrix.md)** packs the grid into 4 × 4 × 4 blocks.
-  - Some blocks are rebuilt on the GPU's Tensor Cores.
-  - Empty blocks are not stored at all.
-- **[Neural Grid](Neural-Grid.md)** tries a tiny neural network that rebuilds the cell values instead. It also compares
-  the grid with tracing rays for light bouncing off walls.
+| Area | Research objective | Evidence boundary |
+| --- | --- | --- |
+| [Cube Matrix](Cube-Matrix.md) | Evaluate compact representations of scene lighting and native GPU reconstruction | Bounded NVIDIA RTX experiments; a smaller representation did not consistently reduce whole-frame time |
+| [Neural Grid](Neural-Grid.md) | Explore learned representations and indirect-light workloads | Bounded RTX experiments, including Sponza; no general rendering-quality or performance claim |
+| [FWHT / retained sessions](FWHT.md) | Exercise dependent compute workloads, resource reuse and correct synchronization | Separate RTX pilot observations; integrated full-benchmark GPU qualification was not established at the recorded checkpoint |
+| [GPU memory placement](GPU-Instruction-Memory-Placement-RTX5070.md) | Examine a known GPU memory-management trade-off | RTX 5070 pilot: lower measured GPU interval, higher host elapsed time |
+| [Campaign 019](Campaign-019-RTX4060Ti.md) | Check clock-controlled histogram measurements | RTX 4060 Ti measurements with documented limits on cross-API comparison |
 
-Findings in short:
+## Results and reproducibility
 
-- **The results are exact.** Every image and grid computed on the GPU matched the CPU reference to the last byte.
-- **Smaller is not always faster.** The compressed grids are much smaller, but on the test scene (Sponza) they did not
-  make the frame faster: the whole scene already fits in the GPU cache.
-- **The biggest speed-up came from the compiler.** The compiler path treated every memory read as "might change at any
-  moment". Telling it which buffers are read-only made the lighting about 2× faster, and up to 3.4× in some programs,
-  with identical images.
-- **A grid is cheap but blurrier.** Reading the light grid is about 33× cheaper than one ray per pixel, but the picture
-  is about 5 dB worse.
+Public, release-identified benchmark records, community submissions and their limitations are maintained separately in [Benchmark Results](../Benchmark%20Results/README.md). For the currently downloadable software, consult [Benchmark documentation](../NDX12_GPU_Benchmark/README.md) and its corresponding release notes and source package.
 
-GPU durations use ns below 1 ms and ms from 1 ms. These runs used locked GPU clocks. These are development results.
+A completed GPU test applies only to the tested binary, device, driver, workload and measurement interval. CPU checks, compiler results, hardware runs and independent review are different evidence categories. A pilot run does not qualify a later package revision.
 
-## Current experiment: Fast Walsh–Hadamard Transform (FWHT)
+Experimental code and internal verification artifacts are not necessarily part of a public release. Source availability for **distributed GPL-covered binaries** is governed by the relevant licenses and source-distribution obligations; this page does not narrow those obligations.
 
-<sub>12 November 2026 · RTX 5070 / RTX 4090 · bounded native GPU pilots · full-benchmark integration in progress</sub>
-
-**Research question:** Can Cache Arena safely reuse a prepared native GPU
-session, shader code and VRAM allocations across multiple dependent FWHT tasks?
-What is the impact of session reuse on host-side overhead, and how does memory
-placement affect the measured GPU interval?
-
-### FWHT and Cache Arena
-
-The **Fast Walsh–Hadamard Transform (FWHT)** is an established algorithm based
-on butterfly stages of pairwise additions and subtractions. Its deterministic
-output can be checked against a CPU reference, while consecutive GPU
-dispatches create a real dependency through intermediate memory.
-
-**Experiment Concept.** The proposal was to combine FWHT with
-**Cache Arena**, a reusable, Rust-managed VRAM pool and persistent native GPU
-session. The objective was to determine whether the same channel, code
-allocation and data pool could serve multiple independent compute tasks
-without losing correct synchronization, results or resource ownership.
-
-This is why FWHT was chosen as the workload. The first native dispatch writes
-intermediate values; the second must read them to finish the transform.
-Running two complete transforms with different inputs through one retained
-Arena tests more than buffer allocation: it checks dependent execution,
-memory visibility, safe resource reuse and verified completion.
-
-The RTX 4090 **A/B design** compares a fresh session for each FWHT task
-(A) with a retained Cache Arena shared by both tasks (B). Code and data
-allocations remain in VRAM; control structures remain in system memory.
-The experiment targets repeated channel setup, allocation, mapping and
-code-upload costs. **Cache Arena refers to software-managed resource reuse,
-not a demonstrated speedup of NVIDIA's hardware L1/L2 cache or shader code.**
-
-A separate RTX 5070 pilot examines **SYSMEM versus VRAM placement** using the
-same two-dispatch FWHT shape. FWHT is also being integrated as **Test 4**
-of the complete benchmark; its integrated GPU execution has not yet been
-qualified.
-
-**Current observation:** On RTX 4090, the retained Arena recorded
-**42.39% lower median operational host time** across two tasks, based on
-two observations per arm and checked outputs. On RTX 5070, VRAM data backing
-recorded shorter **GPU durations** than SYSMEM. These pilots
-measure different effects on different GPUs, not a general performance
-ranking or a Vulkan comparison.
-
-### Workload and experiment scope
-
-The test processes **128 × 128 unsigned 32-bit values (16,384 elements)**.
-The first GPU dispatch writes an intermediate buffer; the second consumes that
-buffer and completes the transform. The final output is checked against CPU
-models. This two-stage dependency, rather than a CPU-inserted final result,
-is the behavior under test.
-
-Two independent pilot designs are retained:
-
-| Pilot | Variable | Fixed / checked | Reported metric |
-| --- | --- | --- | --- |
-| RTX 5070 | SYSMEM or VRAM data; separate VRAM code in a third profile | Same FWHT shape, two dispatches per frame and saved full-output checks | GPU elapsed time (ns) |
-| RTX 4090 | Fresh sessions (A) or a retained session (B) | Same two FWHT tasks, full output checks and VRAM data/code allocations | Host elapsed time |
-
-An instruction buffer's backing and a data buffer's backing are distinct
-questions. These pilots cannot isolate every transfer, cache and driver
-effect, and their timing units must not be mixed.
-
-### Hardware and measurement
-
-- **RTX 5070:** SM120; NVIDIA Open 620.70.06. Three memory-placement
-  configurations, each in one GPU process with 14 frames. The reported
-  median uses 12 frames. GPU clocks were unlocked.
-- **RTX 4090:** SM89; NVIDIA Open 620.70.06. One canary followed by an
-  A–B–B–A comparison: 7 sessions, 20 dispatches and 10 FWHT tasks across
-  the captures. Two observations per arm. A opens/closes a session per task;
-  B retains one session across two tasks. These values are **host wall time**.
-- **Verification:** Saved full buffers, expected transform results, control
-  and allocation records, resource retirement and other available
-  diagnostics were checked. Saved evidence does not by itself prove a new
-  GPU run or a production API qualification.
-
-### Results and charts
-
-#### RTX 5070 — data placement and GPU time in ns
-
-![FWHT RTX 5070 GPU time in ns for SYSMEM data, VRAM data and VRAM data with separate VRAM code](charts/fwht-rtx5070-memory-ticks.svg)
-
-Lower is better. Values show GPU time per frame in ns. Each profile
-has only one process, so the chart is a bounded observation rather than a
-repeatable cross-hardware performance claim.
-
-| Data backing | Program backing | Median GPU time per frame (ns) | Evidence status |
-| --- | --- | ---: | --- |
-| SYSMEM | Control arena | 856,480 | GPU series accepted; saved output checked |
-| VRAM | Control arena | 32,096 | GPU series accepted; saved output checked |
-| VRAM | Separate 1 MiB VRAM code buffer | 32,064 | GPU process finished; VM audit refused; saved data rechecked on CPU |
-
-The two accepted series show a **26.7× difference in median GPU durations**
-between SYSMEM and VRAM data backing in this specific workload. That ratio
-is **not** a wall-clock speedup, and the third row does not independently
-establish an advantage from placing code in VRAM.
-
-In the third profile, the on-VM audit expected 14 QMD launch records, while
-the two-dispatch workload recorded 28. The corrected checker subsequently
-accepted the saved data **on the CPU**; it has **not been rerun on the GPU VM**.
-
-[RTX 5070 summary CSV](data/fwht-rtx5070-summary.csv) — derived medians,
-not original per-frame receipts.
-
-#### RTX 4090 — fresh versus retained session
-
-![FWHT RTX 4090 normalized host timings for fresh and retained sessions](charts/fwht-rtx4090-session-host.svg)
-
-The bars are normalized *separately* within each host metric to the
-fresh-session baseline (A = 100%). Exact measured medians are below.
-
-| Host metric for two tasks | A: fresh sessions | B: retained session | Difference |
-| --- | ---: | ---: | ---: |
-| Operational wall time | 1.751565 s | 1.009055 s | **−42.39%** |
-| Full audited wall time | 34.908102 s | 28.485755 s | **−18.40%** |
-
-This is **host-side work, not shader execution time**. The comparison has
-two observations per arm in sequential A–B–B–A order; it is not a statistical
-significance test. Saved phase records show **0.561522 s less median
-code-upload time** in the retained arm across two tasks; setup/teardown
-and audit phases also differ. These are descriptive components of a
-whole-session A/B comparison, not isolated causal speedups. A smaller
-code-upload strategy was **not measured**; the exact pilot artifact pins
-are listed in the [detailed FWHT report](FWHT.md#tested-pilot-identities-and-evidence).
-
-Saved output and lifetime evidence were checked and timings recalculated;
-the full runtime consumer was not independently qualified. No NVIDIA Vulkan
-GPU comparison was run in this pilot.
-
-[RTX 4090 summary CSV](data/fwht-rtx4090-summary.csv) — derived host medians,
-not the original per-session timing records.
-
-### Integration into the full benchmark
-
-FWHT is being integrated as **Test 4 of the complete benchmark**, not as
-an independently released option. The working candidate is **v21-r20b**
-based on an r19d development tree.
-
-At the recorded checkpoint:
-
-- **CPU validation:** 381 tooling tests PASS; 13 FWHT-focused tests PASS.
-- **Reference:** Full buffers matched a Vulkan reference on Mesa lavapipe
-  (**CPU software execution**, not NVIDIA Vulkan GPU evidence).
-- **Full candidate chain:** Six-runtime build and twelve-suite validation
-  had started; completion and final package were **not yet verified**.
-- **Integrated FWHT candidate on an NVIDIA GPU:** **NOT_RUN**.
-- **Final CodeRabbit review / release qualification:** **NOT_RUN**.
-
-The earlier r20 CPU prototype does not qualify the newer r20b candidate.
-The development pilots above are not a released community benchmark.
-
-### Interpretation and limitations
-
-The transform is known; what is being studied here is its behavior within
-this particular experimental native Direct3D 12 execution path. The results
-do **not** prove complete D3D12 support, game compatibility, GPU-wide
-qualification, general performance superiority or an advantage over Vulkan.
-GPU timestamps and host elapsed time cover different intervals.
-
-**Next question:** Can the complete FWHT Test 4 execute reproducibly from the
-final pinned benchmark package on identified NVIDIA hardware, including
-submission, completion, full output and resource-lifetime verification?
-A matching hardware reference and completed independent review are needed
-before broader claims.
-
-[Detailed FWHT experiment report](FWHT.md) includes the bounded methods,
-failures, evidence levels and remaining checks.
-
-### Experiment history
-
-- [Campaign 019 — RTX 4060 Ti locked-clock histogram measurements](Campaign-019-RTX4060Ti.md)
-  — bit-exact Native/Vulkan histogram runs at locked clocks, separate GPU timing
-  charts, evidence identities and explicit cross-API limits (15 November 2026).
-
-- [GPU instruction memory placement (SYSMEM vs VRAM) — RTX 5070](GPU-Instruction-Memory-Placement-RTX5070.md)
-  — 32 process-level records across balanced A/B pairs, original GPU/host charts and summary
-  CSV, hardware caveats and full original report (12 November 2026).
-
-
-This is a development report, not a released benchmark result. Public tables
-and charts summarize private retained evidence; they are not substitutes for
-an independent hardware reproduction.
-
-**AI Disclosure:** Core architecture, mathematical concepts, and R&D direction by Andrew Kapica (GoblinFlash). Low-level NAK/IMMA shader implementation and benchmark harnesses built with AI assistance (Claude Code, ChatGPT Codex) under strict hardware verification: locked-clock GPU runs, negative fault-injection tests, and byte-for-byte CPU oracle matching.
+**Project owner:** Andrew Kapica — GoblinFlash. Development uses AI-assisted tools under owner supervision.
