@@ -11,6 +11,16 @@ Neural Grid explores whether learned representations can reduce the storage cost
 - A compact learned decoder could execute on the experimental native GPU path. For the tested real-scene lighting data, simpler representations were sometimes equally good or better in the measured trade-off.
 - Tests indicated meaningful quality-versus-cost differences between prepared lighting data and ray-based work. They do not establish a universally best rendering technique.
 
+## Recorded GPU comparison charts
+
+![RTX 4060 Ti: indirect lighting grid lookup versus selected ray-based workloads](charts/neural-grid-bounce-cost.svg)
+
+*RTX 4060 Ti only: grid lookup versus ray-based indirect-light work, with the recorded quality-versus-cost trade-off. This is one scene and one hardware campaign.* [Published summary CSV](data/neural-grid-bounce-cost.csv).
+
+![RTX 4090: selected neural-grid compiler load variants](charts/neural-grid-tc-loads.svg)
+
+*RTX 4090 only: measured GPU costs for selected shader load variants from a separate campaign. These observations must not be combined with the RTX 4060 Ti timings as a matched cross-GPU comparison.* [Published summary CSV](data/neural-grid-tc-loads.csv).
+
 ## Status and limits
 
 **Status: experimental GPU evidence for specific datasets and one principal scene (Sponza).** These experiments do not establish a complete real-time global-illumination system, performance on moving game scenes, cross-GPU speedups or a Vulkan advantage. Results from different hardware campaigns must not be combined without matching their conditions.

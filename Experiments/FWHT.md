@@ -7,7 +7,7 @@ The Fast Walsh–Hadamard Transform (FWHT) is established mathematics, not a new
 ## Recorded scope
 
 - **RTX 5070:** a bounded pilot compared GPU execution intervals across selected memory-placement profiles. Saved outputs were checked, but one variant had a tool-audit limitation and does not carry the same qualification as the fully accepted profile.
-- **RTX 4090:** a separate pilot compared host-side costs of fresh and retained sessions. Those results concern preparation and lifecycle overhead, **not a measured speedup of shader execution**.
+- **RTX 4090:** a separate pilot compared host-side costs of fresh and retained sessions. Those results concern preparation and lifecycle overhead, **not a measured speedup of shader execution**. A second reviewer recalculated the recorded timings and checked saved bytes for this pilot. That check did **not** independently establish live GPU clock behavior, validate the full Rust consumer or production API, or qualify the integrated benchmark.
 - CPU tooling and integration checks were recorded for an early full-benchmark candidate. At that checkpoint, the integrated candidate's NVIDIA GPU execution and final release qualification were **not completed**.
 
 ## What this does not establish
