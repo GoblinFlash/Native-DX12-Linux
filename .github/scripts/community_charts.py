@@ -105,7 +105,7 @@ def render(proposal, rows, context, package_id, format_duration):
                        lookup.get((suite, case, '', 'vulkan'))])
     steps = proposal['run']['steps']
     qualified_count = sum(s['reported_clock_qualification'] == 'QUALIFIED' for s in steps)
-    qualified = (len(steps) == 4 and qualified_count == 4 and
+    qualified = (len(steps) >= len(SELECTED) and qualified_count == len(steps) and
                  proposal['run']['overall'] == 'COMPLETE' and
                  all(a is not None and b is not None for a, b in chosen) and
                  all(s['reported_ns_per_tick_envelope'][0] <= 1 <=
@@ -133,6 +133,10 @@ def render(proposal, rows, context, package_id, format_duration):
         value = value.replace('NVIDIA Open 620.70.06', 'NVIDIA driver ' + proposal['driver'])
         value = value.replace('ISSUE #4' if qualified else 'ISSUE #5', 'ISSUE #' + str(issue))
         value = value.replace('SYSMEM', backing)
+        if len(steps) != 4:
+            value = value.replace('Four submitted suites', f'{len(steps)} submitted suites')
+            if qualified and value == 'HOST/GPU CLOCK CHECK QUALIFIED 4/4':
+                value = f'HOST/GPU CLOCK CHECK QUALIFIED {qualified_count}/{len(steps)}'
         if value.startswith('Native DX12 memory backing:'):
             value = ('Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)'
                      if backing == 'SYSMEM' else 'Native DX12 memory backing: UNKNOWN (release evidence NOT_RECORDED)')

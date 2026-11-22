@@ -27,6 +27,15 @@ SUITES = (
 )
 
 
+V3_SUITES = (
+    ('fwht', 'Test 4 — FWHT', (('128x128', 'block', '128×128 FWHT'),)),
+    ('sponza', 'Test 5 — Sponza', (('64x64', 'scalar', '64×64 Scalar 4-bit'),
+                                  ('64x64', 'tensor', '64×64 Tensor Core 4-bit'))),
+    ('bounce', 'Test 5 — Neural Grid', (('1920x1080', 'constant', '1920×1080 Constant loads'),
+                                        ('1920x1080', 'strong', '1920×1080 Strong loads'))),
+)
+
+
 def gpu_name(proposal):
     """Use only catalogue labels, never raw hardware names from the Issue/archive."""
     return core.GPUS.get(proposal['claimed_gpu'], 'Pending classification')
@@ -80,6 +89,7 @@ def render(version, proposals, existing_issues=()):
         seen.add(proposal['issue'])
     proposals = sorted(proposals, key=lambda p: (gpu_name(p), p['issue']))
     ready = [p for p in proposals if p['state'] == 'DATA_READY']
+    modern = core.release_schema(version) == core.SHARE_V3
     backing = ('SYSMEM (system-memory buffers, not VRAM)' if ready and
                all(core.memory_backing(p)['native_dx12']['backing'] == 'SYSMEM' for p in ready)
                else 'UNKNOWN (release evidence NOT_RECORDED)')
@@ -92,8 +102,11 @@ def render(version, proposals, existing_issues=()):
              '## Submission overview', '', overview(version, proposals, ''), '',
              '## How to read these numbers', '',
              '- Native and Vulkan GPU durations use ns below 1 ms and ms from 1 ms. Charts share a scale '
-             'within a workload only for complete exports with all four reported host/GPU clock checks qualified '
-             'and all four envelopes including the nominal timer rate. Other exports use separate scales.',
+             + ('within a workload only for complete exports with both paths present and all reported host/GPU '
+                'clock checks qualified, with the nominal timer rate inside every reported range. '
+                'Other exports use separate scales.' if modern else
+                'within a workload only for complete exports with all four reported host/GPU clock checks qualified '
+                'and all four envelopes including the nominal timer rate. Other exports use separate scales.'),
              '- Each table value is the median of exported process values. D4, K and WaveForm use medians '
              'of process medians; the full-work timing includes synchronization, not isolated shader timing.',
              '- The same four workload selections, panel layout, fonts, blue/orange series and explanations '
@@ -127,7 +140,7 @@ def render(version, proposals, existing_issues=()):
         folder = core.record_folder(proposal)
         if issue not in existing_issues:
             outputs.update(rendered)
-        else:
+        elif folder + '/chart.svg' in rendered:
             # Existing v1 records/CSV stay in place; only their chart presentation changes.
             outputs[folder + '/chart.svg'] = rendered[folder + '/chart.svg']
         context = core.memory_backing(proposal)
@@ -135,8 +148,11 @@ def render(version, proposals, existing_issues=()):
                   '` · Export: **' + status + '** · Host/GPU clock check: **' + clock + '**.', '',
                   '**' + core.memory_label(context) + '**. [Release evidence](' +
                   context['native_dx12'].get('evidence_url', 'https://github.com/' + core.REPOSITORY + '/releases') + ').', '',
-                  '![' + gpu_name(proposal) + ' selected workload medians](' + folder[len(core.ROOT):] + '/chart.svg)', '',
-                  '*Selected medians from the four suites; all variants appear in the tables below.*', '']
+                  ]
+        has_chart = folder + '/chart.svg' in rendered
+        if has_chart:
+            lines += ['![' + gpu_name(proposal) + ' selected workload medians](' + folder[len(core.ROOT):] + '/chart.svg)', '',
+                      '*Selected medians from the four suites; all variants appear in the tables below.*', '']
         rows = core.summaries(proposal)
         lookup = {(x['suite'], x['case'], x['variant'], x['path']): x['median'] for x in rows}
         def number(key):
@@ -144,7 +160,16 @@ def render(version, proposals, existing_issues=()):
             if value is None:
                 return 'NOT_RECORDED'
             return core.format_gpu_duration(value, group=True)
-        for suite, title, variants in SUITES:
+        suites = SUITES
+        if modern:
+            scheduled = {(row['suite'], row['case'], row['variant']) for row in proposal['processes']}
+            suites = tuple((suite, title, variants + tuple(
+                (shape, 'Q8PL', shape.replace('x', '×') + ' Q8PL')
+                for shape in ('128x128', '32x512', '16x1024')
+                if (suite, shape, 'Q8PL') in scheduled)) for suite, title, variants in SUITES)
+            suites += tuple(suite for suite in V3_SUITES
+                            if any(name == suite[0] for name, _, _ in scheduled))
+        for suite, title, variants in suites:
             lines += ['### ' + title, '', '| Workload / native variant | Native ' +
                       context['native_dx12']['backing'] + ' median GPU time | Vulkan median GPU time |',
                       '| --- | ---: | ---: |']
@@ -157,8 +182,9 @@ def render(version, proposals, existing_issues=()):
         version_index = core.ROOT + proposal['claimed_gpu'] + '/' + version + '/README.md'
         version_indexes.setdefault(version_index, ['# ' + gpu_name(proposal) +
                                                   ' — benchmark ' + version, ''])
+        title = 'full measurements and chart' if has_chart else 'submission report'
         version_indexes[version_index].append('- [Issue #' + str(issue) +
-            ': full measurements and chart](../../../' + version + '-submitted-data.md#' +
+            ': ' + title + '](../../../' + version + '-submitted-data.md#' +
             anchor(proposal) + ') · [Source Issue](https://github.com/' + core.REPOSITORY +
             '/issues/' + str(issue) + ').')
     for path, links in version_indexes.items():
