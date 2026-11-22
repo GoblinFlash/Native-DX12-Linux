@@ -4,7 +4,7 @@ Experimental research into native GPU compute and rendering on Linux, without a 
 
 These pages summarize **what was investigated, what was observed, and what remains unverified**. They are development reports, not claims of full Direct3D 12 support, game compatibility, a production renderer, or general superiority over another graphics API.
 
-## Research areas
+## <img src="charts/cube-matrix.svg" width="40" align="center" alt=""> Research areas
 
 | Area | Research objective | Evidence boundary |
 | --- | --- | --- |

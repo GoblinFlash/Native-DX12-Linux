@@ -1,4 +1,4 @@
-# Cube Matrix — compact GPU lighting representation
+# <img src="charts/cube-matrix.svg" width="56" align="center" alt=""> Cube Matrix — compact GPU lighting representation
 
 <sub>Research overview · experiments recorded 17–20 November 2026 · not a released benchmark feature</sub>
 
