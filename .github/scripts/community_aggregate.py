@@ -147,10 +147,13 @@ def overview(version, proposals, prefix, core):
     backing = ('SYSMEM (system-memory buffers, not VRAM)' if contexts and
                all(x == 'SYSMEM' for x in contexts) else 'UNKNOWN (release evidence NOT_RECORDED)')
     table = report.overview(version, proposals, prefix).replace(version + '-submitted-data.md', basename(version))
+    reports = (f'{ready} submission-specific charts and complete available median tables, with sources and caveats.'
+               if core.release_schema(version) == core.SHARE_V2 else
+               'Median tables for matching submissions and charts when the selected workloads have measurements.')
     return (f'{len(proposals)} submissions checked for **{version} / {core.catalog()[version]["package_id"]}**. '
             f'{measured} matching exports have measurements; refused submissions contribute no numeric results.\n\n' +
             table + '\n\n**[View charts and extracted benchmark measurements](' + prefix + basename(version) +
-            f')** — {ready} submission-specific charts and complete available median tables, with sources and caveats.\n\n' +
+            ')** — ' + reports + '\n\n' +
             'These are **reported export statuses**, not independently repeated GPU qualifications. '
             'Original GPU receipts are unavailable. No overall ranking or owner acceptance is implied.\n\n' +
             '**Native DX12 memory backing: ' + backing + '**. Vulkan memory backing: **NOT_RECORDED**.\n').encode()

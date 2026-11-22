@@ -26,19 +26,36 @@ MAX_COMPRESSED = 8 * 1024 * 1024
 MAX_EXPANDED = 16 * 1024 * 1024
 MAX_MEMBER = 2 * 1024 * 1024
 MAX_MEMBERS = 64
-MAX_PROPOSAL = 128 * 1024
+MAX_PROPOSAL = 192 * 1024
 MAX_ISSUE = 64 * 1024
 MAX_API = 2 * 1024 * 1024
-MAX_PROCESSES = 189
+MAX_PROCESSES = 236
 TRANSIENT_ATTACHMENT = frozenset(('ATTACHMENT_UNAVAILABLE', 'ATTACHMENT_TIMEOUT'))
 SUITES = ('compute', 'd4', 'k', 'kw')
+SHARE_V2 = 'ndx12-share.v2'
+SHARE_V3 = 'ndx12-share.v3'
+V3_FRAME_SUITES = {
+    'fwht': ('test4-fwht', '128x128', ('block',)),
+    'sponza': ('test5-sponza', '64x64', ('scalar', 'tensor')),
+    'bounce': ('test5-neural-grid', '1920x1080', ('constant', 'strong')),
+}
+V3_SUITES = SUITES + tuple(V3_FRAME_SUITES)
+NATIVE_ONLY = ('sponza', 'bounce')
+NATIVE_CODES = ('CONTROL_ARENA', 'SYSMEM_BUFFER', 'VRAM_BUFFER')
+TELEMETRY_MODES = ('LIVE', 'OFF', 'DISABLED', 'NOT_RECORDED')
+LEGACY_DRIVERS = ('615.78.08', '620.70.06')
+V3_DRIVERS = LEGACY_DRIVERS + ('620.73.04',)
 STATUSES = ('VERIFIED', 'FAIL', 'HELD', 'NOT_RUN', 'UNKNOWN')
 CLOCK_MODES = ('UNCHANGED', 'UNCHANGED_UNKNOWN', 'LOCKED', 'LOCK_REQUESTED', 'MANUAL', 'NOT_RECORDED')
-FILES = frozenset(('run.json', 'summary.txt', 'processes.csv', 'samples.csv',
+V2_FILES = frozenset(('run.json', 'summary.txt', 'processes.csv', 'samples.csv',
     'compute-vulkan-samples.csv', 'test1-d4-processes.csv', 'test1-d4-vulkan-processes.csv',
     'test2-k-processes.csv', 'test2-k-vulkan-processes.csv', 'test3-kw-processes.csv',
     'test3-kw-vulkan-processes.csv', 'charts.html', 'charts/results.svg',
     'charts/d4-chart.svg', 'charts/k-chart.svg', 'charts/kw-chart.svg'))
+FILES = V2_FILES | frozenset(
+    [prefix + '-processes.csv' for prefix, _, _ in V3_FRAME_SUITES.values()] +
+    ['test4-fwht-vulkan-processes.csv'] +
+    ['charts/' + suite + '-chart.svg' for suite in V3_FRAME_SUITES])
 GPU_NAMES = (
     'RTX 4090', 'RTX 4090 Laptop GPU', 'RTX 4090 D', 'RTX 4080', 'RTX 4080 Super',
     'RTX 4080 Laptop GPU', 'RTX 4070', 'RTX 4070 Ti', 'RTX 4070 Super',
@@ -140,6 +157,19 @@ def load_json(raw, limit=MAX_PROPOSAL):
 def catalog():
     """Read and decode the release catalogue stored beside this script."""
     return load_json(CATALOG_PATH.read_bytes())
+
+
+def release_schema(version):
+    """Select the parser using only the trusted release catalogue."""
+    return enum(catalog()[version].get('share_schema', SHARE_V2), (SHARE_V2, SHARE_V3), 'SCHEMA')
+
+
+def share_suites(schema):
+    return V3_SUITES if schema == SHARE_V3 else SUITES
+
+
+def native_unit(schema):
+    return 'NS' if schema == SHARE_V3 else 'GPU_TICKS'
 
 
 def gpu_category(value):
@@ -465,6 +495,25 @@ def schedule(suite):
             for repeat in range(1, 8)}
 
 
+def v3_schedule(suite, keys, vulkan):
+    """Allow complete desktop schedules, with optional Q8PL or a single Compute case."""
+    base = schedule(suite) if suite in SUITES else set()
+    if suite in V3_FRAME_SUITES:
+        _, case, variants = V3_FRAME_SUITES[suite]
+        repeats = range(1, 4) if suite in NATIVE_ONLY else range(1, 8)
+        base = {(suite, case, arm, 'native', repeat) for arm in variants for repeat in repeats}
+        if suite not in NATIVE_ONLY:
+            base |= {(suite, case, '', 'vulkan', repeat) for repeat in repeats}
+    if suite == 'compute':
+        cases = {key[1] for key in keys}
+        need(len(cases) in (1, 3), 'PROCESS_SCHEDULE')
+        base = {key for key in base if key[1] in cases}
+    if suite == 'd4' and any(key[2] == 'Q8PL' for key in keys):
+        base |= {(s, case, 'Q8PL', path, repeat)
+                 for s, case, arm, path, repeat in base if arm == 'D4'}
+    return base if vulkan else {key for key in base if key[3] == 'native'}
+
+
 def csv_rows(raw, columns):
     """Decode a bounded UTF-8 CSV with exact ordered headers and string fields.
 
@@ -538,7 +587,7 @@ def process_key(row):
     return tuple(row[name] for name in ('suite', 'case', 'variant', 'path', 'repeat'))
 
 
-def process_rows(raw, requested):
+def process_rows(raw, requested, schema=SHARE_V2):
     """Validate a complete requested process schedule and return sorted typed rows.
 
     raw is processes.csv bytes and requested lists known suites. Enforce unique
@@ -546,32 +595,59 @@ def process_rows(raw, requested):
     NOT_RUN versus completed execution and VERIFIED evidence. Raise Refused
     on contradictions. Preparation and writer revalidation share this check.
     """
-    expected = set().union(*(schedule(suite) for suite in requested))
+    modern = schema == SHARE_V3
+    need(all(suite in share_suites(schema) for suite in requested), 'PROCESS_SCHEDULE')
     rows, keys = [], set()
     for row in csv_rows(raw, PROCESS_COLUMNS):
         row['repeat'] = csv_int(row['repeat'], 1, 7)
         key = process_key(row)
-        need(key in expected and key not in keys, 'PROCESS_SCHEDULE')
+        need(row['suite'] in requested and key not in keys, 'PROCESS_SCHEDULE')
         keys.add(key)
         enum(row['status'], STATUSES)
-        enum(row['submission'], ('RETURNED', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED', 'HELD'))
-        enum(row['completion'], ('CLOSED', 'EXECUTED', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED', 'HELD'))
-        enum(row['correctness'], ('BOUNDED_CORRECTNESS_VERIFIED', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED'))
-        enum(row['timing'], ('OK', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED'))
+        fields = {
+            'submission': ('RETURNED', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED', 'HELD'),
+            'completion': ('CLOSED', 'EXECUTED', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED', 'HELD'),
+            'correctness': ('BOUNDED_CORRECTNESS_VERIFIED', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED'),
+            'timing': ('OK', 'NOT_RECORDED', 'UNKNOWN', 'NOT_RUN', 'FAILED'),
+        }
+        if modern:
+            if row['path'] == 'native':
+                fields['submission'] += ('RETAINED_SESSION',)
+            fields['completion'] += ('NOT_CLOSED',)
+        for field, choices in fields.items():
+            raw_value = row[field]
+            if modern and raw_value not in choices:
+                # Preserve the process outcome, normalize only unverified diagnostic fields.
+                need(row['status'] != 'VERIFIED' and
+                     (raw_value == '' or re.fullmatch(r'[A-Z][A-Z0-9_]{0,63}', raw_value)), 'ENUM')
+                row[field] = 'NOT_RUN' if raw_value == '' and row['status'] == 'NOT_RUN' else 'UNKNOWN'
+            else:
+                enum(raw_value, choices)
         row['kernel_records'] = None if row['kernel_records'] == '' else csv_int(row['kernel_records'], 0, 100000)
         need(row['status'] != 'NOT_RUN' or row['completion'] not in ('CLOSED', 'EXECUTED'),
              'PROCESS_CONTRADICTION')
+        if modern and row['status'] == 'NOT_RUN':
+            need(row['submission'] not in ('RETURNED', 'RETAINED_SESSION')
+                 and row['correctness'] != 'BOUNDED_CORRECTNESS_VERIFIED'
+                 and row['timing'] != 'OK', 'PROCESS_CONTRADICTION')
         if row['status'] == 'VERIFIED':
             need(row['completion'] == ('CLOSED' if row['path'] == 'native' else 'EXECUTED') and
                  row['correctness'] == 'BOUNDED_CORRECTNESS_VERIFIED' and row['timing'] == 'OK' and
                  row['submission'] not in ('FAILED', 'HELD', 'NOT_RUN') and
-                 (row['path'] != 'native' or row['submission'] == 'RETURNED'), 'PROCESS_CONTRADICTION')
+                 (row['path'] != 'native' or row['submission'] == 'RETURNED'
+                  or (modern and row['submission'] == 'RETAINED_SESSION')), 'PROCESS_CONTRADICTION')
         rows.append(row)
+    if modern:
+        vulkan = any(key[3] == 'vulkan' for key in keys)
+        expected = set().union(*(v3_schedule(suite, {key for key in keys if key[0] == suite}, vulkan)
+                                 for suite in requested))
+    else:
+        expected = set().union(*(schedule(suite) for suite in requested))
     need(keys == expected, 'PROCESS_SCHEDULE')
     return sorted(rows, key=process_key)
 
 
-def counts(rows, reported):
+def counts(rows, reported, desktop=False):
     """Recalculate process status/completion totals and require matching reported ints."""
     need(type(reported) is dict, 'COUNTS_MISMATCH')
     actual = {'expected': len(rows), **{name: sum(r['status'] == status for r in rows)
@@ -579,39 +655,50 @@ def counts(rows, reported):
     for name, value in actual.items():
         need(type(reported.get(name)) is int and reported[name] == value, 'COUNTS_MISMATCH')
     actual['completed'] = sum(row['completion'] in ('CLOSED', 'EXECUTED') for row in rows)
-    need(type(reported.get('completed')) is int and reported['completed'] == actual['completed'], 'COUNTS_MISMATCH')
+    # In the v3 archive, completed counts successful and failed correctness outcomes.
+    expected_completed = actual['verified'] + actual['failed'] if desktop else actual['completed']
+    need(type(reported.get('completed')) is int and reported['completed'] == expected_completed, 'COUNTS_MISMATCH')
     return actual
 
 
-def measurements(files, processes):
+def measurements(files, processes, schema=SHARE_V2):
     """Match exported numeric samples exactly to VERIFIED process rows.
 
     files contains allowlisted CSV bytes and processes contains validated
     schedule rows. Reject missing/duplicate samples, invalid timing text or
-    status mismatches. Return sorted sanitized measurements, keeping native
-    ticks and Vulkan ns separate and preserving supported frame fractions.
+    status mismatches. Return sorted sanitized measurements with the
+    release's units and supported frame fractions.
     """
     result, seen = [], set()
     by_key = {process_key(row): row for row in processes}
     names = [('compute', 'native', 'samples.csv'), ('compute', 'vulkan', 'compute-vulkan-samples.csv')]
-    for suite, prefix in [('d4', 'test1-d4'), ('k', 'test2-k'), ('kw', 'test3-kw')]:
-        names.extend([(suite, 'native', prefix+'-processes.csv'), (suite, 'vulkan', prefix+'-vulkan-processes.csv')])
+    modern = schema == SHARE_V3
+    frames = [('d4', 'test1-d4'), ('k', 'test2-k'), ('kw', 'test3-kw')]
+    if modern:
+        frames += [(suite, spec[0]) for suite, spec in V3_FRAME_SUITES.items()]
+    for suite, prefix in frames:
+        names.append((suite, 'native', prefix+'-processes.csv'))
+        if suite not in NATIVE_ONLY:
+            names.append((suite, 'vulkan', prefix+'-vulkan-processes.csv'))
     for suite, path, name in names:
         if name not in files:
             continue
         native = path == 'native'
-        suffix = 'ticks' if native else 'ns'
+        suffix = 'ns' if modern or not native else 'ticks'
         if suite == 'compute':
-            columns = COMPUTE_COLUMNS if native else [
+            columns = [x.replace('ticks', suffix) for x in COMPUTE_COLUMNS] if native else [
                 'case', 'attempt', 'work_ns', 'empty_ns', 'order', 'clock_mode',
                 'requested_core_mhz', 'requested_memory_mhz', 'telemetry', 'series_status']
         else:
             columns = [x.replace('ticks', suffix) for x in FRAME_COLUMNS]
+        if modern and native:
+            columns += ['native_code']
         for row in csv_rows(files[name], columns):
             if suite == 'compute':
                 case, variant, repeat = row['case'], '', csv_int(row['attempt'], 1, 7)
-                value = csv_int(row['work_'+suffix])
-                csv_int(row['empty_'+suffix])
+                parse = csv_timing if modern and not native else csv_int
+                value = parse(row['work_'+suffix])
+                parse(row['empty_'+suffix])
                 for key in ('requested_core_mhz', 'requested_memory_mhz'):
                     if row[key] != '':
                         csv_int(row[key], 0, 100000)
@@ -629,10 +716,12 @@ def measurements(files, processes):
                         csv_int(row[key+suffix])
                     else:
                         csv_timing(row[key+suffix])
+            if modern and native:
+                enum(row['native_code'], NATIVE_CODES)
             item = {'suite': suite, 'case': case, 'variant': variant, 'path': path,
-                    'repeat': repeat, 'value': value, 'unit': 'GPU_TICKS' if native else 'NS',
+                    'repeat': repeat, 'value': value, 'unit': native_unit(schema) if native else 'NS',
                     'clock_mode': enum(row['clock_mode'], CLOCK_MODES),
-                    'telemetry': enum(row['telemetry'], ('LIVE', 'OFF', 'DISABLED', 'NOT_RECORDED'))}
+                    'telemetry': enum(row['telemetry'], (TELEMETRY_MODES + ('BEFORE_AFTER',)) if modern else TELEMETRY_MODES)}
             key = process_key(item)
             need(key not in seen and key in by_key and by_key[key]['status'] == 'VERIFIED', 'MEASUREMENT_STATUS_MISMATCH')
             seen.add(key)
@@ -641,7 +730,7 @@ def measurements(files, processes):
     return sorted(result, key=process_key)
 
 
-def sanitized_run(run, processes):
+def sanitized_run(run, processes, *, desktop=False):
     """Validate reported run/step counts against processes and return a sanitized summary.
 
     Check suite completion/not-started claims, negative outcomes, units and
@@ -649,13 +738,29 @@ def sanitized_run(run, processes):
     not raw private error details. Consistency does not qualify GPU execution
     or establish that reported clocks/provenance are independently verified.
     """
-    need(type(run) is dict and run.get('schema') == 'ndx12-share.v2', 'SCHEMA')
+    need(type(run) is dict, 'SCHEMA')
+    schema = enum(run.get('schema'), (SHARE_V2, SHARE_V3), 'SCHEMA')
+    allowed = share_suites(schema)
     need(type(run.get('units')) is dict and type(run.get('run')) is dict, 'SCHEMA')
-    need(run.get('units', {}).get('native') == 'GPU_TICKS' and run.get('units', {}).get('vulkan') == 'NS', 'UNITS_MISMATCH')
+    need(run['units'].get('native') == native_unit(schema) and run['units'].get('vulkan') == 'NS', 'UNITS_MISMATCH')
     meta = run['run']
-    overall = enum(meta['overall'], ('COMPLETE', 'PARTIAL', 'STOPPED', 'FAILED', 'HELD', 'INCOMPLETE', 'UNCERTAIN'))
-    clocks = enum(meta['clocks'], ('unchanged', 'locked', 'manual', 'not-recorded'))
-    total = counts(processes, run['totals'])
+    overall = meta['overall']
+    if desktop and overall in ('NOT_COMPLETE_NATIVE_SESSION_HELD', 'NOT_COMPLETE_NATIVE_SESSION_NOT_CLEAN',
+                               'NOT_COMPLETE_REPORT_FINALIZATION'):
+        overall = 'HELD' if overall.endswith('_HELD') else 'INCOMPLETE'
+    enum(overall, ('COMPLETE', 'PARTIAL', 'STOPPED', 'FAILED', 'HELD', 'INCOMPLETE', 'UNCERTAIN'))
+    clocks = meta['clocks']
+    if desktop and type(clocks) is dict:
+        exact_keys(clocks, ('mode', 'core_mhz', 'memory_mhz'))
+        need(clocks['mode'] == 'LOCK_REQUESTED', 'CLOCK_FORMAT')
+        integer(clocks['core_mhz'], 1, 100000)
+        integer(clocks['memory_mhz'], 1, 100000)
+        clocks = 'lock-requested'
+    clock_modes = ('unchanged', 'locked', 'manual', 'not-recorded')
+    if schema == SHARE_V3:
+        clock_modes += ('lock-requested',)
+    enum(clocks, clock_modes)
+    total = counts(processes, run['totals'], desktop)
     requested = meta['requested']
     completed, not_started = meta['completed'], meta['not_started']
     for suites in (completed, not_started):
@@ -664,16 +769,19 @@ def sanitized_run(run, processes):
     need(not set(completed).intersection(not_started), 'RUN_CLAIM_MISMATCH')
     failure_reported = meta['failed'] is not None
     steps = []
-    need(type(run['steps']) is list and len(run['steps']) <= 4, 'SCHEMA')
+    need(type(run['steps']) is list and len(run['steps']) <= len(allowed), 'SCHEMA')
     seen = set()
     for step in run['steps']:
         need(type(step) is dict, 'SCHEMA')
-        suite = enum(step['suite'], SUITES)
+        suite = enum(step['suite'], allowed)
         need(suite not in seen, 'SCHEMA')
         seen.add(suite)
         subset = [p for p in processes if p['suite'] == suite]
-        c = counts(subset, step['counts'])
-        status = enum(step['status'], ('COMPLETE', 'PARTIAL', 'STOPPED', 'FAILED', 'HELD', 'NOT_RUN', 'INCOMPLETE', 'UNCERTAIN'))
+        c = counts(subset, step['counts'], desktop)
+        status = step['status']
+        if desktop and status in ('UNKNOWN', 'NOT_STARTED'):
+            status = 'UNCERTAIN' if status == 'UNKNOWN' else 'NOT_RUN'
+        enum(status, ('COMPLETE', 'PARTIAL', 'STOPPED', 'FAILED', 'HELD', 'NOT_RUN', 'INCOMPLETE', 'UNCERTAIN'))
         need((suite in completed) == (status == 'COMPLETE') and
              (suite not in not_started or status == 'NOT_RUN'), 'RUN_CLAIM_MISMATCH')
         if status == 'COMPLETE':
@@ -681,9 +789,14 @@ def sanitized_run(run, processes):
         elif status == 'NOT_RUN':
             need(c['completed'] == c['verified'] == 0 and c['not_run'] == c['expected'], 'COUNTS_MISMATCH')
         clock = step.get('clock_check', {})
+        if desktop and clock is None:
+            clock = {}
         need(type(clock) is dict, 'SCHEMA')
-        q = enum(clock.get('status', 'NOT_RECORDED'), ('QUALIFIED', 'NOT_QUALIFIED', 'NOT_RECORDED'))
-        envelope = clock.get('envelope_ns_per_tick')
+        q = clock.get('status', 'NOT_RECORDED')
+        if desktop and q in ('UNREADABLE', 'NOT_SHOWN'):
+            q = 'NOT_RECORDED'
+        enum(q, ('QUALIFIED', 'NOT_QUALIFIED', 'NOT_RECORDED'))
+        envelope = clock.get('relative_rate_range' if desktop else 'envelope_ns_per_tick')
         if envelope is not None:
             need(type(envelope) is list and len(envelope) == 2, 'CLOCK_FORMAT')
             for value in envelope:
@@ -734,7 +847,10 @@ def prepare(issue, compressed=None, fetch=download):
         files = read_share_members(data)
         need('run.json' in files and 'processes.csv' in files, 'MISSING_DATA')
         run = load_json(files['run.json'], MAX_MEMBER)
-        need(type(run) is dict and run.get('schema') == 'ndx12-share.v2', 'SCHEMA')
+        schema = release_schema(version)
+        modern = schema == SHARE_V3
+        need(type(run) is dict and run.get('schema') == schema, 'SCHEMA')
+        need(modern or set(files) <= V2_FILES, 'MEMBER_NOT_ALLOWLISTED')
         need(all(type(run.get(field)) is dict for field in ('gpu', 'identity', 'units', 'run')), 'SCHEMA')
         actual_gpu = gpu_category(run.get('gpu', {}).get('model'))
         actual_version = run.get('identity', {}).get('public_version')
@@ -749,8 +865,10 @@ def prepare(issue, compressed=None, fetch=download):
             need(inline is None or inline.group(1).lower() == pci, 'GPU_PCI_MISMATCH')
         need(actual_version == version, 'VERSION_MISMATCH')
         identity = run['identity']
-        need(identity.get('schema') == 'ndx12-share.v2' and identity.get('status') == 'VERIFIED', 'IDENTITY_MISMATCH')
+        need(identity.get('schema') == schema and identity.get('status') == 'VERIFIED', 'IDENTITY_MISMATCH')
         for key, expected in catalog()[version].items():
+            if key == 'share_schema':
+                continue
             need(type(identity.get(key)) is type(expected) and identity[key] == expected, 'IDENTITY_MISMATCH')
         version_text = first_line(fields.get('Benchmark version', ''))
         packages = re.findall(r'\bpackage\s+(v[0-9]+-r[0-9]+)\b', version_text, re.I)
@@ -758,12 +876,13 @@ def prepare(issue, compressed=None, fetch=download):
         need(all(x == identity['package_id'] for x in packages) and
              all(x.lower() == identity['archive_sha256'] for x in hashes), 'IDENTITY_MISMATCH')
         need(driver is not None and driver == run['gpu'].get('driver') and
-             driver in ('615.78.08', '620.70.06'), 'DRIVER_MISMATCH')
-        requested = run.get('run', {}).get('requested')
-        need(type(requested) is list and requested and len(requested) <= 4 and
-             len(set(requested)) == len(requested) and all(x in SUITES for x in requested), 'SCHEMA')
-        processes = process_rows(files['processes.csv'], requested)
-        sanitized = sanitized_run(run, processes)
+             driver in (V3_DRIVERS if modern else LEGACY_DRIVERS), 'DRIVER_MISMATCH')
+        requested = run['run'].get('requested')
+        allowed = share_suites(schema)
+        need(type(requested) is list and requested and len(requested) <= len(allowed) and
+             all(x in allowed for x in requested) and len(set(requested)) == len(requested), 'SCHEMA')
+        processes = process_rows(files['processes.csv'], requested, schema)
+        sanitized = sanitized_run(run, processes, desktop=modern)
         run_claim = first_line(fields.get('Run status', ''))
         need(run_claim in ('Full test completed', 'Selected tests completed',
             'Stopped or interrupted before completion', 'Failed or refused to start', 'Unsure'), 'RUN_CLAIM_MISMATCH')
@@ -780,10 +899,18 @@ def prepare(issue, compressed=None, fetch=download):
                  (sanitized['overall'] == 'FAILED' or sanitized['failure_reported']),
                  'RUN_CLAIM_MISMATCH')
         if run_claim == 'Full test completed':
-            need(set(requested) == set(SUITES), 'RUN_CLAIM_MISMATCH')
-        values = measurements(files, processes)
+            if modern:
+                need(set(SUITES + ('fwht',)) <= set(requested) and
+                     ('bounce' not in requested or 'sponza' in requested) and
+                     len({row['case'] for row in processes if row['suite'] == 'compute'}) == 3,
+                     'RUN_CLAIM_MISMATCH')
+            else:
+                need(set(requested) == set(SUITES), 'RUN_CLAIM_MISMATCH')
+        values = measurements(files, processes, schema)
         result.update(driver=driver, pci=pci, state='DATA_READY', reason='OK', run=sanitized,
                       processes=processes, measurements=values)
+        if modern:
+            result['warnings'].remove('SEPARATE_TIMING_UNITS')
         if any(p['kernel_records'] for p in processes):
             result['warnings'].append('KERNEL_RECORDS_REPORTED')
         if any(p['kernel_records'] is None for p in processes):
@@ -846,7 +973,7 @@ def _validate_proposal(value):
         need(value[key] is None or value[key] in GPUS, 'PROPOSAL_SCHEMA')
     for key in ('claimed_version', 'archive_version'):
         need(value[key] is None or value[key] in catalog(), 'PROPOSAL_SCHEMA')
-    need(value['driver'] in (None, '615.78.08', '620.70.06'), 'PROPOSAL_SCHEMA')
+    need(value['driver'] in (None, *V3_DRIVERS), 'PROPOSAL_SCHEMA')
     enum(value['state'], ('DATA_READY', 'MANUAL_REVIEW'))
     enum(value['reason'], REASONS)
     need(type(value['warnings']) is list and len(value['warnings']) <= len(WARNINGS) and
@@ -865,10 +992,16 @@ def _validate_proposal(value):
              value['claimed_gpu'] == value['archive_gpu'] and value['claimed_version'] is not None and
              value['claimed_version'] == value['archive_version'] and value['driver'] is not None and
              value['bundle_sha256'] is not None, 'PROPOSAL_SCHEMA')
+        schema = release_schema(value['archive_version'])
+        modern = schema == SHARE_V3
+        allowed = share_suites(schema)
+        if modern:
+            expected_warnings -= {'SEPARATE_TIMING_UNITS'}
+        need(value['driver'] in (V3_DRIVERS if modern else LEGACY_DRIVERS), 'PROPOSAL_SCHEMA')
         run = value['run']
         exact_keys(run, ('overall', 'clocks', 'failure_reported', 'counts', 'steps'))
         need(type(run['failure_reported']) is bool, 'PROPOSAL_SCHEMA')
-        need(type(run['steps']) is list and 0 < len(run['steps']) <= 4, 'PROPOSAL_SCHEMA')
+        need(type(run['steps']) is list and 0 < len(run['steps']) <= len(allowed), 'PROPOSAL_SCHEMA')
         for c in [run['counts'], *(step.get('counts') for step in run['steps'])]:
             exact_keys(c, ('expected', 'completed', 'verified', 'failed', 'held', 'not_run', 'unknown'))
             for n in c.values():
@@ -877,7 +1010,7 @@ def _validate_proposal(value):
         input_steps = []
         for step in run['steps']:
             exact_keys(step, ('suite', 'status', 'counts', 'reported_clock_qualification', 'reported_ns_per_tick_envelope'))
-            requested.append(enum(step['suite'], SUITES))
+            requested.append(enum(step['suite'], allowed))
             input_steps.append({'suite': step['suite'], 'status': step['status'], 'counts': step['counts'],
                 'clock_check': {'status': step['reported_clock_qualification'],
                                 'envelope_ns_per_tick': step['reported_ns_per_tick_envelope']}})
@@ -890,9 +1023,9 @@ def _validate_proposal(value):
                 integer(row['kernel_records'], 0, 100000)
             need(all(type(row[k]) is str for k in PROCESS_COLUMNS if k not in ('repeat', 'kernel_records')), 'PROPOSAL_SCHEMA')
             serialized.append({k: '' if v is None else str(v) for k, v in row.items()})
-        normalized = process_rows(csv_text(serialized, PROCESS_COLUMNS), requested)
+        normalized = process_rows(csv_text(serialized, PROCESS_COLUMNS), requested, schema)
         need(normalized == value['processes'], 'PROPOSAL_SCHEMA')
-        again = sanitized_run({'schema': 'ndx12-share.v2', 'units': {'native': 'GPU_TICKS', 'vulkan': 'NS'},
+        again = sanitized_run({'schema': schema, 'units': {'native': native_unit(schema), 'vulkan': 'NS'},
             'run': {'overall': run['overall'], 'clocks': run['clocks'], 'requested': requested,
                     'completed': [x['suite'] for x in input_steps if x['status'] == 'COMPLETE'],
                     'not_started': [x['suite'] for x in input_steps if x['status'] == 'NOT_RUN'],
@@ -904,15 +1037,15 @@ def _validate_proposal(value):
         for row in value['measurements']:
             exact_keys(row, ('suite', 'case', 'variant', 'path', 'repeat', 'value', 'unit', 'clock_mode', 'telemetry'))
             integer(row['repeat'], 1, 7)
-            if row['suite'] == 'compute':
+            if row['suite'] == 'compute' and (not modern or row['path'] == 'native'):
                 integer(row['value'])
             else:
                 timing_fraction(row['value'], halves=row['path'] == 'native')
             key = process_key(row)
             need(key in verified and key not in seen and
-                 row['unit'] == ('GPU_TICKS' if row['path'] == 'native' else 'NS'), 'PROPOSAL_SCHEMA')
+                 row['unit'] == (native_unit(schema) if row['path'] == 'native' else 'NS'), 'PROPOSAL_SCHEMA')
             enum(row['clock_mode'], CLOCK_MODES)
-            enum(row['telemetry'], ('LIVE', 'OFF', 'DISABLED', 'NOT_RECORDED'))
+            enum(row['telemetry'], (TELEMETRY_MODES + ('BEFORE_AFTER',)) if modern else TELEMETRY_MODES)
             seen.add(key)
         need(seen == verified, 'PROPOSAL_SCHEMA')
         if any(p['kernel_records'] for p in normalized):
@@ -971,7 +1104,7 @@ def report_measurements(proposal):
     if proposal['state'] != 'DATA_READY':
         return []
     version = proposal['archive_version']
-    need(catalog()[version]['archive_sha256'] in NATIVE_NANOSECOND_ARCHIVES,
+    need(release_schema(version) == SHARE_V3 or catalog()[version]['archive_sha256'] in NATIVE_NANOSECOND_ARCHIVES,
          'REPORT_TIMESTAMP_PROFILE')
     return [dict(row, unit='NS') for row in proposal['measurements']]
 
@@ -1046,6 +1179,10 @@ def chart(proposal, rows):
                                                   Path(__file__).with_name('community_charts.py'))
     renderer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(renderer)
+    if release_schema(proposal['archive_version']) == SHARE_V3:
+        selected = set(renderer.SELECTED) | {(suite, case, '') for suite, case, _ in renderer.SELECTED}
+        if not any((r['suite'], r['case'], r['variant']) in selected for r in rows):
+            return None
     return renderer.render(proposal, rows, memory_backing(proposal),
                            catalog()[proposal['claimed_version']]['package_id'], format_gpu_duration)
 
@@ -1085,7 +1222,9 @@ def render(proposal):
         'medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.',
         'Review background contention and all reporter notes in the Issue; they are not copied here.',
         'Actual per-dispatch clocks are not proven. GPU durations are shown in ns below 1 ms and in ms from 1 ms.',
-        'A reported 189/189 VERIFIED count is not independent GPU qualification.', '']
+        ('Reported VERIFIED counts do not establish independent GPU qualification.'
+         if proposal['claimed_version'] and release_schema(proposal['claimed_version']) == SHARE_V3
+         else 'A reported 189/189 VERIFIED count is not independent GPU qualification.'), '']
     public = {folder+'/record.json': json_bytes(proposal),
               folder+'/memory-backing.json': json_bytes(context)}
     if proposal['state'] == 'DATA_READY':
@@ -1105,15 +1244,18 @@ def render(proposal):
         for row in rows:
             fields = [str(row[k]) for k in ('suite', 'case', 'variant', 'path', 'n')]
             lines.append('| ' + ' | '.join(fields + [format_gpu_duration(row['median'])]) + ' |')
-        lines += ['', f'![Exported measurements for Issue #{issue}](chart.svg)', '',
-                  '[Open SVG](chart.svg). Full sanitized data: [measurements.csv](measurements.csv),',
+        svg = chart(proposal, rows)
+        if svg is not None:
+            lines += ['', f'![Exported measurements for Issue #{issue}](chart.svg)', '']
+            public[folder+'/chart.svg'] = svg
+        prefix = '[Open SVG](chart.svg). ' if svg is not None else ''
+        lines += [prefix + 'Full sanitized data: [measurements.csv](measurements.csv),',
                   '[summary.csv](summary.csv), [processes.csv](processes.csv).', '']
         public[folder+'/processes.csv'] = csv_text(proposal['processes'], PROCESS_COLUMNS)
         public[folder+'/measurements.csv'] = csv_text(report_measurements(proposal),
             ['suite', 'case', 'variant', 'path', 'repeat', 'value', 'unit', 'clock_mode', 'telemetry'])
         public[folder+'/summary.csv'] = csv_text(rows,
             ['suite', 'case', 'variant', 'path', 'unit', 'n', 'median', 'minimum', 'maximum'])
-        public[folder+'/chart.svg'] = chart(proposal, rows)
     else:
         lines += ['No numeric result or uploaded chart is proposed while this refusal remains unresolved.',
                   'Inspect and correct the source Issue/attachment, then request a new reviewed intake.', '']
