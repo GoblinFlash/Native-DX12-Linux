@@ -67,7 +67,9 @@ GPU_NAMES = (
     'RTX 3050 Laptop GPU', 'RTX 3050 Ti Laptop GPU', 'RTX 3050 A Laptop GPU',
     'RTX 5090', 'RTX 5090 D', 'RTX 5090 Laptop GPU', 'RTX 5080', 'RTX 5080 Laptop GPU',
     'RTX 5070', 'RTX 5070 Ti', 'RTX 5070 Laptop GPU', 'RTX 5070 Ti Laptop GPU',
-    'RTX 5060', 'RTX 5060 Ti', 'RTX 5060 Laptop GPU')
+    'RTX 5060', 'RTX 5060 Ti', 'RTX 5060 Laptop GPU', 'RTX 5090 D v2', 'RTX 5050',
+    'RTX 5050 Laptop GPU', 'RTX 2080 Ti', 'RTX 2080 Super', 'RTX 2080', 'RTX 2070 Super',
+    'RTX 2070', 'RTX 2060 Super', 'RTX 2060', 'RTX 2050')
 GPUS = {'NVIDIA/' + name.replace(' ', '_'): name for name in GPU_NAMES}
 GPUS.update({'AMD/RX_7900_XTX': 'RX 7900 XTX', 'Intel/Arc_A770': 'Arc A770'})
 LEGACY = {2: ('NVIDIA/RTX_4060_Laptop_GPU', 'v0.1.4'),
@@ -176,14 +178,19 @@ def gpu_category(value):
     """Resolve a bounded GPU name to a fixed category, or return None.
 
     Only the corresponding vendor family's optional prefixes are accepted.
-    Whitespace/case, the bounded PCI suffix and Laptop alias are normalized;
+    Whitespace/case, the bounded PCI suffix, one memory size, a trailing OEM
+    marker and the Laptop alias are normalized;
     Ti, Super, D and Laptop identities are never merged.
     """
     if type(value) is not str or len(value) > 160:
         return None
     value = re.sub(r' \(PCI [0-9a-f]{4}:[0-9a-f]{4}\)$', '', value, flags=re.I)
     value = ' '.join(value.split()).casefold()
-    # Laptop aliases remain Laptop; no suffix or model is discarded.
+    # A memory size (RTX 3080 12GB, RTX 3050 6GB Laptop GPU) or an OEM marker does
+    # not form a separate category: the record keeps the PCI ID that tells them apart.
+    value = re.sub(r' (?:4|6|8|10|12|16|20|24|32) ?gb(?= |$)', '', value, count=1)
+    value = re.sub(r' oem$', '', value)
+    # Laptop aliases remain Laptop; Ti, Super, D and Laptop suffixes are never discarded.
     if value.endswith(' laptop'):
         value += ' gpu'
     prefixes = {'NVIDIA': r'(?:nvidia )?(?:geforce )?', 'AMD': r'(?:amd )?(?:radeon )?',

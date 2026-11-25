@@ -80,6 +80,14 @@ class IntakeUXTests(unittest.TestCase):
             ('AMD GeForce 4060', 'gpu:unclassified'),
             ('RTX-3090', 'gpu:unclassified'),
             ('GeForce-RTX-4070-Ti', 'gpu:unclassified'),
+            ('Nvidia Geforce RTX 3080 12gb', 'gpu:rtx-3080'),
+            ('RTX 4060 Ti 16 GB', 'gpu:rtx-4060-ti'),
+            ('NVIDIA GeForce RTX 3050 6GB Laptop GPU', 'gpu:rtx-3050-laptop'),
+            ('NVIDIA GeForce RTX 3050 OEM', 'gpu:rtx-3050'),
+            ('NVIDIA GeForce RTX 2060 SUPER', 'gpu:rtx-2060-super'),
+            ('NVIDIA GeForce RTX 5090 D v2', 'gpu:rtx-5090-d-v2'),
+            ('RTX 3080 12GB 10GB', 'gpu:unclassified'),
+            ('RTX 3080 13GB', 'gpu:unclassified'),
         ]
         examples += [(name, 'gpu:' + name.lower().replace(' laptop gpu', ' laptop').replace(' ', '-'))
                      for name in core.GPU_NAMES]
