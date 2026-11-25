@@ -255,6 +255,28 @@ def memory_size_unverified(gpu, pci):
                                     if other == base and key != gpu)
 
 
+def size_category(claimed, archive, pci):
+    """The record category for a claimed and an archive GPU category, or None when they name different models.
+
+    The more specific memory-size category wins: the claimed size (RTX 3080 12GB over the archive's RTX 3080),
+    the archive's own size (RTX 3050 4GB Laptop GPU over a claimed RTX 3050 Laptop GPU), or, for an unsized
+    claim, the one size whose PCI list alone holds the ID (RTX 3080 10de:220a -> 12GB). The PCI ID must
+    still belong to the returned category (gpu_pci).
+    """
+    if claimed == archive:
+        if claimed in MEMORY_VARIANTS.values():
+            models = pci_models()
+            sizes = [key for key, base in MEMORY_VARIANTS.items() if base == claimed and pci in models.get(key, ())]
+            if len(sizes) == 1:
+                return sizes[0]
+        return claimed
+    if MEMORY_VARIANTS.get(claimed) == archive:
+        return claimed
+    if MEMORY_VARIANTS.get(archive) == claimed:
+        return archive
+    return None
+
+
 def pci_models():
     """Load and validate the pinned model -> PCI ID table."""
     data = load_json(Path(__file__).with_name('community_gpu_pci.json').read_bytes(), MAX_MEMBER)
@@ -903,11 +925,13 @@ def prepare(issue, compressed=None, fetch=download):
         result['archive_gpu'] = actual_gpu
         result['archive_version'] = actual_version if actual_version in catalog() else None
         need(actual_gpu is not None, 'GPU_UNKNOWN')
-        # The archive name carries no memory size; the claimed size must name that model.
-        need(actual_gpu == gpu or MEMORY_VARIANTS.get(gpu) == actual_gpu, 'GPU_MISMATCH')
+        # nvidia-smi names a memory size only for some GPUs; claim and archive must name one model.
+        need(size_category(gpu, actual_gpu, None) is not None, 'GPU_MISMATCH')
         need(run['gpu'].get('status') == 'RECORDED', 'GPU_PCI_UNVERIFIED')
         pci = gpu_pci(actual_gpu, run['gpu'].get('pci'))
+        gpu = size_category(gpu, actual_gpu, pci)
         need(gpu_pci(gpu, pci) == pci, 'GPU_PCI_MISMATCH')
+        result['claimed_gpu'] = gpu
         for model_text in (run['gpu']['model'], first_line(fields.get('GPU model', ''))):
             inline = re.search(r' \(PCI ([0-9a-f]{4}:[0-9a-f]{4})\)$', model_text, re.I)
             need(inline is None or inline.group(1).lower() == pci, 'GPU_PCI_MISMATCH')
@@ -1044,7 +1068,7 @@ def _validate_proposal(value):
         if memory_size_unverified(value['claimed_gpu'], value['pci']):
             expected_warnings |= {'MEMORY_SIZE_NOT_VERIFIED'}
         need(value['reason'] == 'OK' and value['claimed_gpu'] is not None and
-             value['archive_gpu'] in (value['claimed_gpu'], MEMORY_VARIANTS.get(value['claimed_gpu'])) and
+             size_category(value['claimed_gpu'], value['archive_gpu'], value['pci']) == value['claimed_gpu'] and
              value['claimed_version'] is not None and
              value['claimed_version'] == value['archive_version'] and value['driver'] is not None and
              value['bundle_sha256'] is not None, 'PROPOSAL_SCHEMA')

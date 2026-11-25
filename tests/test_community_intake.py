@@ -338,15 +338,27 @@ class IntakeTests(unittest.TestCase):
             with self.subTest(value=value):self.assertIsNone(core.gpu_category(value))
 
     def test_memory_size_claim_is_checked_against_pci_where_it_differs(self):
-        """RTX 3080 12GB needs 10de:220a; a shared PCI ID (RTX 5060 Ti) adds MEMORY_SIZE_NOT_VERIFIED."""
-        cases = (('Nvidia Geforce RTX 3080 12gb', 'NVIDIA GeForce RTX 3080', '10de:220a', 'OK', False),
-                 ('RTX 3080 10GB', 'NVIDIA GeForce RTX 3080', '10de:2206', 'OK', False),
-                 ('Nvidia Geforce RTX 3080 12gb', 'NVIDIA GeForce RTX 3080', '10de:2206', 'GPU_PCI_MISMATCH', False),
-                 ('RTX 3080', 'NVIDIA GeForce RTX 3080', '10de:220a', 'OK', False),
-                 ('RTX 5060 Ti 16GB', 'NVIDIA GeForce RTX 5060 Ti', '10de:2d04', 'OK', True),
-                 ('RTX 3080 12GB', 'NVIDIA GeForce RTX 3080 Ti', '10de:2208', 'GPU_MISMATCH', False))
-        for claim, model, pci, reason, unverified in cases:
-            with self.subTest(claim=claim, pci=pci):
+        """The more specific size wins: claimed, archive-named or PCI-unique; shared IDs add MEMORY_SIZE_NOT_VERIFIED."""
+        cases = (
+            ('Nvidia Geforce RTX 3080 12gb', 'NVIDIA GeForce RTX 3080', '10de:220a', 'OK', 'RTX_3080_12GB', False),
+            ('RTX 3080 10GB', 'NVIDIA GeForce RTX 3080', '10de:2206', 'OK', 'RTX_3080_10GB', False),
+            ('Nvidia Geforce RTX 3080 12gb', 'NVIDIA GeForce RTX 3080', '10de:2206', 'GPU_PCI_MISMATCH', None, False),
+            ('RTX 3080', 'NVIDIA GeForce RTX 3080', '10de:220a', 'OK', 'RTX_3080_12GB', False),
+            ('RTX 3080', 'NVIDIA GeForce RTX 3080', '10de:2216', 'OK', 'RTX_3080_10GB', False),
+            ('RTX 3060', 'NVIDIA GeForce RTX 3060', '10de:2503', 'OK', 'RTX_3060', False),
+            ('RTX 5060 Ti 16GB', 'NVIDIA GeForce RTX 5060 Ti', '10de:2d04', 'OK', 'RTX_5060_Ti_16GB', True),
+            ('RTX 3050 Laptop GPU', 'NVIDIA GeForce RTX 3050 4GB Laptop GPU', '10de:25ab', 'OK',
+             'RTX_3050_4GB_Laptop_GPU', False),
+            ('RTX 3050 4GB Laptop GPU', 'NVIDIA GeForce RTX 3050 Laptop GPU', '10de:25ab', 'OK',
+             'RTX_3050_4GB_Laptop_GPU', False),
+            ('RTX 3050 4GB Laptop GPU', 'NVIDIA GeForce RTX 3050 Laptop GPU', '10de:25a2', 'OK',
+             'RTX_3050_4GB_Laptop_GPU', True),
+            ('RTX 3050 Laptop GPU', 'NVIDIA GeForce RTX 3050 Laptop GPU', '10de:25ac', 'OK',
+             'RTX_3050_6GB_Laptop_GPU', False),
+            ('RTX 3050 6GB Laptop GPU', 'NVIDIA GeForce RTX 3050 4GB Laptop GPU', '10de:25ab', 'GPU_MISMATCH', None, False),
+            ('RTX 3080 12GB', 'NVIDIA GeForce RTX 3080 Ti', '10de:2208', 'GPU_MISMATCH', None, False))
+        for claim, model, pci, reason, folder, unverified in cases:
+            with self.subTest(claim=claim, model=model, pci=pci):
                 files = raw_files(gpu=model)
                 run = json.loads(files['run.json'])
                 run['gpu']['pci'] = pci
@@ -356,13 +368,14 @@ class IntakeTests(unittest.TestCase):
                 if reason == 'OK':
                     self.assertEqual(p['state'], 'DATA_READY')
                     core.validate_proposal(p)
-                    self.assertIn('/' + core.gpu_category(claim).split('/')[1] + '/v0.1.5/issue-12',
-                                  core.record_folder(p))
+                    self.assertIn('/' + folder + '/v0.1.5/issue-12', core.record_folder(p))
                     self.assertEqual('MEMORY_SIZE_NOT_VERIFIED' in p['warnings'], unverified)
                     forged = dict(p, warnings=[w for w in p['warnings'] if w != 'MEMORY_SIZE_NOT_VERIFIED'])
                     if unverified:
                         with self.assertRaises(core.Refused):
                             core.validate_proposal(forged)
+                    with self.assertRaises(core.Refused):
+                        core.validate_proposal(dict(p, claimed_gpu='NVIDIA/RTX_3090'))
 
     def test_gpu_vendor_prefixes_match_only_the_corresponding_model_family(self):
         """Accept supported vendor aliases and reject contradictory cross-vendor model names."""

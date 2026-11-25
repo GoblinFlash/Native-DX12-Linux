@@ -84,7 +84,11 @@
       "10de:2584"
     ],
     "NVIDIA/RTX_3050_4GB_Laptop_GPU": [
-      "10de:25ab"
+      "10de:25a2",
+      "10de:25a5",
+      "10de:25ab",
+      "10de:25e2",
+      "10de:25e5"
     ],
     "NVIDIA/RTX_3050_6GB": [
       "10de:2507",
@@ -92,7 +96,11 @@
       "10de:2584"
     ],
     "NVIDIA/RTX_3050_6GB_Laptop_GPU": [
+      "10de:25a2",
+      "10de:25a5",
       "10de:25ac",
+      "10de:25e2",
+      "10de:25e5",
       "10de:25ec"
     ],
     "NVIDIA/RTX_3050_8GB": [
@@ -108,8 +116,11 @@
     "NVIDIA/RTX_3050_Laptop_GPU": [
       "10de:25a2",
       "10de:25a5",
+      "10de:25ab",
+      "10de:25ac",
       "10de:25e2",
-      "10de:25e5"
+      "10de:25e5",
+      "10de:25ec"
     ],
     "NVIDIA/RTX_3050_OEM": [
       "10de:2508"
@@ -327,5 +338,5 @@
       "10de:2c58"
     ]
   },
-  "source_additions": "RTX 20, RTX 2050, RTX 3050 OEM/4GB/6GB Laptop, RTX 5050 and RTX 5090 D v2 rows: NVIDIA supported-gpus.json of drivers 615.78.08 and 620.70.06, as used by the v0.1.6 runtime identity tables. Memory-size rows (RTX 2060/3050/3060/3080/4060 Ti/5060 Ti): that catalogue names no size, so each size lists every PCI ID of its model, except RTX 3080 10GB (2206, 2216) and 12GB (220a)."
+  "source_additions": "RTX 20, RTX 2050, RTX 3050 OEM/4GB/6GB Laptop, RTX 5050 and RTX 5090 D v2 rows: NVIDIA supported-gpus.json of drivers 615.78.08 and 620.70.06, as used by the v0.1.6 runtime identity tables. Memory-size rows (RTX 2060/3050/3060/3080/4060 Ti/5060 Ti): that catalogue names no size, so each size lists every PCI ID of its model, except RTX 3080 10GB (2206, 2216) and 12GB (220a); the RTX 3050 4GB/6GB Laptop GPU rows add the IDs NVIDIA names with that size (25ab; 25ac, 25ec) to the unsized laptop IDs."
 }
