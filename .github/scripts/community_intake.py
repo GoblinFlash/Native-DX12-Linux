@@ -69,9 +69,20 @@ GPU_NAMES = (
     'RTX 5070', 'RTX 5070 Ti', 'RTX 5070 Laptop GPU', 'RTX 5070 Ti Laptop GPU',
     'RTX 5060', 'RTX 5060 Ti', 'RTX 5060 Laptop GPU', 'RTX 5090 D v2', 'RTX 5050',
     'RTX 5050 Laptop GPU', 'RTX 2080 Ti', 'RTX 2080 Super', 'RTX 2080', 'RTX 2070 Super',
-    'RTX 2070', 'RTX 2060 Super', 'RTX 2060', 'RTX 2050')
+    'RTX 2070', 'RTX 2060 Super', 'RTX 2060', 'RTX 2050', 'RTX 3050 OEM',
+    'RTX 3050 4GB Laptop GPU', 'RTX 3050 6GB Laptop GPU',
+    # Memory-size variants: nvidia-smi gives the same name; the size comes from the Issue
+    # form and is checked against the PCI ID where the PCI ID differs (RTX 3080).
+    'RTX 3080 10GB', 'RTX 3080 12GB', 'RTX 3060 8GB', 'RTX 3060 12GB',
+    'RTX 4060 Ti 8GB', 'RTX 4060 Ti 16GB', 'RTX 5060 Ti 8GB', 'RTX 5060 Ti 16GB',
+    'RTX 2060 6GB', 'RTX 2060 12GB', 'RTX 3050 6GB', 'RTX 3050 8GB')
 GPUS = {'NVIDIA/' + name.replace(' ', '_'): name for name in GPU_NAMES}
 GPUS.update({'AMD/RX_7900_XTX': 'RX 7900 XTX', 'Intel/Arc_A770': 'Arc A770'})
+MEMORY_TOKEN = re.compile(r' (4|6|8|10|11|12|16|20|24|32) ?gb(?= |$)')
+# Memory-size category -> the category of the same name without the size.
+MEMORY_VARIANTS = {key: base for key, name in GPUS.items() if MEMORY_TOKEN.search(name.casefold())
+                   for base, other in GPUS.items()
+                   if other.casefold() == MEMORY_TOKEN.sub('', name.casefold(), count=1)}
 LEGACY = {2: ('NVIDIA/RTX_4060_Laptop_GPU', 'v0.1.4'),
           3: ('NVIDIA/RTX_3060_Ti', 'v0.1.4'),
           4: ('NVIDIA/RTX_3060', 'v0.1.4'), 5: ('NVIDIA/RTX_3090', 'v0.1.4')}
@@ -178,21 +189,30 @@ def gpu_category(value):
     """Resolve a bounded GPU name to a fixed category, or return None.
 
     Only the corresponding vendor family's optional prefixes are accepted.
-    Whitespace/case, the bounded PCI suffix, one memory size, a trailing OEM
-    marker and the Laptop alias are normalized;
-    Ti, Super, D and Laptop identities are never merged.
+    Whitespace/case, the bounded PCI suffix, the spacing of one memory size
+    and the Laptop alias are normalized; Ti, Super, D, v2, OEM, Laptop and
+    memory-size identities are never merged. A memory size is dropped only
+    for a model that has no memory-size categories (RTX 3090 24GB).
     """
     if type(value) is not str or len(value) > 160:
         return None
     value = re.sub(r' \(PCI [0-9a-f]{4}:[0-9a-f]{4}\)$', '', value, flags=re.I)
     value = ' '.join(value.split()).casefold()
-    # A memory size (RTX 3080 12GB, RTX 3050 6GB Laptop GPU) or an OEM marker does
-    # not form a separate category: the record keeps the PCI ID that tells them apart.
-    value = re.sub(r' (?:4|6|8|10|11|12|16|20|24|32) ?gb(?= |$)', '', value, count=1)
-    value = re.sub(r' oem$', '', value)
-    # Laptop aliases remain Laptop; Ti, Super, D and Laptop suffixes are never discarded.
+    value = MEMORY_TOKEN.sub(r' \1gb', value, count=1)
+    # Laptop aliases remain Laptop; no suffix or model is discarded.
     if value.endswith(' laptop'):
         value += ' gpu'
+    key = gpu_name_category(value)
+    bare = MEMORY_TOKEN.sub('', value, count=1)
+    if key is None and bare != value and not MEMORY_TOKEN.search(bare):
+        key = gpu_name_category(bare)
+        if key in MEMORY_VARIANTS.values():
+            return None
+    return key
+
+
+def gpu_name_category(value):
+    """Match one normalized, casefolded GPU name exactly against GPUS, or return None."""
     prefixes = {'NVIDIA': r'(?:nvidia )?(?:geforce )?', 'AMD': r'(?:amd )?(?:radeon )?',
                 'Intel': r'(?:intel )?'}
     for key, name in GPUS.items():
@@ -218,6 +238,25 @@ def gpu_pci(gpu, value):
     need(type(value) is str and re.fullmatch('[0-9a-f]{4}:[0-9a-f]{4}', value, re.I),
          'GPU_PCI_FORMAT')
     value = value.lower()
+    models = pci_models()
+    need(gpu in models and any(value in ids for ids in models.values()), 'GPU_PCI_UNVERIFIED')
+    need(value in models[gpu], 'GPU_PCI_MISMATCH')
+    return value
+
+
+def memory_size_unverified(gpu, pci):
+    """Return whether a memory-size category's PCI ID also belongs to a sibling size.
+
+    Then only the Issue form names the size (RTX 5060 Ti 8GB/16GB share 10de:2d04).
+    """
+    base = MEMORY_VARIANTS.get(gpu)
+    models = pci_models()
+    return base is not None and any(pci in models.get(key, ()) for key, other in MEMORY_VARIANTS.items()
+                                    if other == base and key != gpu)
+
+
+def pci_models():
+    """Load and validate the pinned model -> PCI ID table."""
     data = load_json(Path(__file__).with_name('community_gpu_pci.json').read_bytes(), MAX_MEMBER)
     need(type(data) is dict and data.get('schema') == 'ndx12.gpu-pci.v1' and
          type(data.get('models')) is dict, 'PROPOSAL_SCHEMA')
@@ -226,9 +265,7 @@ def gpu_pci(gpu, value):
              0 < len(ids) <= 32 and len(set(ids)) == len(ids) and
              all(type(x) is str and re.fullmatch('10de:[0-9a-f]{4}', x) for x in ids)
              for key, ids in models.items()), 'PROPOSAL_SCHEMA')
-    need(gpu in models and any(value in ids for ids in models.values()), 'GPU_PCI_UNVERIFIED')
-    need(value in models[gpu], 'GPU_PCI_MISMATCH')
-    return value
+    return models
 
 
 def issue_fields(issue):
@@ -458,7 +495,8 @@ REASONS = frozenset(('OK', 'INPUT_FORMAT', 'ISSUE_FORMAT', 'ISSUE_LIMIT',
 WARNINGS = frozenset(('UNVERIFIED_SUBMISSION', 'NO_INDEPENDENT_GPU_RERUN',
     'RAW_READBACKS_NOT_INCLUDED', 'IDENTITY_SELF_REPORTED', 'BACKGROUND_NOT_ASSESSED',
     'REVIEW_ISSUE_CONTEXT', 'CLOCKS_NOT_PROVEN_PER_DISPATCH', 'SEPARATE_TIMING_UNITS',
-    'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN'))
+    'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN',
+    'MEMORY_SIZE_NOT_VERIFIED'))
 PROCESS_COLUMNS = ['suite', 'case', 'variant', 'path', 'repeat', 'submission',
                    'completion', 'correctness', 'timing', 'kernel_records', 'status']
 COMPUTE_COLUMNS = ['case', 'attempt', 'work_ticks', 'empty_ticks', 'clock_mode',
@@ -832,7 +870,8 @@ def base_proposal(issue):
             'claimed_gpu': gpu, 'claimed_version': version, 'archive_gpu': None,
             'archive_version': None, 'driver': None, 'pci': None, 'state': 'MANUAL_REVIEW',
             'reason': 'INPUT_FORMAT', 'run': None, 'processes': [], 'measurements': [],
-            'warnings': sorted(WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN'})}
+            'warnings': sorted(WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN',
+                                       'MEMORY_SIZE_NOT_VERIFIED'})}
 
 
 def prepare(issue, compressed=None, fetch=download):
@@ -864,9 +903,11 @@ def prepare(issue, compressed=None, fetch=download):
         result['archive_gpu'] = actual_gpu
         result['archive_version'] = actual_version if actual_version in catalog() else None
         need(actual_gpu is not None, 'GPU_UNKNOWN')
-        need(actual_gpu == gpu, 'GPU_MISMATCH')
+        # The archive name carries no memory size; the claimed size must name that model.
+        need(actual_gpu == gpu or MEMORY_VARIANTS.get(gpu) == actual_gpu, 'GPU_MISMATCH')
         need(run['gpu'].get('status') == 'RECORDED', 'GPU_PCI_UNVERIFIED')
         pci = gpu_pci(actual_gpu, run['gpu'].get('pci'))
+        need(gpu_pci(gpu, pci) == pci, 'GPU_PCI_MISMATCH')
         for model_text in (run['gpu']['model'], first_line(fields.get('GPU model', ''))):
             inline = re.search(r' \(PCI ([0-9a-f]{4}:[0-9a-f]{4})\)$', model_text, re.I)
             need(inline is None or inline.group(1).lower() == pci, 'GPU_PCI_MISMATCH')
@@ -924,6 +965,8 @@ def prepare(issue, compressed=None, fetch=download):
             result['warnings'].append('KERNEL_RECORDS_NOT_AVAILABLE')
         if sanitized['overall'] != 'COMPLETE':
             result['warnings'].append('NONCOMPLETE_RUN')
+        if memory_size_unverified(gpu, pci):
+            result['warnings'].append('MEMORY_SIZE_NOT_VERIFIED')
     except Refused as error:
         if str(error) in TRANSIENT_ATTACHMENT:
             raise
@@ -988,15 +1031,21 @@ def _validate_proposal(value):
          len(set(value['warnings'])) == len(value['warnings']), 'PROPOSAL_SCHEMA')
     need(type(value['processes']) is list and len(value['processes']) <= MAX_PROCESSES and
          type(value['measurements']) is list and len(value['measurements']) <= MAX_PROCESSES, 'PROPOSAL_SCHEMA')
-    expected_warnings = WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN'}
+    expected_warnings = WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN',
+                                       'MEMORY_SIZE_NOT_VERIFIED'}
     if value['state'] == 'MANUAL_REVIEW':
         need(value['pci'] is None, 'PROPOSAL_SCHEMA')
         need(value['reason'] != 'OK' and value['reason'] not in TRANSIENT_ATTACHMENT and value['run'] is None and
              not value['processes'] and not value['measurements'], 'PROPOSAL_SCHEMA')
     else:
         need(gpu_pci(value['archive_gpu'], value['pci']) == value['pci'], 'PROPOSAL_SCHEMA')
+        need(value['claimed_gpu'] is not None and gpu_pci(value['claimed_gpu'], value['pci']) == value['pci'],
+             'PROPOSAL_SCHEMA')
+        if memory_size_unverified(value['claimed_gpu'], value['pci']):
+            expected_warnings |= {'MEMORY_SIZE_NOT_VERIFIED'}
         need(value['reason'] == 'OK' and value['claimed_gpu'] is not None and
-             value['claimed_gpu'] == value['archive_gpu'] and value['claimed_version'] is not None and
+             value['archive_gpu'] in (value['claimed_gpu'], MEMORY_VARIANTS.get(value['claimed_gpu'])) and
+             value['claimed_version'] is not None and
              value['claimed_version'] == value['archive_version'] and value['driver'] is not None and
              value['bundle_sha256'] is not None, 'PROPOSAL_SCHEMA')
         schema = release_schema(value['archive_version'])
