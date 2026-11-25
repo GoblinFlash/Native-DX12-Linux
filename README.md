@@ -11,7 +11,7 @@
 **AI-assisted development:** This project uses AI tools to assist with research, implementation, testing, code review, and documentation. AI-assisted contributions are subject to the same technical review, testing, and licensing requirements as other contributions. See the [contribution guidelines](AGENTS.md).
 
 <p>
-  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.5" height="54"></a>
+  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.6"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.6" height="54"></a>
   <a href="NDX12_GPU_Benchmark/HOW_TO_RUN.md"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
   <a href="Benchmark%20Results/README.md"><img src=".github/readme-assets/button-results.svg" alt="Results" height="54"></a>
   <a href="Experiments/README.md"><img src=".github/readme-assets/button-experiments.svg" alt="Experiments" height="54"></a>
@@ -30,26 +30,41 @@ Both are mature, game-oriented projects. A translation layer introduces an API b
 
 **Native-DX12-Linux does not use Vulkan or VKD3D in its experimental NVIDIA compute path.** Shaders are compiled through **DXIL → NIR → NAK**, and compute work is submitted through native NVIDIA Linux driver interfaces. The project is an experimental, compute-focused subset of Direct3D 12, **not** a drop-in replacement for commercial games or a complete D3D12 implementation.
 
-### Experimental GPU Measurements — Campaign 019 (RTX 4060 Ti)
+## Native DirectX 12 Benchmark for Linux — v0.1.6
 
-The campaign used a **16,384-sample, 256-bin histogram** on an NVIDIA GeForce **RTX 4060 Ti**. Earlier dynamic-clock tests showed P8 power-state readings after Native runs, so the comparison was repeated with **locked clocks** (2310 MHz core / 9001 MHz memory). Recorded monitoring samples during the locked-clock campaign showed P0 / 2310 / 9001 MHz.
+A major update featuring an improved native GPU execution path, expanded benchmark workloads, interactive native graphics demos and a redesigned desktop application.
 
-**All 67 campaign runs completed**, with bit-exact output validation reported by the campaign author. The following results are medians of four processes for each workload. **Both paths report elapsed GPU time in nanoseconds (ns) for these results. At 1,000,000 ns and above, reports display ms to at most two decimal places.**
+- **Benchmark:** Generic Global NIR optimizations, VRAM placement for Native DX12 and Vulkan reference buffers, and new ParallelSort 4096 variants.
+- **Demos:** Earth 4K, nBody 128, nBody 10K and nBody 4K.
+- **GPU Monitoring:** Live GPU telemetry, utilization history, temperatures, clocks and memory usage.
+- **GPU Control:** Selected `nvidia-smi` functionality and additional GPU management features, including power limits, fan control, clock locking and Persistence Mode.
+- **Installation:** One download, one command. Includes a desktop launcher, integrated charts and result sharing.
 
-| Workload Variant | 256×64 Native (ns) | 256×64 NVIDIA Vulkan (ns) | 16×1024 Native (ns) | 16×1024 NVIDIA Vulkan (ns) |
-| :--- | ---: | ---: | ---: | ---: |
-| **Empty Kernel (Baseline)** | **4,480** | 6,792 | **4,424** | 6,792 |
-| **D4 (Reference)** | **5,032** | 8,160 | **10,864** | 15,680 |
-| **Q8PL (Packed INT8 Opt.)** | **4,816** | 7,992 | **7,344** | 9,152 |
+```bash
+sudo bash NDX12-Benchmark-v0.1.6.run
+```
 
-**Measurement limitations:** The Native and Vulkan timing windows differ, and Native buffers use VRAM while the Vulkan reference uses system memory. Therefore, the numbers above are **independent experimental observations**, not directly comparable execution times or evidence of a specific cross-API speedup. The empty-kernel measurements also include their respective measurement/submission brackets; they do not isolate API translation overhead. Independent review is pending.
+Once installed, launch Native DX12 Benchmark from your desktop or application menu.
 
+GPU management options depend on the hardware and driver. Included RTX profiles do not imply full hardware qualification.
+
+### Benchmark
+
+<img src=".github/readme-assets/v0.1.6/benchmark.png" alt="Native DX12 Benchmark v0.1.6 — workload selection and GPU clock profiles" width="950">
+
+### GPU Monitoring
+
+<img src=".github/readme-assets/v0.1.6/gpu-monitoring.png" alt="Native DX12 Benchmark — live GPU telemetry and utilization history" width="950">
+
+### GPU Control
+
+<img src=".github/readme-assets/v0.1.6/gpu-control.png" alt="Native DX12 Benchmark — NVIDIA GPU control, fan speed, power limits and GPU processes" width="950">
 
 ## Current Progress
 
 <picture>
   <source media="(max-width: 650px)" srcset=".github/readme-assets/progress-mobile.svg">
-  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.5 available; community submissions underway" width="950">
+  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.6 available; community submissions underway" width="950">
 </picture>
 
 ## Current Work
@@ -94,7 +109,7 @@ This roadmap shows **development focus**, not a percentage of Direct3D 12 comple
 - [Native pipeline overview](docs/native_dx12_linux_pipeline.svg) — experimental NVIDIA execution path.
 - [NVIDIA Developer Forums discussion](https://forums.developer.nvidia.com/t/native-directx-12-on-linux/386938) — public progress and feedback.
 
-The documented build environment is Ubuntu 26.04 x86-64. Hardware results belong to their recorded package revisions. **The v0.1.5 release has CPU-side validation; it is not a new GPU qualification of every listed card.**
+The documented build environment is Ubuntu 26.04 x86-64. Hardware results belong to their recorded package revisions. **Included GPU profiles do not imply qualification of every listed card.**
 
 ## License and Credits
 
@@ -104,4 +119,4 @@ Created by **Andrew Kapica — GoblinFlash**. Project-owned material is licensed
 
 - [Hyrules](https://github.com/Hyrules) — Benchmark testing, bug reports and valuable feedback.
 
-<sub>Experimental project · Native compute subset only · Status updated 11 November 2026</sub>
+<sub>Experimental project · Native compute subset only · Status updated 25 November 2026</sub>
