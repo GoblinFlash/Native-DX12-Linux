@@ -394,6 +394,7 @@ class AggregateTests(unittest.TestCase):
         start, end = (m.encode() for m in aggregate.markers('results:NVIDIA/RTX_3060/v0.1.5'))
         region = page[page.index(start):page.index(end)]
         for text in (b'### [Issue #10](', b'### [Issue #12](', b'| Affine | 20,416 ns | 9,856 ns |',
+                     b'Vulkan median GPU time (backing: NOT_RECORDED)',
                      b'](v0.1.5/issue-10/chart.svg)', b'](v0.1.5/issue-12/README.md)',
                      b'#### Test 3 \xe2\x80\x94 K WaveForm'):
             self.assertIn(text, region)
@@ -427,7 +428,7 @@ class AggregateTests(unittest.TestCase):
 
     def test_local_checker_rejects_edited_or_orphan_gpu_results(self):
         """The pre-merge check covers the GPU pages: edited numbers and results without a record fail."""
-        for case in ('edited', 'orphan'):
+        for case in ('edited', 'orphan', 'wrong_gpu_on_valid_page'):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 for path in (ROOT / 'Benchmark Results').rglob('*'):
@@ -440,11 +441,16 @@ class AggregateTests(unittest.TestCase):
                 if case == 'edited':
                     page.write_bytes(raw.replace(b'10,336 ns', b'10,335 ns', 1))
                     reason = '^AGGREGATE_EDITED$'
-                else:
+                elif case == 'orphan':
                     region = raw[raw.index(b'<!-- ndx12:results:'):raw.index(b'v0.1.5:end -->') + 14]
                     other = root / core.ROOT / 'NVIDIA/RTX_4080/README.md'
                     other.parent.mkdir(parents=True)
                     other.write_bytes(b'# RTX 4080\n\n' + region.replace(b'RTX_4090', b'RTX_4080') + b'\n')
+                    reason = '^AGGREGATE_ORPHAN_DOCUMENT$'
+                else:
+                    other = root / core.ROOT / 'NVIDIA/RTX_3060/README.md'
+                    other.write_bytes(other.read_bytes() + b'\n' + aggregate.wrap(
+                        b'## Unexpected results', 'results:NVIDIA/RTX_4080/v0.1.5'))
                     reason = '^AGGREGATE_ORPHAN_DOCUMENT$'
                 self.assertEqual(aggregate.verify(ROOT, core)['status'], 'AGGREGATES_CURRENT')
                 with self.assertRaisesRegex(core.Refused, reason):
@@ -458,12 +464,31 @@ class AggregateTests(unittest.TestCase):
         self.assertLess(updated.index(b'v0.1.6:start'), updated.index(b'v0.1.5:start'))
         self.assertEqual(updated.replace(aggregate.wrap(b'## Benchmark v0.1.6 results\n',
                                                         'results:NVIDIA/RTX_4090/v0.1.6') + b'\n', b'', 1), page)
+        newest = aggregate.wrap(b'## Benchmark v0.1.10 results\n', 'results:NVIDIA/RTX_4090/v0.1.10')
+        page = b'# RTX 4090\n\n' + newest + older + b'\n## Submitting a result\n'
+        middle = aggregate.add_results(page, b'middle\n', 'results:NVIDIA/RTX_4090/v0.1.6', core)
+        middle_block = aggregate.wrap(b'middle\n', 'results:NVIDIA/RTX_4090/v0.1.6') + b'\n'
+        self.assertEqual(middle, b'# RTX 4090\n\n' + newest + middle_block + older + b'\n## Submitting a result\n')
+        oldest = aggregate.add_results(middle, b'oldest\n', 'results:NVIDIA/RTX_4090/v0.1.4', core)
+        oldest_block = aggregate.wrap(b'oldest\n', 'results:NVIDIA/RTX_4090/v0.1.4') + b'\n'
+        self.assertEqual(oldest, b'# RTX 4090\n\n' + newest + middle_block + older + oldest_block +
+                         b'\n## Submitting a result\n')
         first = aggregate.add_results(b'# GPU\n\nIntro.\n\n## Old results\n', b'new\n', 'results:NVIDIA/RTX_4090/v0.1.5', core)
         self.assertLess(first.index(b'v0.1.5:start'), first.index(b'## Old results'))
         plain = aggregate.add_results(b'# GPU\n\nIntro.\n', b'new\n', 'results:NVIDIA/RTX_4090/v0.1.5', core)
         self.assertTrue(plain.startswith(b'# GPU\n\nIntro.\n<!-- ndx12:results:'))
         with self.assertRaisesRegex(core.Refused, '^AGGREGATE_MARKERS$'):
             aggregate.add_results(updated, b'x\n', 'results:NVIDIA/RTX_4090/v0.1.6', core)
+
+    def test_gpu_results_insertion_separates_a_line_without_a_newline(self):
+        key = 'results:NVIDIA/RTX_4090/v0.1.6'
+        block = aggregate.wrap(b'new\n', key) + b'\n'
+        intro = b'# GPU\n\nIntro.'
+        older = aggregate.wrap(b'old\n', 'results:NVIDIA/RTX_4090/v0.1.5')
+        for suffix in (b'', older):
+            with self.subTest(suffix=suffix):
+                self.assertEqual(aggregate.add_results(intro + suffix, b'new\n', key, core),
+                                 intro + b'\n' + block + suffix)
 
 
 if __name__ == '__main__':

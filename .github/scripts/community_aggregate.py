@@ -147,20 +147,38 @@ def gpu_page(path, core):
 def add_results(raw, content, key, core):
     """Insert a release's results region into a GPU page that has none for that release yet.
 
-    A newer release goes above earlier results; the first goes before the page's first
+    Releases appear newest first; the first region goes before the page's first
     section heading, or at the end. Bytes outside the new region stay as they are.
     """
     start = markers(key)[0].encode()
     core.need(len(raw) <= MAX_DOCUMENT and start not in raw and markers(key)[1].encode() not in raw,
               'AGGREGATE_MARKERS')
     block = wrap(content, key) + b'\n'
-    position = raw.find(b'<!-- ndx12:results:')
-    if position < 0:
-        heading = raw.find(b'\n## ')
-        position = len(raw) if heading < 0 else heading + 1
-    elif not raw[:position].endswith(b'\n'):
-        raise core.Refused('AGGREGATE_MARKERS')
-    updated = raw[:position] + block + raw[position:]
+    prefix, version = key.rsplit('/', 1)
+    release = tuple(map(int, version[1:].split('.')))
+    starts = rb'<!-- ndx12:' + re.escape(prefix.encode()) + rb'/(v[0-9]+\.[0-9]+\.[0-9]+):start -->'
+    position, last = None, None
+    for match in re.finditer(starts, raw):
+        existing = tuple(map(int, match[1][1:].split(b'.')))
+        if existing < release:
+            position = match.start()
+            break
+        last = match
+    if position is None:
+        if last is None:
+            heading = raw.find(b'\n## ')
+            position = len(raw) if heading < 0 else heading + 1
+        else:
+            end = markers(prefix + '/' + last[1].decode('ascii'))[1].encode()
+            stop = raw.find(end, last.end())
+            core.need(stop >= 0, 'AGGREGATE_MARKERS')
+            position = stop + len(end)
+            if raw[position:position + 2] == b'\r\n':
+                position += 2
+            elif raw[position:position + 1] == b'\n':
+                position += 1
+    separator = b'\n' if position and raw[position - 1:position] != b'\n' else b''
+    updated = raw[:position] + separator + block + raw[position:]
     core.need(len(updated) <= MAX_DOCUMENT, 'AGGREGATE_DOCUMENT_LIMIT')
     return updated
 
@@ -305,9 +323,8 @@ def verify(root, core=None):
     # Generated release blocks must not disappear from checking when the last
     # source record is removed. Curated v0.1.4 pages have no such markers.
     managed = re.compile(
-        rb'<!-- ndx12:(?:overview|aggregate):(v[0-9]+\.[0-9]+\.[0-9]+):(?:start|end) -->|'
-        rb'<!-- ndx12:(?:gpu|results):[A-Za-z0-9_/]+/(v[0-9]+\.[0-9]+\.[0-9]+)'
-        rb'(?:/intake-README\.md)?:(?:start|end) -->')
+        rb'<!-- ndx12:((?:overview:|aggregate:|(?:gpu|results):[A-Za-z0-9_/]+/)'
+        rb'(v[0-9]+\.[0-9]+\.[0-9]+)(?:/intake-README\.md)?):(?:start|end) -->')
     documents = list(community.glob('v*-data.md'))
     core.need(len(documents) <= 32, 'AGGREGATE_DOCUMENT_LIMIT')
     for version in core.catalog():
@@ -326,16 +343,17 @@ def verify(root, core=None):
     for name in list(overview_paths) + [
             p.relative_to(root).as_posix() for p in documents]:
         for match in managed.finditer(local_file(name)):
-            version = (match[1] or match[2]).decode('ascii')
+            key, version = match[1].decode('ascii'), match[2].decode('ascii')
             versions.add(version)
-            discovered.setdefault(version, set()).add(name)
+            discovered.setdefault(version, set()).add((name, key))
     for version in sorted(versions):
         core.need(version in core.catalog(), 'AGGREGATE_VERSION')
         proposals = records(Local(), rows, version, core)
         core.need(proposals, 'AGGREGATE_SOURCE_MISSING')
         expected = document_set(version, proposals, core)
-        core.need(discovered.get(version, set()) <= set(expected) | set(overview_paths),
-                  'AGGREGATE_ORPHAN_DOCUMENT')
+        expected_markers = {(path, key) for path, (_, key) in expected.items()}
+        expected_markers.update((path, 'overview:' + version) for path in overview_paths)
+        core.need(discovered.get(version, set()) <= expected_markers, 'AGGREGATE_ORPHAN_DOCUMENT')
         for path, (content, key) in expected.items():
             raw = local_file(path)
             replace_region(raw, content, content, key, core)

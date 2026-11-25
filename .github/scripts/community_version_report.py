@@ -111,7 +111,8 @@ def measurement_lines(proposal, has_chart, folder_link, level='###'):
                         if any(name == suite[0] for name, _, _ in scheduled))
     for suite, title, variants in suites:
         lines += [level + ' ' + title, '', '| Workload / native variant | Native ' +
-                  context['native_dx12']['backing'] + ' median GPU time | Vulkan median GPU time |',
+                  context['native_dx12']['backing'] + ' median GPU time | Vulkan median GPU time (backing: ' +
+                  context['vulkan']['backing'] + ') |',
                   '| --- | ---: | ---: |']
         for case, variant, label in variants:
             lines.append('| ' + label + ' | ' + number((suite, case, variant, 'native')) +

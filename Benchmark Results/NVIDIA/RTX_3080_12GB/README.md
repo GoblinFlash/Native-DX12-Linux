@@ -15,7 +15,7 @@ GPU PCI ID: `10de:220a` · Driver: `615.78.08` · Export: **189/189 VERIFIED** �
 
 #### Compute suite
 
-| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time |
+| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time (backing: NOT_RECORDED) |
 | --- | ---: | ---: |
 | Affine | 36,032 ns | 21,696 ns |
 | Affine N515 | 28,928 ns | 22,080 ns |
@@ -23,7 +23,7 @@ GPU PCI ID: `10de:220a` · Driver: `615.78.08` · Export: **189/189 VERIFIED** �
 
 #### Test 1 — D4
 
-| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time |
+| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time (backing: NOT_RECORDED) |
 | --- | ---: | ---: |
 | 128×128 Original | 44,240 ns | 19,296 ns |
 | 128×128 D4 | 39,920 ns | 19,296 ns |
@@ -34,7 +34,7 @@ GPU PCI ID: `10de:220a` · Driver: `615.78.08` · Export: **189/189 VERIFIED** �
 
 #### Test 2 — K
 
-| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time |
+| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time (backing: NOT_RECORDED) |
 | --- | ---: | ---: |
 | 64×64 scalar | 463,120 ns | 108,224 ns |
 | 64×64 uint4 | 218,912 ns | 108,224 ns |
@@ -43,7 +43,7 @@ GPU PCI ID: `10de:220a` · Driver: `615.78.08` · Export: **189/189 VERIFIED** �
 
 #### Test 3 — K WaveForm
 
-| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time |
+| Workload / native variant | Native SYSMEM median GPU time | Vulkan median GPU time (backing: NOT_RECORDED) |
 | --- | ---: | ---: |
 | 64×64 scalar | 221,264 ns | 18,384 ns |
 | 64×64 uint4 | 218,160 ns | 18,384 ns |
