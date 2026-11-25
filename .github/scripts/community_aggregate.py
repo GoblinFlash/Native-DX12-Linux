@@ -194,18 +194,14 @@ def overview(version, proposals, prefix, core):
     report = load('community_version_report')
     report.core = core
     proposals = sorted(proposals, key=lambda p: (report.gpu_name(p), p['issue']))
-    ready = sum(p['state'] == 'DATA_READY' for p in proposals)
-    measured = sum(p['state'] == 'DATA_READY' and bool(p['measurements']) for p in proposals)
-    contexts = [core.memory_backing(p)['native_dx12']['backing']
-                for p in proposals if p['state'] == 'DATA_READY']
+    contexts = [core.memory_backing(p)['native_dx12']['backing'] for p in proposals]
     backing = ('SYSMEM (system-memory buffers, not VRAM)' if contexts and
                all(x == 'SYSMEM' for x in contexts) else 'UNKNOWN (release evidence NOT_RECORDED)')
     table = report.overview(version, proposals, prefix).replace(version + '-submitted-data.md', basename(version))
-    reports = (f'{ready} submission-specific charts and complete available median tables, with sources and caveats.'
+    reports = (f'{len(proposals)} submission-specific charts and complete available median tables, with sources and caveats.'
                if core.release_schema(version) == core.SHARE_V2 else
                'Median tables for matching submissions and charts when the selected workloads have measurements.')
-    return (f'{len(proposals)} submissions checked for **{version} / {core.catalog()[version]["package_id"]}**. '
-            f'{measured} matching exports have measurements; refused submissions contribute no numeric results.\n\n' +
+    return (f'{len(proposals)} submissions checked for **{version} / {core.catalog()[version]["package_id"]}** with measurements.\n\n' +
             table + '\n\n**[View charts and extracted benchmark measurements](' + prefix + basename(version) +
             ')** — ' + reports + '\n\n' +
             'These are **reported export statuses**, not independently repeated GPU qualifications. '

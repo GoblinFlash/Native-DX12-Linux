@@ -66,11 +66,17 @@ class AggregateTests(unittest.TestCase):
                 self.assertEqual(proposal['state'], 'DATA_READY')
                 self.assertEqual(bool(proposal['measurements']), not empty)
                 api = FakeAPI(current=source)
-                self.assertEqual(writer.publish(proposal, api, 12)['status'], 'DRAFT_PR_CREATED')
-                outputs = draft_files(api)
-                for name in writer.INDEXES:
-                    self.assertIn(f'{0 if empty else 1} matching exports have measurements'.encode(),
-                                  outputs[name])
+                result = writer.publish(proposal, api, 12)
+                if empty:
+                    self.assertEqual(result['reason'], 'NO_MEASUREMENTS')
+                    self.assertEqual(result['status'], 'ISSUE_ONLY')
+                    self.assertEqual(core.render(proposal), {})
+                    self.assertEqual(aggregate.document_set('v0.1.5', [proposal], core), {})
+                    self.assertEqual(api.writes, [])
+                else:
+                    self.assertEqual(result['status'], 'DRAFT_PR_CREATED')
+                    for name in writer.INDEXES:
+                        self.assertIn(b'issue-12/README.md', draft_files(api)[name])
 
     def test_new_record_and_its_version_report_are_in_the_same_draft(self):
         """A successful draft must include the new record, overview table and release report."""
@@ -85,18 +91,12 @@ class AggregateTests(unittest.TestCase):
         self.assertIn('| GPU | Exported process status |', root)
         self.assertIn('v0.1.5-submitted-data.md', root)
 
-    def test_issue_11_conflict_explains_duplicate_and_required_correction(self):
-        """A shared bundle cannot supply RTX3090 values; changing its name is no correction."""
-        proposals = [core.load_json((ROOT / core.ROOT / name).read_bytes()) for name in (
-            'NVIDIA/RTX_3060/v0.1.5/issue-10/record.json',
-            'Pending_Classification/v0.1.5/issue-11/record.json')]
-        docs = aggregate.document_set('v0.1.5', proposals, core)
-        text = docs[core.ROOT + 'v0.1.5-submitted-data.md'][0].decode()
-        self.assertIn('identical to Issue #10', text)
-        self.assertIn('10de:2503', text)
-        self.assertIn('genuine share-results bundle', text)
-        self.assertIn('Renaming', text)
-        self.assertNotIn('RTX_3090/v0.1.5/issue-11/chart.svg', text)
+    def test_conflicting_submission_is_omitted_from_all_release_documents(self):
+        measured = ready(10)
+        conflict = core.prepare(issue(11, 'RTX 3060'), bundle())
+        self.assertEqual(conflict['reason'], 'GPU_MISMATCH')
+        self.assertEqual(aggregate.document_set('v0.1.5', [measured, conflict], core),
+                         aggregate.document_set('v0.1.5', [measured], core))
 
     def test_real_records_refresh_and_preserve_prior_data_and_owner_notes(self):
         """Actual v2 and pinned legacy15 sources feed one release refresh without old-data rewrites."""
@@ -154,11 +154,11 @@ class AggregateTests(unittest.TestCase):
         writer.publish(p, api, 12)
         files = draft_files(api)
         index = files[core.ROOT + 'NVIDIA/RTX_3060/v0.1.5/README.md']
-        self.assertIn(b'## [Issue #10](', index)
-        self.assertIn(b'## [Issue #12](', index)
+        self.assertIn(b'](issue-10/chart.svg)', index)
+        self.assertIn(b'](issue-12/chart.svg)', index)
         main = files[core.ROOT + 'NVIDIA/RTX_3060/README.md']
-        self.assertIn(b'### [Issue #10](', main)
-        self.assertIn(b'### [Issue #12](', main)
+        self.assertEqual(main.count(b'[v0.1.5](v0.1.5/)'), 1)
+        self.assertNotIn(b'![', main)
         report = files[core.ROOT + 'v0.1.5-submitted-data.md']
         self.assertIn(b'rtx-3060--issue-10', report)
         self.assertIn(b'rtx-3060--issue-12', report)
@@ -196,28 +196,28 @@ class AggregateTests(unittest.TestCase):
         writer.publish(p, api, 12)
         files = draft_files(api)
         self.assertIn(core.ROOT + 'v0.1.4-intake-data.md', files)
-        self.assertIn(core.ROOT + 'NVIDIA/RTX_3090/v0.1.4/intake-README.md', files)
+        self.assertIn(core.ROOT + 'NVIDIA/RTX_3060_Ti/v0.1.4/intake-README.md', files)
         report = files[core.ROOT + 'v0.1.4-intake-data.md']
-        self.assertIn(b'(v0.1.4-intake-data.md#rtx-3090--issue-12)', report)
+        self.assertIn(b'(v0.1.4-intake-data.md#rtx-3060-ti--issue-12)', report)
         self.assertNotIn(b'v0.1.4-submitted-data.md#', report)
-        self.assertIn('## RTX 3090 — [Issue #12]'.encode(), report)
+        self.assertIn('## RTX 3060 Ti — [Issue #12]'.encode(), report)
         for name, raw in before.items():
             self.assertEqual(files[name], raw, name)
-        self.assertNotIn(core.ROOT + 'NVIDIA/RTX_3090/README.md', files.keys() - {r['path'] for r in api.entries})
-        self.assertNotIn(b'ndx12:results:', files.get(core.ROOT + 'NVIDIA/RTX_3090/README.md', b''))
+        self.assertNotIn(core.ROOT + 'NVIDIA/RTX_3060_Ti/README.md', files.keys() - {r['path'] for r in api.entries})
+        self.assertNotIn(b'ndx12:results:', files.get(core.ROOT + 'NVIDIA/RTX_3060_Ti/README.md', b''))
         for name in ('Benchmark Results/README.md', core.ROOT + 'README.md'):
             old = (ROOT / name).read_bytes()
             heading = (b'\n## Community Benchmark Data ' + '— v0.1.4'.encode() if
                        name.startswith('Benchmark Results/README') else b'\n## Curated v0.1.4 report')
             self.assertEqual(files[name][files[name].index(heading):], old[old.index(heading):])
 
-    def test_unknown_release_remains_individual_manual_record(self):
+    def test_unknown_release_remains_in_issues(self):
         """No arbitrary unrecognized release path is created."""
         api = FakeAPI(issue(version='v9.9.9'))
         p = core.prepare(api.issue, bundle())
         result = writer.publish(p, api, 12)
-        self.assertEqual(len(result['files']), 5)
-        self.assertFalse(any('v9.9.9' in name for name in result['files']))
+        self.assertEqual(result['status'], 'ISSUE_ONLY')
+        self.assertEqual(api.writes, [])
 
     def test_oversized_record_and_too_many_records_are_rejected(self):
         """Count and byte ceilings apply before any remote write."""
@@ -229,7 +229,7 @@ class AggregateTests(unittest.TestCase):
         self.assertEqual(api.writes, [])
         api = FakeAPI()
         for n in range(100, 133):
-            put(api, core.ROOT + 'NVIDIA/RTX_3090/v0.1.5/issue-' + str(n) + '/record.json', '{}')
+            put(api, core.ROOT + 'NVIDIA/RTX_3060_Ti/v0.1.5/issue-' + str(n) + '/record.json', '{}')
         with self.assertRaisesRegex(core.Refused, '^AGGREGATE_RECORD_LIMIT$'):
             writer.publish(ready(), api, 12)
         self.assertEqual(api.writes, [])
@@ -252,7 +252,7 @@ class AggregateTests(unittest.TestCase):
         api = seeded();api.fail_pr_once = True
         with self.assertRaises(core.Refused): writer.publish(ready(), api, 12)
         api.entries = copy.deepcopy(api.entries)
-        put(api, core.ROOT + 'NVIDIA/RTX_3090/v0.1.5/issue-13/record.json',
+        put(api, core.ROOT + 'NVIDIA/RTX_3060_Ti/v0.1.5/issue-13/record.json',
             core.json_bytes(ready(13)))
         api.base, api.base_tree = 'e'*40, 'f'*40
         api.trees[api.base_tree] = api.entries
@@ -381,8 +381,8 @@ class AggregateTests(unittest.TestCase):
             self.assertEqual(files, {p.relative_to(root).as_posix(): p.read_bytes()
                                      for p in root.rglob('*') if p.is_file()})
 
-    def test_gpu_main_page_shows_measurements_and_keeps_curated_text(self):
-        """The page GitHub opens for a GPU folder carries the tables and chart of each submission."""
+    def test_gpu_version_index_keeps_the_curated_introduction(self):
+        """The model page lists versions while each version keeps its own benchmarks."""
         api = seeded()
         submitted = issue(12, 'RTX 3060')
         api.issue = submitted
@@ -393,24 +393,22 @@ class AggregateTests(unittest.TestCase):
         page = draft_files(api)[name]
         start, end = (m.encode() for m in aggregate.markers('results:NVIDIA/RTX_3060/v0.1.5'))
         region = page[page.index(start):page.index(end)]
-        for text in (b'### [Issue #10](', b'### [Issue #12](', b'| Affine | 20,416 ns | 9,856 ns |',
-                     b'Vulkan median GPU time (backing: NOT_RECORDED)',
-                     b'](v0.1.5/issue-10/chart.svg)', b'](v0.1.5/issue-12/README.md)',
-                     b'#### Test 3 \xe2\x80\x94 K WaveForm'):
-            self.assertIn(text, region)
+        self.assertIn(b'- [v0.1.5](v0.1.5/)', region)
+        self.assertNotIn(b'![', page)
+        self.assertNotIn(b'Issue #', page)
         outside = lambda raw: raw[:raw.index(start)] + raw[raw.index(end):]
         self.assertEqual(outside(page), outside(before))
-        self.assertIn(b'## Benchmark v0.1.4 results', page[page.index(end):])
+        self.assertIn(b'[v0.1.4](v0.1.4/)', page[page.index(end):])
 
     def test_gpu_folder_without_main_page_gets_one(self):
         """A first submission for a GPU creates the folder page that shows its results."""
         api = seeded()
-        name = core.ROOT + 'NVIDIA/RTX_3090/README.md'
+        name = core.ROOT + 'NVIDIA/RTX_3060_Ti/README.md'
         api.entries[:] = [r for r in api.entries if r['path'] != name]
         writer.publish(ready(), api, 12)
         page = draft_files(api)[name]
-        self.assertTrue(page.startswith(b'# RTX 3090 \xe2\x80\x94 community results\n\n'
-                                        b'<!-- ndx12:results:NVIDIA/RTX_3090/v0.1.5:start -->\n'), page[:200])
+        self.assertTrue(page.startswith(b'# RTX 3060 Ti \xe2\x80\x94 community results\n\n'
+                                        b'<!-- ndx12:results:NVIDIA/RTX_3060_Ti/v0.1.5:start -->\n'), page[:200])
         self.assertIn(b'### [Issue #12](', page)
         self.assertIn(b'| Workload / native variant |', page)
 
@@ -419,7 +417,7 @@ class AggregateTests(unittest.TestCase):
         api = seeded()
         name = core.ROOT + 'NVIDIA/RTX_3060/README.md'
         old = next(r for r in api.entries if r['path'] == name)
-        put(api, name, api.blobs[old['sha']].replace('20,416', '20,417', 1))
+        put(api, name, api.blobs[old['sha']].replace('[v0.1.5](v0.1.5/)', '[v0.1.5](bad/)', 1))
         submitted = issue(12, 'RTX 3060')
         api.issue = submitted
         with self.assertRaisesRegex(core.Refused, '^AGGREGATE_EDITED$'):

@@ -79,11 +79,8 @@ def index_entry(proposal, index_id):
     """Format one plain report link from validated catalogue identity and a fixed path."""
     folder = intake.record_folder(proposal)
     gpu = proposal['claimed_gpu']
-    if gpu in intake.GPUS and folder.startswith(intake.ROOT + gpu + '/'):
-        label = gpu.split('/')[0] + ' ' + intake.GPUS[gpu]
-    else:
-        label = 'Pending classification'
-    version = proposal['claimed_version'] or 'Unidentified release'
+    label = gpu.split('/')[0] + ' ' + intake.GPUS[gpu]
+    version = proposal['claimed_version']
     intake.need(index_id in INDEX_BOOTSTRAP, 'INDEX_FORMAT')
     relative = folder[len(intake.ROOT):] + '/README.md'
     return f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative})'
@@ -210,6 +207,9 @@ def publish(proposal, api, expected_issue, manual=False):
     """
     intake.validate_proposal(proposal)
     intake.need(proposal['issue'] == expected_issue, 'ISSUE_NUMBER_MISMATCH')
+    reason = intake.issue_only_reason(proposal)
+    if reason:
+        return {'status': 'ISSUE_ONLY', 'issue': expected_issue, 'reason': reason}
     check_current_source(api, proposal, manual)
     head = api.get('git/ref/heads/main')
     base = sha(head['object']['sha'])

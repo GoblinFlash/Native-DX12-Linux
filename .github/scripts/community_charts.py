@@ -96,7 +96,23 @@ def rescale(axis, medians, format_duration):
         bar.set('d', f'M {left} {base} L {right} {base} L {right} {y:.6f} L {left} {y:.6f} z')
 
 
-def render(proposal, rows, context, package_id, format_duration):
+def chart_panels(root):
+    """Keep the axes, legend and clock qualification from either pinned layout."""
+    figure = root.find('.//*[@id="figure_1"]')
+    for group in list(figure):
+        name = group.get('id', '')
+        label = group.findtext(TAG + 'text', '')
+        if (name.startswith('axes_') or name in ('patch_1', 'legend_1')
+                or label.startswith(('HOST/GPU CLOCK', 'CLOCK:', 'CLOCK NOT QUALIFIED', 'Do not compare'))):
+            continue
+        figure.remove(group)
+    root.remove(root.find("./*[@id='memory-backing-label']"))
+    # The plot wrapper in both pinned templates translates its axes down by 44 points.
+    root.set('viewBox', '0 138 972 330')
+    root.set('height', '330pt')
+
+
+def render(proposal, rows, context, package_id, format_duration, *, panels_only=False):
     """Render validated summaries using the prior release's shared and independent scale designs."""
     lookup = {(r['suite'], r['case'], r['variant'], r['path']): r for r in rows}
     chosen = []
@@ -160,4 +176,6 @@ def render(proposal, rows, context, package_id, format_duration):
     source = ET.SubElement(root, TAG + 'metadata', {'id': 'submitted-measurements'})
     source.text = json.dumps({'issue': issue, 'release': version,
         'bundle_sha256': proposal['bundle_sha256'], 'selected': chosen}, sort_keys=True)
+    if panels_only:
+        chart_panels(root)
     return ET.tostring(root, encoding='utf-8', xml_declaration=True) + b'\n'

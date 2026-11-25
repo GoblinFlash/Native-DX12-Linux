@@ -1,9 +1,7 @@
-# RTX 3060 — benchmark v0.1.4
+# NVIDIA GeForce RTX 3060 · v0.1.4
 
-**Existing v0.1.4 results — Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM).** This is the documented backing of the release artifact, not independent observation of the submitted host. Vulkan memory backing: **NOT_RECORDED**; do not infer it from Native DX12. [Release evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111). The experimental VRAM candidate is separate.
+![NVIDIA GeForce RTX 3060 · v0.1.4](chart.svg)
 
-This index preserves the existing curated location for [Issue #4](https://github.com/GoblinFlash/Native-DX12-Linux/issues/4). It creates no second result record and changes no acceptance status.
+Model and kernel message explanation received from the reporter; maintainer acceptance remains pending.
 
-Review status is recorded in [the submissions index](../../../SUBMISSIONS.md). Full numeric variants and charts remain in [the centralized v0.1.4 report](../../../v0.1.4-submitted-data.md).
-
-Model and kernel-message explanation received from the reporter; maintainer acceptance remains pending. Export consistency is not independent GPU qualification or owner acceptance. This centrally curated Issue is reserved for manual migration even without a separate issue-4.md page; automated intake cannot duplicate or overwrite it.
+[All medians](../../../v0.1.4-submitted-data.md#rtx-3060)

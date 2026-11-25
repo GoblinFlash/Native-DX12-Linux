@@ -129,17 +129,10 @@ class VersionReportTests(unittest.TestCase):
         with self.assertRaisesRegex(report.core.Refused, '^VERSION_REPORT_DUPLICATE$'):
             report.render('v0.1.5', [proposal, proposal])
 
-    def test_conflicting_gpu_is_listed_without_measurements_or_chart(self):
-        """A refused archive may explain the conflict but cannot become GPU benchmark data."""
+    def test_conflicting_gpu_alone_creates_no_report(self):
         refused = core.prepare(issue(gpu='RTX 3060'), bundle())
         self.assertEqual(refused['reason'], 'GPU_MISMATCH')
-        outputs = report.render('v0.1.5', [refused])
-        self.assertEqual(list(outputs), ['Benchmark Results/v0.1.5-submitted-data.md'])
-        text = next(iter(outputs.values())).decode()
-        self.assertIn('GPU_MISMATCH', text)
-        self.assertIn('No measurements or chart', text)
-        self.assertNotIn('![', text)
-        self.assertNotIn('189/189 VERIFIED', text)
+        self.assertEqual(report.render('v0.1.5', [refused]), {})
 
     def test_existing_issue_record_and_csv_are_not_regenerated(self):
         """Re-charting a legacy Issue does not upgrade its record schema or overwrite data."""
@@ -153,11 +146,18 @@ class VersionReportTests(unittest.TestCase):
         first = core.prepare(issue(12), bundle())
         second = core.prepare(issue(13), bundle())
         outputs = report.render('v0.1.5', [first, second])
-        index = outputs['Benchmark Results/NVIDIA/RTX_3090/v0.1.5/README.md'].decode()
+        index = outputs['Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/README.md'].decode()
         for number in (12, 13):
-            self.assertIn('#rtx-3090--issue-' + str(number), index)
-            self.assertIn('Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-' +
+            self.assertIn('#rtx-3060-ti--issue-' + str(number), index)
+            self.assertIn('Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-' +
                           str(number) + '/record.json', outputs)
+
+    def test_overview_counts_each_reported_clock_status(self):
+        proposal = core.prepare(issue(), bundle())
+        self.assertEqual(report.observations(proposal)[1], 'NOT_QUALIFIED, 4/4 suites')
+        proposal['run']['steps'][0]['reported_clock_qualification'] = 'NOT_RECORDED'
+        self.assertEqual(report.observations(proposal)[1],
+                         'NOT_QUALIFIED, 3/4 suites, NOT_RECORDED, 1/4 suites')
 
     def test_unqualified_clock_keeps_independent_scales(self):
         """The old unqualified design retains both data series without a shared time axis."""
