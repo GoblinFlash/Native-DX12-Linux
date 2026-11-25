@@ -8,6 +8,7 @@ Community submissions are collected as public [Benchmark Results issues](https:/
 <summary>Individual intake records (all benchmark versions)</summary>
 
 <!-- ndx12-community-intake:start -->
+- [Pending classification / v0.1.5 / Issue #42](Pending_Classification/v0.1.5/issue-42/README.md)
 - [Pending classification / v0.1.5 / Issue #11](Pending_Classification/v0.1.5/issue-11/README.md)
 - [NVIDIA RTX 3060 / v0.1.5 / Issue #10](NVIDIA/RTX_3060/v0.1.5/issue-10/README.md)
 - [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md)
@@ -19,10 +20,11 @@ Community submissions are collected as public [Benchmark Results issues](https:/
 ## Community Benchmark Data — v0.1.5
 
 <!-- ndx12:overview:v0.1.5:start -->
-4 submissions checked for **v0.1.5 / v21-r16**. 3 matching exports have measurements; refused submissions contribute no numeric results.
+5 submissions checked for **v0.1.5 / v21-r16**. 3 matching exports have measurements; refused submissions contribute no numeric results.
 
 | GPU | Exported process status | Reported host/GPU clock check | Important limitation |
 | --- | --- | --- | --- |
+| [Pending classification (claimed)](https://github.com/GoblinFlash/Native-DX12-Linux/issues/42) | No imported values | NOT_RECORDED | GPU_UNKNOWN: archive reports unknown |
 | [RTX 3060](v0.1.5-submitted-data.md#rtx-3060--issue-10) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 | [RTX 3090 (claimed)](https://github.com/GoblinFlash/Native-DX12-Linux/issues/11) | No imported values | NOT_RECORDED | GPU_MISMATCH: archive reports RTX 3060 |
 | [RTX 4060](v0.1.5-submitted-data.md#rtx-4060--issue-15) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
