@@ -9,12 +9,11 @@ class DisplayTests(unittest.TestCase):
     def test_nvidia_index_reaches_submitted_4090_report(self):
         """A GPU-model link must reach the actual release report, not a placeholder."""
         index = (ROOT / 'Benchmark Results/NVIDIA/README.md').read_text()
-        self.assertIn('[GeForce RTX 4090](RTX_4090/v0.1.5/README.md)', index)
-        report = (ROOT / 'Benchmark Results/NVIDIA/RTX_4090/v0.1.5/README.md').read_text()
-        self.assertIn('[Issue #14](https://github.com/GoblinFlash/Native-DX12-Linux/issues/14)', report)
-        self.assertIn('](issue-14/chart.svg)', report)
-        self.assertIn('| Affine |', report)
-        self.assertIn('not independent GPU qualification', report)
+        self.assertIn('[NVIDIA GeForce RTX 4090](RTX_4090/)', index)
+        page = ROOT / 'Benchmark Results/NVIDIA/RTX_4090/v0.1.5/README.md'
+        self.assertEqual(page.read_text().count('!['), 4)
+        self.assertIn('](issue-14/chart.svg)', page.read_text())
+        self.assertNotIn('Issue #', page.read_text())
 
     def test_flat_vendor_layout_preserves_classification_and_existing_issues(self):
         """Results route into GPU folders directly, without a Community directory."""
@@ -40,7 +39,7 @@ class DisplayTests(unittest.TestCase):
         writer.publish(ready(), api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
         folder = 'Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-12'
-        self.assertIn('![Exported measurements for Issue #12](chart.svg)',
+        self.assertIn('![NVIDIA GeForce RTX 3060 Ti · v0.1.5 · Compute suite](chart.svg)',
                       api.blobs[entries[folder + '/README.md']['sha']])
         expected = {
             'Benchmark Results/README.md': 'NVIDIA/RTX_3060_Ti/v0.1.5/issue-12/README.md',
@@ -49,11 +48,9 @@ class DisplayTests(unittest.TestCase):
         for path, relative in expected.items():
             with self.subTest(path=path):
                 text = api.blobs[entries[path]['sha']]
-                self.assertIn('Issue #12](' + relative + ')', text)
+                self.assertIn('v0.1.5](' + relative + ')', text)
         svg = ET.fromstring(api.blobs[entries[folder + '/chart.svg']['sha']])
-        bars = [row for row in svg.iter('{http://www.w3.org/2000/svg}path')
-                if row.get('style') in ('fill: #0c80bd', 'fill: #ef7100')]
-        self.assertEqual(len(bars), 8)
+        self.assertEqual(len(svg.findall('.//{*}g/{*}title')), 6)
 
     def test_export_checks_do_not_imply_owner_acceptance(self):
         """An eligible Issue's prose/approval label cannot supply an acceptance decision."""
@@ -65,18 +62,18 @@ class DisplayTests(unittest.TestCase):
         entries = {row['path']: row for row in api.trees['c' * 40]}
         folder = 'Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-12'
         report = api.blobs[entries[folder + '/README.md']['sha']]
-        self.assertIn('**Export consistency: CHECKED**', report)
-        self.assertIn('**Owner acceptance: NOT_RECORDED**', report)
+        self.assertNotIn('Export consistency:', report)
+        self.assertNotIn('Owner acceptance:', report)
         self.assertNotIn('UNVERIFIED', '\n'.join(report.splitlines()[:6]))
         for path in writer.INDEXES:
             with self.subTest(path=path):
                 text = api.blobs[entries[path]['sha']]
                 managed = text.split(writer.INDEX_START)[1].split(writer.INDEX_END)[0]
-                self.assertIn('Issue #12](', managed)
+                self.assertIn('v0.1.5](', managed)
                 self.assertNotIn('owner acceptance', managed)
                 self.assertNotIn('**UNVERIFIED**', managed)
         svg = api.blobs[entries[folder + '/chart.svg']['sha']]
-        self.assertIn('Panels use independent scales', svg)
+        self.assertIn('independent scale', svg)
         self.assertEqual(api.blobs[entries[folder + '/record.json']['sha']], core.json_bytes(proposal).decode())
         self.assertIn('UNVERIFIED_SUBMISSION', proposal['warnings'])
         self.assertIn('NO_INDEPENDENT_GPU_RERUN', proposal['warnings'])

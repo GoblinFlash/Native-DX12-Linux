@@ -285,7 +285,7 @@ class IntakeTests(unittest.TestCase):
                 self.assertEqual(len(core.summaries(p)), 27)
                 self.assertEqual(core.summaries(p)[0]['n'], 7)
                 outputs = core.render(p)
-                self.assertEqual(len(outputs), 7)  # memory-backing.json is a separate artifact
+                self.assertEqual(len(outputs), 10)  # memory-backing.json is a separate artifact
                 self.assertTrue(all('/NVIDIA/RTX_3060_Ti/'+version+'/issue-12/' in path for path in outputs))
 
     def test_deterministic_bytes(self):
@@ -300,7 +300,7 @@ class IntakeTests(unittest.TestCase):
             self.assertNotIn(canary, output)
         self.assertIn(b'UNVERIFIED', output)
         self.assertIn(b'NOT_QUALIFIED', output)
-        self.assertIn(b'Vulkan memory backing: NOT_RECORDED', output)
+        self.assertIn('NOT_RECORDED', core.memory_backing(p)['vulkan']['backing'])
         self.assertEqual({r['unit'] for r in p['measurements']}, {'GPU_TICKS', 'NS'})
 
     def test_exact_gpu_suffixes_and_unknown(self):
@@ -703,8 +703,9 @@ class IntakeTests(unittest.TestCase):
                     if row['suite'] != 'compute':
                         self.assertEqual(row['value'], '1000.5' if row['path'] == 'native' else '1000.1234567890123456789')
                 public = core.render(proposal)
-                for suffix in ('/measurements.csv', '/summary.csv', '/README.md', '/chart.svg'):
+                for suffix in ('/measurements.csv', '/summary.csv', '/d4-chart.svg'):
                     output = next(data for name, data in public.items() if name.endswith(suffix))
+                    output = output.replace(' '.encode(), b'')
                     self.assertIn(b'1000.5', output)
                     self.assertIn(b'1000.1234567890123456789', output)
 
@@ -739,7 +740,7 @@ class IntakeTests(unittest.TestCase):
                        row['suite'] == 'd4' and row['path'] == 'vulkan' and row['case'] == selected[0]['case'])
         self.assertEqual(summary['median'], '1.000000000000000000035')
         public = core.render(proposal)
-        for suffix in ('/summary.csv', '/README.md', '/chart.svg'):
+        for suffix in ('/summary.csv', '/d4-chart.svg'):
             self.assertIn(b'1.000000000000000000035', next(data for name, data in public.items() if name.endswith(suffix)))
 
     def test_fractional_timing_limits_and_integer_rounds_remain_enforced(self):
@@ -1067,7 +1068,7 @@ class PublisherTests(unittest.TestCase):
         p = ready()
         result = writer.publish(p, api, 12)
         # Record, data, chart and CSV files, the release report, two GPU pages and the indexes.
-        self.assertEqual(len(result['files']), 12)
+        self.assertEqual(len(result['files']), 15)
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
                 baseline = index_fixture(path)
@@ -1163,8 +1164,7 @@ class PublisherTests(unittest.TestCase):
         for path in writer.INDEXES:
             entry = next(row for row in api.trees['c'*40] if row['path'] == path)
             text = api.blobs[entry['sha']]
-            self.assertIn('Issue #12', text)
-            self.assertIn('Issue #12](', text)
+            self.assertIn(writer.index_entry(p, writer.INDEXES[path][1]), text)
             self.assertIn('v0.1.4', text)
 
     def test_duplicate_events_and_reopened_or_edited_issues(self):

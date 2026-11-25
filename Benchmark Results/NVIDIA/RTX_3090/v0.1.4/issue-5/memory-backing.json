@@ -1,0 +1,16 @@
+{
+  "native_dx12": {
+    "backing": "SYSMEM",
+    "basis": "RELEASE_ARTIFACT_DOCUMENTATION",
+    "documentation_git_blob": "fbd3fd01968c60ed67cb6c492be63bbc9dbd598f",
+    "evidence_url": "https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111",
+    "release": "v0.1.4",
+    "release_artifact_sha256": "a4d707dd50fa9fa22d554732d4e97dfbb54c5ab4ce6fee225c7d554afd1f399a",
+    "scope": "data_buffers"
+  },
+  "schema": "ndx12.community-memory.v1",
+  "vulkan": {
+    "backing": "NOT_RECORDED",
+    "basis": "NOT_INFERRED_FROM_NATIVE"
+  }
+}

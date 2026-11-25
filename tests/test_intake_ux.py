@@ -181,9 +181,7 @@ class IntakeUXTests(unittest.TestCase):
                 self.assertIn('NONCOMPLETE_RUN', proposal['warnings'])
                 rendered = b'\n'.join(core.render(proposal).values())
                 self.assertIn(b'UNVERIFIED', rendered)
-                self.assertIn(b'Export consistency: CHECKED', rendered)
-                self.assertIn(b'Owner acceptance: NOT_RECORDED', rendered)
-                self.assertIn(b'Reported overall state: `FAILED`', rendered)
+                self.assertIn(b'Reported run status: FAILED', rendered)
                 self.assertNotIn(b'PRIVATE_FAIL_CANARY', rendered)
                 api = FakeAPI(current=current)
                 self.assertEqual(writer.publish(proposal, api, 12)['status'],
@@ -195,12 +193,11 @@ class IntakeUXTests(unittest.TestCase):
         compact_files = {**files, 'run.json': core.json_bytes(compact_run)}
         compact = core.prepare(compact_source, bundle(compact_files))
         readme = core.render(compact)[core.record_folder(compact) + '/README.md']
-        self.assertIn(b'<summary>Reported FAILED', readme)
-        self.assertIn(b'188/189 VERIFIED', readme)
-        self.assertIn(b'FAILED 1', readme)
-        self.assertIn(b'NOT_QUALIFIED, 4/4 suites', readme)
-        self.assertIn(b'NONCOMPLETE_RUN', readme)
+        self.assertEqual(readme.count(b'!['), 4)
         self.assertNotIn(b'PRIVATE_FAIL_CANARY', readme)
+        self.assertEqual(compact['run']['counts']['verified'], 188)
+        self.assertEqual(compact['run']['counts']['failed'], 1)
+        self.assertIn('NONCOMPLETE_RUN', compact['warnings'])
 
         for negative in ('Stopped or interrupted before completion',
                          'Failed or refused to start'):

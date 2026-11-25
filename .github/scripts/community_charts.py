@@ -1,181 +1,234 @@
-"""Reuse the published v0.1.4 SVG layouts with validated, release-specific data.
-
-No uploaded SVG is read. The two project-owned templates are pinned below;
-fonts, colors, panels, legend and explanatory blocks come from those files.
-"""
-import hashlib
+"""Plot sanitized series using the SVG layout from benchmark v0.1.5, tools/nvidia_charts.py."""
+import html
 import json
 import math
-from pathlib import Path
-import re
-import xml.etree.ElementTree as ET
 
-NS = 'http://www.w3.org/2000/svg'
-TAG = '{' + NS + '}'
-ET.register_namespace('', NS)
-ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
-TEMPLATES = {
-    True: ('rtx-3060.svg', 'e765440716271ad13aeba960fb5bdc92080fd029d77f1ba2db64385d0f5775ec'),
-    False: ('rtx-3090.svg', 'ea85da0bb463f299ba938716a67fafbdd265df939c6cea8027c62ce0f05833b2'),
-}
-SELECTED = (('compute', 'affine', ''), ('d4', '128x128', 'D4'),
-            ('k', '64x64', 'root-uint4'), ('kw', '64x64', 'wave-root-uint4'))
-COLORS = ('fill: #0c80bd', 'fill: #ef7100')
-
-
-def template(qualified):
-    """Read only the exact project template; reject unexplained layout changes."""
-    name, expected = TEMPLATES[qualified]
-    path = Path(__file__).resolve().parents[2] / 'Benchmark Results/charts' / name
-    raw = path.read_bytes()
-    if hashlib.sha256(raw).hexdigest() != expected:
-        raise ValueError('CHART_TEMPLATE_IDENTITY')
-    return ET.fromstring(raw)
+WIDTH = 1400
+PAD = 64
+PANEL_GAP = 28
+PLOT_HEIGHT = 300
+INK = '#0f2440'          # primary text
+INK_2 = '#41536b'        # secondary text
+INK_3 = '#66758a'        # muted text
+GRID = '#e3e8ef'
+AXIS = '#9aa6b6'
+CARD = '#f6f8fb'
+WHISKER = '#1c2836'
+FONT = "Arial, 'Liberation Sans', Helvetica, 'Helvetica Neue', sans-serif"   # Arial metrics everywhere
+# Validated with the dataviz palette checker (light, white surface, all pairs): blue, orange, aqua.
+NATIVE, VULKAN, VARIANT = '#2a78d6', '#eb6834', '#1baf7a'
 
 
-def coordinates(path):
-    """Read the eight coordinates of one pinned rectangular bar or panel."""
-    values = [float(x) for x in re.findall(r'-?\d+(?:\.\d+)?', path.get('d'))]
-    if len(values) != 8:
-        raise ValueError('CHART_TEMPLATE_RECTANGLE')
-    return values
+def text_width(text, size, bold=False):
+    """Conservative width estimate for the Arial-metric FONT stack (measured <= 0.52 em, bold <= 0.56)."""
+    return len(text) * size * (0.60 if bold else 0.56)
 
 
-def move_text(node, y):
-    """Retain typography and horizontal position while updating a data label's height."""
-    node.set('y', f'{y:.6f}')
-    node.set('transform', f'rotate(-0 {node.get("x")} {y:.6f})')
-
-
-def rescale(axis, medians, format_duration):
-    """Update only bars, tick values and numeric labels inside an existing panel."""
-    values = [float(value) if value is not None else None for value in medians]
-    paths = list(axis.iter(TAG + 'path'))
-    background = next(x for x in paths if x.get('style') == 'fill: #ffffff')
-    x0, bottom, x1, _, _, top, _, _ = coordinates(background)
-    bars = [x for x in paths if x.get('style') in COLORS]
-    if len(bars) != len(values):
-        raise ValueError('CHART_TEMPLATE_BARS')
-    positive = [v for v in values if v is not None]
-    maximum = max(positive + [1]) * 1.3
-    ticks = [g for g in axis.iter(TAG + 'g') if g.get('id', '').startswith('ytick_')]
-    # The published charts use rounded locator steps, with independent panel limits.
-    magnitude = 10 ** math.floor(math.log10(maximum / len(ticks)))
-    step = next(x for x in (1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10)
-                if x * magnitude >= maximum / len(ticks)) * magnitude
-    for i, group in enumerate(ticks):
-        if i * step > maximum:
-            group.set('style', 'display: none')
-            continue
-        if group.get('style') == 'display: none':
-            del group.attrib['style']
-        y = bottom - (bottom - top) * i * step / maximum
-        label = next(group.iter(TAG + 'text'))
-        label.text = format_duration(f'{i * step:.12g}')
-        grid = next(group.iter(TAG + 'path'))
-        old_y = float(re.findall(r'-?\d+(?:\.\d+)?', grid.get('d'))[1])
-        offset = float(label.get('y')) - old_y
-        move_text(label, y + offset)
-        grid.set('d', f'M {x0} {y:.6f} L {x1} {y:.6f}')
-    texts = list(axis.iter(TAG + 'text'))
-    for bar, value, median in zip(bars, values, medians):
-        left, base, right, _, _, old_top, _, _ = coordinates(bar)
-        center = (left + right) / 2
-        annotation = next(t for t in texts if t.get('x') is not None and
-                          abs(float(t.get('x')) - center) < 0.001
-                          and re.fullmatch(r'~?[\d,.]+(?: ns| ms)?', t.text or ''))
-        offset = float(annotation.get('y')) - old_top
-        y = bottom if value is None else bottom - value / maximum * (bottom - top)
-        if value is None:
-            # Missing measurements are not zero-valued samples.
-            bar.set('style', 'fill: none')
-            annotation.text = 'NOT_RECORDED'
+def wrap(text, size, width, bold=False):
+    words, lines, line = text.split(), [], ''
+    for word in words:
+        trial = (line + ' ' + word).strip()
+        if line and text_width(trial, size, bold) > width:
+            lines.append(line)
+            line = word
         else:
-            annotation.text = format_duration(median, group=True)
-        move_text(annotation, y + offset)
-        bar.set('d', f'M {left} {base} L {right} {base} L {right} {y:.6f} L {left} {y:.6f} z')
+            line = trial
+    if line:
+        lines.append(line)
+    return lines or ['']
 
 
-def chart_panels(root):
-    """Keep the axes, legend and clock qualification from either pinned layout."""
-    figure = root.find('.//*[@id="figure_1"]')
-    for group in list(figure):
-        name = group.get('id', '')
-        label = group.findtext(TAG + 'text', '')
-        if (name.startswith('axes_') or name in ('patch_1', 'legend_1')
-                or label.startswith(('HOST/GPU CLOCK', 'CLOCK:', 'CLOCK NOT QUALIFIED', 'Do not compare'))):
-            continue
-        figure.remove(group)
-    root.remove(root.find("./*[@id='memory-backing-label']"))
-    # The plot wrapper in both pinned templates translates its axes down by 44 points.
-    root.set('viewBox', '0 138 972 330')
-    root.set('height', '330pt')
+def nice_axis(top):
+    """Axis maximum and step: 4-6 clean ticks above the largest drawn value."""
+    if top <= 0:
+        return 1.0, 0.25
+    raw = top / 5
+    power = 10 ** math.floor(math.log10(raw))
+    for factor in (1, 2, 2.5, 5, 10):
+        step = factor * power
+        if step >= raw:
+            break
+    maximum = step * math.ceil(top / step)
+    if maximum < top * 1.12:            # room for the value label above the tallest mark
+        maximum += step
+    return maximum, step
 
 
-def render(proposal, rows, context, package_id, format_duration, *, panels_only=False):
-    """Render validated summaries using the prior release's shared and independent scale designs."""
-    lookup = {(r['suite'], r['case'], r['variant'], r['path']): r for r in rows}
-    chosen = []
-    for suite, case, variant in SELECTED:
-        chosen.append([lookup.get((suite, case, variant, 'native')),
-                       lookup.get((suite, case, '', 'vulkan'))])
-    steps = proposal['run']['steps']
-    qualified_count = sum(s['reported_clock_qualification'] == 'QUALIFIED' for s in steps)
-    qualified = (len(steps) >= len(SELECTED) and qualified_count == len(steps) and
-                 proposal['run']['overall'] == 'COMPLETE' and
-                 all(a is not None and b is not None for a, b in chosen) and
-                 all(s['reported_ns_per_tick_envelope'][0] <= 1 <=
-                     s['reported_ns_per_tick_envelope'][1] for s in steps))
-    root = template(qualified)
-    axes = [g for g in root.iter(TAG + 'g') if g.get('id', '').startswith('axes_')]
-    values = [[r['median'] if r else None for r in pair] for pair in chosen]
-    if qualified:
-        for axis, pair in zip(axes, values):
-            rescale(axis, pair, format_duration)
+class Canvas:
+    def __init__(self):
+        self.parts = []
+
+    def text(self, x, y, text, size, color=INK, bold=False, anchor='start'):
+        weight = ' font-weight="700"' if bold else ''
+        self.parts.append('<text x="%.1f" y="%.1f" font-size="%d" fill="%s"%s text-anchor="%s">%s</text>'
+                          % (x, y, size, color, weight, anchor, html.escape(text)))
+
+    def raw(self, markup):
+        self.parts.append(markup)
+
+
+def bar_path(x, y, w, h, r=4):
+    """Column with a 4 px rounded data end and a square base."""
+    r = min(r, w / 2, h)
+    return ('M%.1f,%.1f V%.1f Q%.1f,%.1f %.1f,%.1f H%.1f Q%.1f,%.1f %.1f,%.1f V%.1f Z'
+            % (x, y + h, y + r, x, y, x + r, y, x + w - r, x + w, y, x + w, y + r, y + h))
+
+
+def layout(spec, format_duration, backing):
+    c = Canvas()
+    series = {s['key']: s for s in spec['series']}
+    y = 76
+    c.text(PAD, y, spec['title'], 38, bold=True)
+    y += 42
+    c.text(PAD, y, spec['subtitle'], 24, INK_2)
+    for line in wrap('  ·  '.join(spec.get('context', [])), 17, WIDTH - 2 * PAD):
+        y += 32
+        c.text(PAD, y, line, 17, INK_3)
+    y += 22
+    c.raw('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="%s"/>' % (PAD, y, WIDTH - PAD, y, GRID))
+    # legend: every series, centred, swatch beside text (text keeps the text colour)
+    y += 44
+    widths = [28 + text_width(s['label'], 17) for s in spec['series']]
+    x = (WIDTH - sum(widths) - 40 * (len(widths) - 1)) / 2
+    for s, w in zip(spec['series'], widths):
+        c.raw('<rect x="%.1f" y="%.1f" width="18" height="14" rx="3" fill="%s"/>' % (x, y - 12, s['color']))
+        c.text(x + 28, y, s['label'], 17)
+        x += w + 40
+    if spec.get('banner'):
+        y += 30
+        lines = wrap(spec['banner'], 17, WIDTH - 2 * PAD - 32, bold=True)
+        c.raw('<rect x="%d" y="%.1f" width="%d" height="%d" rx="8" fill="#fff3e0"/>'
+              % (PAD, y, WIDTH - 2 * PAD, 18 + 24 * len(lines)))
+        for line in lines:
+            y += 24
+            c.text(PAD + 16, y, line, 17, bold=True)
+        y += 18
+    if spec.get('rows') is None:
+        panel_bottom = panel_row(c, series, spec['groups'], y + 30, format_duration)
     else:
-        for i, axis in enumerate(axes):
-            rescale(axis, [pair[i] for pair in values], format_duration)
-    gpu = proposal['claimed_gpu'].split('/')[-1].replace('_', ' ')
-    version, issue = proposal['claimed_version'], proposal['issue']
-    backing = context['native_dx12']['backing']
-    counts = proposal['run']['counts']
-    samples = [r['n'] for pair in chosen for r in pair if r]
-    sample_text = str(min(samples)) if samples and min(samples) == max(samples) else (
-        f'{min(samples)}–{max(samples)}' if samples else 'not recorded')
-    for text in root.iter(TAG + 'text'):
-        value = text.text or ''
-        value = value.replace('RTX 3060' if qualified else 'RTX 3090', gpu)
-        value = value.replace('v0.1.4', version).replace('v21-r14', package_id)
-        value = value.replace('NVIDIA Open 620.70.06', 'NVIDIA driver ' + proposal['driver'])
-        value = value.replace('ISSUE #4' if qualified else 'ISSUE #5', 'ISSUE #' + str(issue))
-        value = value.replace('SYSMEM', backing)
-        if len(steps) != 4:
-            value = value.replace('Four submitted suites', f'{len(steps)} submitted suites')
-            if qualified and value == 'HOST/GPU CLOCK CHECK QUALIFIED 4/4':
-                value = f'HOST/GPU CLOCK CHECK QUALIFIED {qualified_count}/{len(steps)}'
-        if value.startswith('Native DX12 memory backing:'):
-            value = ('Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)'
-                     if backing == 'SYSMEM' else 'Native DX12 memory backing: UNKNOWN (release evidence NOT_RECORDED)')
-        if value.startswith('Seven exported values per median;'):
-            value = f'{sample_text} exported values per displayed median; {counts["verified"]}/{counts["expected"]} statuses VERIFIED. Original GPU receipts unavailable.'
-        if value in ('Model clarified by reporter; maintainer acceptance pending.',
-                     'Host/GPU clock check NOT_QUALIFIED for all four suites.'):
-            value = 'Reported ' + proposal['run']['overall'] + '; see source Issue for context. No independent GPU rerun.'
-        if not qualified and value.startswith('CLOCK NOT QUALIFIED'):
-            value = f'CLOCK: {qualified_count}/{len(steps)} reported QUALIFIED — independent scales'
-        if not qualified and value.startswith('Host/GPU clock check NOT_QUALIFIED;'):
-            value = 'Panels use independent scales. No cross-API ratio or cross-GPU ranking. Missing values are not zero.'
-        text.text = value
-    # Keep the same visible design while replacing the old template's memory evidence.
-    for node in list(root):
-        if node.tag == TAG + 'metadata' and node.get('id') == 'native-memory-backing':
-            root.remove(node)
-    metadata = ET.Element(TAG + 'metadata', {'id': 'memory-backing'})
-    metadata.text = json.dumps(context, sort_keys=True)
-    root.insert(0, metadata)
-    source = ET.SubElement(root, TAG + 'metadata', {'id': 'submitted-measurements'})
-    source.text = json.dumps({'issue': issue, 'release': version,
-        'bundle_sha256': proposal['bundle_sha256'], 'selected': chosen}, sort_keys=True)
-    if panels_only:
-        chart_panels(root)
-    return ET.tostring(root, encoding='utf-8', xml_declaration=True) + b'\n'
+        for row in spec['rows']:
+            y += 52
+            c.text(PAD, y, row['heading'], 22, bold=True)
+            y = panel_row(c, series, row['groups'], y + 16, format_duration)
+        panel_bottom = y
+    height = int(panel_bottom + 40)
+    title = html.escape(spec['title'])
+    head = ('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" role="img" '
+            'aria-label="%s"><title>%s</title><rect width="100%%" height="100%%" fill="#ffffff"/>'
+            '<g font-family="%s">' % (WIDTH, height, WIDTH, height, title, title, html.escape(FONT)))
+    metadata = '<metadata>' + html.escape(json.dumps(backing, sort_keys=True)) + '</metadata>'
+    return (head + ''.join(c.parts) + '</g>' + metadata + '</svg>\n').encode()
+
+
+def panel_row(c, series, groups, top, format_duration):
+    """One row of panels (one per group) from y = top; returns the bottom of its panels."""
+    n = max(1, len(groups))
+    panel_w = (WIDTH - 2 * PAD - PANEL_GAP * (n - 1)) / n
+    bar_label_lines = 1
+    for g in groups:
+        slot = (panel_w - 134) / max(1, len(g['bars']))
+        for b in g['bars']:
+            bar_label_lines = max(bar_label_lines, len(wrap(series[b['series']]['short'], 14, slot - 8)))
+    plot_top = top + 110
+    plot_bottom = plot_top + PLOT_HEIGHT
+    panel_bottom = plot_bottom + 22 + 18 * bar_label_lines + 18
+    for index, g in enumerate(groups):
+        x0 = PAD + index * (panel_w + PANEL_GAP)
+        c.raw('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="12" fill="%s"/>'
+              % (x0, top, panel_w, panel_bottom - top, CARD))
+        c.text(x0 + 20, top + 38, g['label'], 22, bold=True)
+        drawn = [b for b in g['bars'] if b['value'] is not None]
+        highest = max([max(b['value'], b.get('high') or b['value']) for b in drawn] + [0])
+        maximum, step = nice_axis(highest)
+        left, right = x0 + 110, x0 + panel_w - 24
+
+        def ypos(v):
+            return plot_bottom - PLOT_HEIGHT * v / maximum
+        c.text(left - 54, plot_top - 22, 'GPU time', 14, INK_3)
+        for tick_index in range(int(round(maximum / step)) + 1):
+            tick = tick_index * step
+            ty = ypos(tick)
+            c.raw('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="1"/>'
+                  % (left, ty, right, ty, AXIS if tick == 0 else GRID))
+            c.text(left - 10, ty + 5, format_duration(f'{tick:.12g}', group=True), 14, INK_3, anchor='end')
+        slot = (right - left) / max(1, len(g['bars']))
+        bar_w = min(64, slot * 0.56)
+        for k, b in enumerate(g['bars']):
+            s = series[b['series']]
+            cx = left + slot * (k + 0.5)
+            if b['value'] is None:
+                c.text(cx, plot_bottom - 12, 'not measured', 14, INK_3, anchor='middle')
+            else:
+                by = ypos(b['value'])
+                tip = html.escape(b.get('tip', ''))
+                c.raw('<g><title>%s</title><path d="%s" fill="%s"/></g>'
+                      % (tip, bar_path(cx - bar_w / 2, by, bar_w, plot_bottom - by), s['color']))
+                label_y = by
+                if b.get('low') is not None and b.get('high') is not None and b['high'] > b['low']:
+                    lo, hi = ypos(b['low']), ypos(b['high'])
+                    c.raw('<path d="M%.1f,%.1f V%.1f M%.1f,%.1f H%.1f M%.1f,%.1f H%.1f" stroke="%s" '
+                          'stroke-width="1.6" fill="none"/>' % (cx, lo, hi, cx - 7, hi, cx + 7, cx - 7, lo, cx + 7,
+                                                               WHISKER))
+                    label_y = min(label_y, hi)
+                c.text(cx, label_y - 10, b['value_text'], 15, anchor='middle')
+            for m, line in enumerate(wrap(s['short'], 14, slot - 8)):
+                c.text(cx, plot_bottom + 24 + 18 * m, line, 14, INK_2, anchor='middle')
+    return panel_bottom
+
+# This order matches the benchmark report and is independent of CSV row order.
+CASES = ('affine', 'affine515', 'parallel-sort', '128x128', '32x512', '16x1024',
+         '64x64', '127x65', '1920x1080')
+VARIANTS = {
+    '': 'Native DX12', 'B': 'Original', 'D4': 'D4', 'Q8PL': 'Q8PL',
+    'root-scalar': 'K root scalar', 'root-uint4': 'K root uint4',
+    'wave-root-scalar': 'WF scalar', 'wave-root-uint4': 'WF uint4',
+    'block': 'FWHT', 'scalar': 'Scalar', 'tensor': 'Tensor Core',
+    'constant': 'Constant loads', 'strong': 'Strong loads',
+}
+
+
+def render_suite(title, label, proposal, step, rows, schedule, format_duration, backing):
+    """Render every scheduled arm once, with the measured range and process count."""
+    lookup = {(r['case'], r['variant'], r['path']): r for r in rows}
+    variants = [v for v in VARIANTS if any(arm == v and path == 'native' for _, arm, path in schedule)]
+    series = [dict(key=('native', v), label=('Native DX12 · ' if v else '') + VARIANTS[v], short=VARIANTS[v], color=color)
+              for v, color in zip(variants, (NATIVE, VARIANT, '#8555ac'))]
+    if any(path == 'vulkan' for _, _, path in schedule):
+        series.append(dict(key=('vulkan', ''), label='Vulkan NVIDIA', short='Vulkan NVIDIA', color=VULKAN))
+    groups = []
+    for case in CASES:
+        bars = []
+        for item in series:
+            path, variant = item['key']
+            if (case, variant, path) not in schedule:
+                continue
+            row = lookup.get((case, variant, path))
+            bar = dict(series=item['key'], value=None)
+            if row:
+                median, low, high = (row[k] for k in ('median', 'minimum', 'maximum'))
+                bar.update(value=float(median), low=float(low), high=float(high),
+                           value_text=format_duration(median, group=True),
+                           tip=(f'{item["label"]}, {case}: median {format_duration(median, group=True)}, '
+                                f'range {format_duration(low, group=True)} to {format_duration(high, group=True)}, '
+                                f'{row["n"]} processes'))
+            bars.append(bar)
+        if bars:
+            groups.append(dict(label=case.replace('x', ' × '), bars=bars))
+    envelope = step['reported_ns_per_tick_envelope']
+    overall = proposal['run']['overall']
+    shared = (overall == 'COMPLETE' and step['reported_clock_qualification'] == 'QUALIFIED'
+              and envelope and envelope[0] <= 1 <= envelope[1] and
+              all(bar['value'] is not None for group in groups for bar in group['bars']))
+    spec = dict(title=title, subtitle=label, series=series, groups=groups,
+                context=[proposal['claimed_gpu'].split('/')[0] + ' driver ' + proposal['driver'],
+                         'Host/GPU clock check: ' + step['reported_clock_qualification']])
+    if overall != 'COMPLETE':
+        spec['banner'] = 'Reported run status: ' + overall
+    if not shared:
+        spec['rows'] = []
+        for path, heading in (('native', 'Native DX12'), ('vulkan', 'Vulkan NVIDIA')):
+            panels = [dict(label=g['label'], bars=[b for b in g['bars'] if b['series'][0] == path]) for g in groups]
+            panels = [panel for panel in panels if panel['bars']]
+            if panels:
+                spec['rows'].append(dict(heading=heading + ' · independent scale', groups=panels))
+    return layout(spec, format_duration, backing)

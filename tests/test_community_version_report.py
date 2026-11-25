@@ -14,36 +14,20 @@ SPEC.loader.exec_module(report)
 
 
 class VersionReportTests(unittest.TestCase):
-    def test_v15_has_its_own_gpu_table_and_full_report_link(self):
-        """The v0.1.5 overview must match the existing table-and-report navigation."""
-        text = (ROOT / 'Benchmark Results/README.md').read_text()
-        section = text.split('## Community Benchmark Data — v0.1.5\n', 1)[1].split(
-            '## Community Benchmark Data — v0.1.4\n', 1)[0]
-        self.assertIn('| GPU | Exported process status | Reported host/GPU clock check | Important limitation |', section)
-        for gpu in ('RTX 3060', 'RTX 4060', 'RTX 4090'):
-            self.assertIn('[' + gpu + ']', section)
-        self.assertIn('v0.1.5-submitted-data.md', section)
-
-    def test_new_numeric_chart_reuses_published_four_panel_design(self):
-        """New intake charts use the actual prior release's axes, colors and type styles."""
-        files = raw_files()
-        run = json.loads(files['run.json'])
-        for step in run['steps']:
-            step['clock_check'] = {'status': 'QUALIFIED', 'envelope_ns_per_tick': [0.98, 1.02]}
-        files['run.json'] = core.json_bytes(run)
-        output = core.render(core.prepare(issue(), bundle(files)))
-        svg = ET.fromstring(next(v for k, v in output.items() if k.endswith('/chart.svg')))
-        ns = '{http://www.w3.org/2000/svg}'
-        axes = [x.get('id') for x in svg.iter(ns + 'g') if x.get('id', '').startswith('axes_')]
-        self.assertEqual(axes, ['axes_1', 'axes_2', 'axes_3', 'axes_4'])
-        fills = [x.get('style') for x in svg.iter(ns + 'path')]
-        self.assertEqual(fills.count('fill: #0c80bd'), 5)  # four panels and legend
-        self.assertEqual(fills.count('fill: #ef7100'), 5)
-        text = ''.join(svg.itertext())
-        for label in ('Compute · Affine', 'D4 · 128×128', 'K uint4 · 64×64',
-                      'WaveForm uint4 · 64×64', 'What is being compared?', 'Scope and limitations'):
-            self.assertIn(label, text)
-        self.assertIn('HOST/GPU CLOCK CHECK QUALIFIED 4/4', text)
+    def test_version_navigation_and_all_numeric_bars(self):
+        proposal = core.prepare(issue(), bundle())
+        folder = core.record_folder(proposal)
+        output = report.render('v0.1.5', [proposal])
+        version_page = output[folder.rsplit('/', 1)[0] + '/README.md'].decode()
+        self.assertNotIn('Issue #', version_page)
+        self.assertEqual(version_page.count('!['), 4)
+        for (suite, (name, title)), expected in zip(core.CHARTS.items(), (6, 9, 6, 6)):
+            with self.subTest(suite=suite):
+                self.assertIn(f'{title}](issue-12/{name})', version_page)
+                chart = ET.fromstring(output[folder + '/' + name])
+                tips = chart.findall('.//{*}g/{*}title')
+                self.assertEqual(len(tips), expected)
+                self.assertTrue(all('processes' in tip.text for tip in tips))
 
     def test_display_threshold_and_lossless_csv(self):
         for raw, shown in ((999999, '999999 ns'), (1000000, '1 ms'),
@@ -65,7 +49,7 @@ class VersionReportTests(unittest.TestCase):
         matching = [row for row in saved if row['path'] == 'native' and row['case'] == 'affine']
         self.assertEqual({(row['unit'], row['value']) for row in matching}, {('NS', '2610752')})
         self.assertIn(b'2.61 ms', outputs[folder + '/chart.svg'])
-        self.assertIn(b'2.61 ms', outputs[folder + '/README.md'])
+        self.assertIn(b'](chart.svg)', outputs[folder + '/README.md'])
 
     def test_chart_driver_label_does_not_infer_driver_type(self):
         """Both published layouts label numeric driver versions without asserting Open."""
@@ -117,8 +101,8 @@ class VersionReportTests(unittest.TestCase):
                 self.assertEqual(len(proposal['run']['steps']), count)
                 output = core.render(proposal)
                 svg = ET.fromstring(next(v for k, v in output.items() if k.endswith('/chart.svg')))
-                self.assertIn(f'CLOCK: 0/{count} reported QUALIFIED — independent scales',
-                              ''.join(svg.itertext()))
+                self.assertEqual(sum(path.endswith('.svg') for path in output), count)
+                self.assertIn('Host/GPU clock check: NOT_QUALIFIED', ''.join(svg.itertext()))
 
     def test_report_refuses_mixed_versions_and_duplicate_issues(self):
         """A release page cannot silently import another release or duplicate a submission."""
@@ -138,7 +122,8 @@ class VersionReportTests(unittest.TestCase):
         """Re-charting a legacy Issue does not upgrade its record schema or overwrite data."""
         proposal = core.prepare(issue(), bundle())
         outputs = report.render('v0.1.5', [proposal], [12])
-        self.assertTrue(any(x.endswith('/issue-12/chart.svg') for x in outputs))
+        self.assertFalse(any(x.endswith('.svg') for x in outputs))
+        self.assertTrue(any(b'issue-12/chart.svg' in data for data in outputs.values()))
         self.assertFalse(any(x.endswith(('/record.json', '.csv', '/memory-backing.json')) for x in outputs))
 
     def test_same_gpu_release_keeps_distinct_issues_in_one_version_index(self):
@@ -148,29 +133,19 @@ class VersionReportTests(unittest.TestCase):
         outputs = report.render('v0.1.5', [first, second])
         index = outputs['Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/README.md'].decode()
         for number in (12, 13):
-            self.assertIn('#rtx-3060-ti--issue-' + str(number), index)
+            self.assertIn(f'](issue-{number}/kw-chart.svg)', index)
             self.assertIn('Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-' +
                           str(number) + '/record.json', outputs)
 
-    def test_overview_counts_each_reported_clock_status(self):
+    def test_shared_axis_depends_on_qualification_and_envelope(self):
         proposal = core.prepare(issue(), bundle())
-        self.assertEqual(report.observations(proposal)[1], 'NOT_QUALIFIED, 4/4 suites')
-        proposal['run']['steps'][0]['reported_clock_qualification'] = 'NOT_RECORDED'
-        self.assertEqual(report.observations(proposal)[1],
-                         'NOT_QUALIFIED, 3/4 suites, NOT_RECORDED, 1/4 suites')
-
-    def test_unqualified_clock_keeps_independent_scales(self):
-        """The old unqualified design retains both data series without a shared time axis."""
-        output = core.render(core.prepare(issue(), bundle()))
-        root = ET.fromstring(next(v for k, v in output.items() if k.endswith('/chart.svg')))
-        ns = '{http://www.w3.org/2000/svg}'
-        self.assertEqual([x.get('id') for x in root.iter(ns + 'g')
-                          if x.get('id', '').startswith('axes_')], ['axes_1', 'axes_2'])
-        text = ''.join(root.itertext())
-        self.assertIn('Native — GPU time', text)
-        self.assertIn('Vulkan reference — GPU time', text)
-        self.assertIn('Do not compare these panels', text)
-
+        step = next(s for s in proposal['run']['steps'] if s['suite'] == 'compute')
+        for status, envelope, shared in [('NOT_QUALIFIED', None, False),
+                                         ('QUALIFIED', [1.01, 1.02], False),
+                                         ('QUALIFIED', [0.98, 1.02], True)]:
+            step.update(reported_clock_qualification=status, reported_ns_per_tick_envelope=envelope)
+            chart = core.render(proposal)[core.record_folder(proposal) + '/chart.svg']
+            self.assertEqual(b'independent scale' not in chart, shared)
 
 if __name__ == '__main__':
     unittest.main()

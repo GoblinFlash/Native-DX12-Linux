@@ -1,84 +1,41 @@
 # Community benchmark results
 
-**Release-specific memory backing:** existing v0.1.4 results use **Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)**. The documented v0.1.5 release also uses SYSMEM; future releases require separate artifact-bound evidence. Vulkan memory backing is NOT_RECORDED and is not inferred from Native DX12. The experimental VRAM candidate is separate. [v0.1.4 evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/README.md#L111) · [v0.1.5 evidence](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.5/NDX12_GPU_Benchmark/README.md#L113).
-
-Community submissions are collected as public [Benchmark Results issues](https://github.com/GoblinFlash/Native-DX12-Linux/issues?q=is%3Aissue+label%3Abenchmark%3Asubmission). A GitHub Actions workflow labels recognized GPU models. **Labels categorize submissions; they do not approve correctness or performance claims.**
-
-<details>
-<summary>Individual intake records (all benchmark versions)</summary>
-
-<!-- ndx12-community-intake:start -->
-- [NVIDIA RTX 3090 / v0.1.5 / Issue #11](NVIDIA/RTX_3090/v0.1.5/issue-11/README.md)
-- [NVIDIA RTX 3080 12GB / v0.1.5 / Issue #42](NVIDIA/RTX_3080_12GB/v0.1.5/issue-42/README.md)
-- [NVIDIA RTX 3060 / v0.1.5 / Issue #10](NVIDIA/RTX_3060/v0.1.5/issue-10/README.md)
-- [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md)
-- [NVIDIA RTX 4090 / v0.1.5 / Issue #14](NVIDIA/RTX_4090/v0.1.5/issue-14/README.md)
-<!-- ndx12-community-intake:end -->
-
-</details>
-
 ## Community Benchmark Data — v0.1.5
 
 <!-- ndx12:overview:v0.1.5:start -->
-5 submissions checked for **v0.1.5 / v21-r16** with measurements.
+- [NVIDIA GeForce RTX 3060 · v0.1.5](NVIDIA/RTX_3060/v0.1.5/)
+- [NVIDIA GeForce RTX 3080 12GB · v0.1.5](NVIDIA/RTX_3080_12GB/v0.1.5/)
+- [NVIDIA GeForce RTX 3090 · v0.1.5](NVIDIA/RTX_3090/v0.1.5/)
+- [NVIDIA GeForce RTX 4060 · v0.1.5](NVIDIA/RTX_4060/v0.1.5/)
+- [NVIDIA GeForce RTX 4090 · v0.1.5](NVIDIA/RTX_4090/v0.1.5/)
 
-| GPU | Exported process status | Reported host/GPU clock check | Important limitation |
-| --- | --- | --- | --- |
-| [RTX 3060](v0.1.5-submitted-data.md#rtx-3060--issue-10) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
-| [RTX 3080 12GB](v0.1.5-submitted-data.md#rtx-3080-12gb--issue-42) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
-| [RTX 3090](v0.1.5-submitted-data.md#rtx-3090--issue-11) | 189/189 VERIFIED | NOT_QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
-| [RTX 4060](v0.1.5-submitted-data.md#rtx-4060--issue-15) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
-| [RTX 4090](v0.1.5-submitted-data.md#rtx-4090--issue-14) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
-
-**[View charts and extracted benchmark measurements](v0.1.5-submitted-data.md)** — 5 submission-specific charts and complete available median tables, with sources and caveats.
-
-These are **reported export statuses**, not independently repeated GPU qualifications. Original GPU receipts are unavailable. No overall ranking or owner acceptance is implied.
-
-**Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)**. Vulkan memory backing: **NOT_RECORDED**.
+[All v0.1.5 charts](v0.1.5-submitted-data.md)
 <!-- ndx12:overview:v0.1.5:end -->
 
+## Community Benchmark Data — v0.1.4
 
-## Curated v0.1.4 report
+<!-- ndx12:overview:v0.1.4:start -->
+- [NVIDIA GeForce RTX 3060 · v0.1.4](NVIDIA/RTX_3060/v0.1.4/)
+- [NVIDIA GeForce RTX 3060 Ti · v0.1.4](NVIDIA/RTX_3060_Ti/v0.1.4/)
+- [NVIDIA GeForce RTX 3090 · v0.1.4](NVIDIA/RTX_3090/v0.1.4/)
+- [NVIDIA GeForce RTX 4060 Laptop GPU · v0.1.4](NVIDIA/RTX_4060_Laptop_GPU/v0.1.4/)
 
-**[Benchmark v0.1.4 — charts and extracted results for RTX 3060, RTX 3060 Ti, RTX 3090 and RTX 4060 Laptop GPU](v0.1.4-submitted-data.md)**
+[All v0.1.4 charts](v0.1.4-submitted-data.md)
+<!-- ndx12:overview:v0.1.4:end -->
 
-This report contains GPU-specific charts and median values recalculated from the four attached `share-results-v0.1.4.tar.gz` archives. Both paths show ns below 1 ms and ms from 1 ms. The RTX 3090 host/GPU clock check was **NOT_QUALIFIED**. Charts show four selected workloads per GPU; full numeric variants remain in the tables.
+<details>
+<summary>Individual runs</summary>
 
-## Existing curated GPU folders and review status
+<!-- ndx12-community-intake:start -->
+- [NVIDIA GeForce RTX 3060 · v0.1.5](NVIDIA/RTX_3060/v0.1.5/issue-10/README.md)
+- [NVIDIA GeForce RTX 3080 12GB · v0.1.5](NVIDIA/RTX_3080_12GB/v0.1.5/issue-42/README.md)
+- [NVIDIA GeForce RTX 3090 · v0.1.5](NVIDIA/RTX_3090/v0.1.5/issue-11/README.md)
+- [NVIDIA GeForce RTX 4060 · v0.1.5](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md)
+- [NVIDIA GeForce RTX 4090 · v0.1.5](NVIDIA/RTX_4090/v0.1.5/issue-14/README.md)
+- [NVIDIA GeForce RTX 3060 · v0.1.4](NVIDIA/RTX_3060/v0.1.4/issue-4/README.md)
+- [NVIDIA GeForce RTX 3060 Ti · v0.1.4](NVIDIA/RTX_3060_Ti/v0.1.4/issue-3/README.md)
+- [NVIDIA GeForce RTX 3090 · v0.1.4](NVIDIA/RTX_3090/v0.1.4/issue-5/README.md)
+- [NVIDIA GeForce RTX 4060 Laptop GPU · v0.1.4](NVIDIA/RTX_4060_Laptop_GPU/v0.1.4/issue-2/README.md)
+<!-- ndx12-community-intake:end -->
 
-- [NVIDIA RTX 4090](NVIDIA/RTX_4090/README.md) — reserved for approved community submissions; maintainer-recorded experiments are [separate](NVIDIA/README.md).
-- [NVIDIA RTX 3090](NVIDIA/RTX_3090/README.md) — [Issue #5](NVIDIA/RTX_3090/issue-5.md), archive-consistency reviewed; all four timestamp checks NOT_QUALIFIED.
-- [NVIDIA RTX 3060 Ti](NVIDIA/RTX_3060_Ti/README.md) — [Issue #3](NVIDIA/RTX_3060_Ti/issue-3.md), archive-consistency reviewed; concurrent ONNX GPU usage disclosed.
-- [NVIDIA RTX 3060](NVIDIA/RTX_3060/README.md) — Issue #4 model and kernel-message explanation received from reporter; **maintainer acceptance pending**.
-- [NVIDIA RTX 4060 Laptop GPU](NVIDIA/RTX_4060_Laptop_GPU/README.md) — [Issue #2](NVIDIA/RTX_4060_Laptop_GPU/issue-2.md), archive-consistency reviewed.
-
-The issue-specific reviews cover exported archive consistency, **not independent GPU reruns**. A new model needs its own GPU folder and must not be combined with a similar GPU name.
-
-## Review before approval
-
-Before approval, inspect the benchmark and archive identity, exact GPU and driver, reported GPU submission/completion, output correctness, run status, timing model, failures, and privacy. Keep raw evidence and machine identifiers out of public summaries. Failed, partial and unqualified runs remain visible with their actual limitations.
-
-The GPU categorizer labels Issues. The separate intake workflow described below proposes draft PRs for review. A folder or Issue link is not itself a maintainer performance endorsement.
-
-## Intake and versioned storage
-
-The intake workflow reads only a bounded, supported share-results data format and proposes a **draft PR**. A maintainer must authorize processing for an outside contributor with `benchmark:intake-approved` or a manual workflow dispatch. This authorization permits intake only; it does not accept the result. No workflow merges, approves, closes Issues or changes the existing GPU-category labels.
-
-New records use `<vendor>/<exact_GPU>/<release>/issue-<number>/`. Ti, Laptop GPU, Super and D models remain distinct. Only submissions with matching identities and measurements receive a results folder. Strings from an Issue never become arbitrary paths.
-
-Supported, internally consistent archives produce sanitized process/measurement CSV, recalculated medians and a fresh chart using ns below 1 ms and ms from 1 ms. Uploaded HTML, SVG, prose, system details and raw logs are not copied. Submissions requiring correction or lacking measurements stay in their source Issues.
-
-Generated reports show **Export consistency: CHECKED** after supported export checks pass. **Owner acceptance: NOT_RECORDED** describes what intake records, not whether a maintainer has reviewed the result. Intake never infers acceptance from an Issue, label or merged PR. The machine-readable `UNVERIFIED_SUBMISSION` caveat remains, including for a reported 189/189 count or QUALIFIED clock status. The share export does not establish independent GPU execution, readback correctness, actual per-dispatch clocks, receipt provenance or absence of background contention. Review the source Issue and its caveats before approval.
-
-Existing curated records stay in place. Version indexes link to those records and the centralized tables instead of duplicating them:
-
-| Issue | Exact GPU / release | Migration |
-| --- | --- | --- |
-| #2 | [RTX 4060 Laptop GPU / v0.1.4](NVIDIA/RTX_4060_Laptop_GPU/v0.1.4/README.md) | Link existing review and centralized measurements. |
-| #3 | [RTX 3060 Ti / v0.1.4](NVIDIA/RTX_3060_Ti/v0.1.4/README.md) | Preserve disclosed concurrent ONNX GPU usage. |
-| #4 | [RTX 3060 / v0.1.4](NVIDIA/RTX_3060/v0.1.4/README.md) | Preserve model explanation received and maintainer acceptance pending. |
-| #5 | [RTX 3090 / v0.1.4](NVIDIA/RTX_3090/v0.1.4/README.md) | Preserve all four NOT_QUALIFIED timestamp checks. |
-
-One Issue has one stable intake branch and draft PR. Duplicate, edited or reopened events never overwrite an existing review, PR or curated record. The source is checked immediately before creating a new branch ref. A later Issue change is shown in the draft body as `STALE`, with prepared/observed source fingerprints and the pinned snapshot commit; an unavailable final observation is `UNKNOWN`. Reviewers reconcile these observations before acceptance. Recovery of a pre-existing orphan still requires matching source, permission and exact branch bytes. See [the intake operator guide](https://github.com/GoblinFlash/Native-DX12-Linux/blob/main/.github/scripts/README.md) for permissions, limits, tests, failure handling and the owner approval gate.
-
-[All benchmark results](README.md)
+</details>

@@ -42,16 +42,13 @@ The latter checks did not constitute a qualified performance comparison.
 
 ## Submitted results
 
-Community submissions are organized by exact GPU model and retain their recorded evidence limitations:
-
-- [GeForce RTX 3060](RTX_3060/README.md)
-- [GeForce RTX 3060 Ti](RTX_3060_Ti/README.md)
-- [GeForce RTX 3090](RTX_3090/README.md)
-- [GeForce RTX 4060](RTX_4060/v0.1.5/README.md)
-- [GeForce RTX 4060 Laptop GPU](RTX_4060_Laptop_GPU/README.md)
-- [GeForce RTX 4090](RTX_4090/v0.1.5/README.md)
-
-[All submissions and review status](../SUBMISSIONS.md). A reported export status is not independent GPU reproduction or owner acceptance.
+- [NVIDIA GeForce RTX 3060](RTX_3060/)
+- [NVIDIA GeForce RTX 3060 Ti](RTX_3060_Ti/)
+- [NVIDIA GeForce RTX 3080 12GB](RTX_3080_12GB/)
+- [NVIDIA GeForce RTX 3090](RTX_3090/)
+- [NVIDIA GeForce RTX 4060](RTX_4060/)
+- [NVIDIA GeForce RTX 4060 Laptop GPU](RTX_4060_Laptop_GPU/)
+- [NVIDIA GeForce RTX 4090](RTX_4090/)
 
 ## Reproducibility and limits
 
