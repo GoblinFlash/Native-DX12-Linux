@@ -1,0 +1,13 @@
+{
+  "archive_url": "https://github.com/user-attachments/files/34688925/share-results-v0.1.5.tar.gz",
+  "bundle_sha256": "f424668009885acad705fc0baf2fd40bac7dd9154813926001e2360ad604d6ff",
+  "native_timestamp": {
+    "basis": "RELEASE_SEMAPHORE_TIMESTAMP",
+    "ns_per_tick": 1,
+    "published_unit": "NS",
+    "release_artifact_sha256": "eed38c254c8e8cc8310c8fc84fbca6081696f114aadcb63cc584cb2828b448a5",
+    "source_field_unit": "GPU_TICKS"
+  },
+  "reported_os": "Ubuntu 26.04.1 LTS",
+  "source_url": "https://github.com/GoblinFlash/Native-DX12-Linux/issues/10"
+}

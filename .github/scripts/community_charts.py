@@ -170,7 +170,14 @@ def panel_row(c, series, groups, top, format_duration):
                           'stroke-width="1.6" fill="none"/>' % (cx, lo, hi, cx - 7, hi, cx + 7, cx - 7, lo, cx + 7,
                                                                WHISKER))
                     label_y = min(label_y, hi)
-                c.text(cx, label_y - 10, b['value_text'], 15, anchor='middle')
+                label = b['value_text']
+                if text_width(label, 15) > slot - 8:
+                    # Use a compact annotation only when needed. The tooltip retains full precision.
+                    ms = label.endswith(' ms')
+                    value = b['value'] / 1_000_000 if ms else b['value']
+                    label = f'≈{value:.3g} ' + ('ms' if ms else 'ns')
+                size = min(15, (slot - 8) / text_width(label, 1))
+                c.text(cx, label_y - 10, label, size, anchor='middle')
             for m, line in enumerate(wrap(s['short'], 14, slot - 8)):
                 c.text(cx, plot_bottom + 24 + 18 * m, line, 14, INK_2, anchor='middle')
     return panel_bottom
@@ -187,7 +194,7 @@ VARIANTS = {
 }
 
 
-def render_suite(title, label, proposal, step, rows, schedule, format_duration, backing):
+def render_suite(title, label, proposal, step, rows, schedule, format_duration, backing, run_context):
     """Render every scheduled arm once, with the measured range and process count."""
     lookup = {(r['case'], r['variant'], r['path']): r for r in rows}
     variants = [v for v in VARIANTS if any(arm == v and path == 'native' for _, arm, path in schedule)]
@@ -208,7 +215,7 @@ def render_suite(title, label, proposal, step, rows, schedule, format_duration, 
                 median, low, high = (row[k] for k in ('median', 'minimum', 'maximum'))
                 bar.update(value=float(median), low=float(low), high=float(high),
                            value_text=format_duration(median, group=True),
-                           tip=(f'{item["label"]}, {case}: median {format_duration(median, group=True)}, '
+                           tip=(f'{item["label"]}, {case}: median {format_duration(median, group=True, exact=True)}, '
                                 f'range {format_duration(low, group=True)} to {format_duration(high, group=True)}, '
                                 f'{row["n"]} processes'))
             bars.append(bar)
@@ -219,9 +226,18 @@ def render_suite(title, label, proposal, step, rows, schedule, format_duration, 
     shared = (overall == 'COMPLETE' and step['reported_clock_qualification'] == 'QUALIFIED'
               and envelope and envelope[0] <= 1 <= envelope[1] and
               all(bar['value'] is not None for group in groups for bar in group['bars']))
-    spec = dict(title=title, subtitle=label, series=series, groups=groups,
-                context=[proposal['claimed_gpu'].split('/')[0] + ' driver ' + proposal['driver'],
-                         'Host/GPU clock check: ' + step['reported_clock_qualification']])
+    counts = proposal['run']['counts']
+    context = [proposal['claimed_gpu'].split('/')[0] + ' driver ' + proposal['driver'],
+               'Host/GPU clock check: ' + step['reported_clock_qualification'],
+               f'Reported {overall} · {counts["verified"]}/{counts["expected"]} verified',
+               'Native buffers (release): ' + backing['native_dx12']['backing']]
+    if any(s['key'][0] == 'vulkan' for s in series):
+        context.append('Vulkan buffers: ' + backing['vulkan']['backing'])
+    if 'reported_os' in run_context:
+        context.append(run_context['reported_os'])
+    if 'reported_gpu_load' in run_context:
+        context.append('Reported GPU load: ' + run_context['reported_gpu_load'])
+    spec = dict(title=title, subtitle=label, series=series, groups=groups, context=context)
     if overall != 'COMPLETE':
         spec['banner'] = 'Reported run status: ' + overall
     if not shared:

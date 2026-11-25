@@ -48,7 +48,7 @@ class DisplayTests(unittest.TestCase):
         for path, relative in expected.items():
             with self.subTest(path=path):
                 text = api.blobs[entries[path]['sha']]
-                self.assertIn('v0.1.5](' + relative + ')', text)
+                self.assertIn('v0.1.5 · Run 12](' + relative + ')', text)
         svg = ET.fromstring(api.blobs[entries[folder + '/chart.svg']['sha']])
         self.assertEqual(len(svg.findall('.//{*}g/{*}title')), 6)
 
@@ -69,7 +69,7 @@ class DisplayTests(unittest.TestCase):
             with self.subTest(path=path):
                 text = api.blobs[entries[path]['sha']]
                 managed = text.split(writer.INDEX_START)[1].split(writer.INDEX_END)[0]
-                self.assertIn('v0.1.5](', managed)
+                self.assertIn('v0.1.5 · Run 12](', managed)
                 self.assertNotIn('owner acceptance', managed)
                 self.assertNotIn('**UNVERIFIED**', managed)
         svg = api.blobs[entries[folder + '/chart.svg']['sha']]

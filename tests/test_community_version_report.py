@@ -49,7 +49,38 @@ class VersionReportTests(unittest.TestCase):
         matching = [row for row in saved if row['path'] == 'native' and row['case'] == 'affine']
         self.assertEqual({(row['unit'], row['value']) for row in matching}, {('NS', '2610752')})
         self.assertIn(b'2.61 ms', outputs[folder + '/chart.svg'])
+        self.assertIn(b'median 2.610752 ms', outputs[folder + '/chart.svg'])
         self.assertIn(b'](chart.svg)', outputs[folder + '/README.md'])
+
+    def test_long_median_uses_compact_bar_label_and_precise_tooltip(self):
+        proposal = core.prepare(issue(), bundle())
+        step = next(s for s in proposal['run']['steps'] if s['suite'] == 'd4')
+        step.update(reported_clock_qualification='QUALIFIED', reported_ns_per_tick_envelope=[0.98, 1.02])
+        value = '1000.1234567890123456789'
+        for row in proposal['measurements']:
+            if (row['suite'], row['path'], row['case']) == ('d4', 'vulkan', '128x128'):
+                row['value'] = value
+        files = core.render(proposal)
+        folder = core.record_folder(proposal)
+        svg = ET.fromstring(files[folder + '/d4-chart.svg'])
+        self.assertTrue(any(t.text.startswith('≈') for t in svg.findall('.//{*}text')))
+        self.assertTrue(any(('median 1 ' + value[1:] + ' ns') in t.text for t in svg.findall('.//{*}g/{*}title')))
+        self.assertIn(value.encode(), files[folder + '/summary.csv'])
+
+    def test_historical_context_requires_the_reviewed_archive(self):
+        record = ROOT / 'Benchmark Results/NVIDIA/RTX_3060/v0.1.5/issue-10/record.json'
+        proposal = json.loads(record.read_bytes())
+        context = core.run_context(proposal)
+        self.assertEqual(context['reported_os'], 'Ubuntu 26.04.1 LTS')
+        self.assertIn(context['archive_url'], record.with_name('README.md').read_text())
+        self.assertEqual(context['native_timestamp']['ns_per_tick'], 1)
+        self.assertNotIn('reported_os', core.run_context(dict(proposal, bundle_sha256='a' * 64)))
+        chart = ET.parse(record.with_name('chart.svg'))
+        visible = ' '.join(t.text or '' for t in chart.findall('.//{*}text'))
+        for label in ('Native buffers (release): SYSMEM', 'Vulkan buffers: NOT_RECORDED', '189/189 verified'):
+            self.assertIn(label, visible)
+        ti = ROOT / 'Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.4/issue-3/chart.svg'
+        self.assertIn('Concurrent ONNX workload', ' '.join(t.text or '' for t in ET.parse(ti).findall('.//{*}text')))
 
     def test_chart_driver_label_does_not_infer_driver_type(self):
         """Both published layouts label numeric driver versions without asserting Open."""
@@ -133,7 +164,9 @@ class VersionReportTests(unittest.TestCase):
         outputs = report.render('v0.1.5', [first, second])
         index = outputs['Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/README.md'].decode()
         for number in (12, 13):
-            self.assertIn(f'](issue-{number}/kw-chart.svg)', index)
+            self.assertIn(f'## Run {number}\n', index)
+            self.assertIn(f'Run {number} · Test 3 — K WaveForm](issue-{number}/kw-chart.svg)', index)
+            self.assertIn(f' · Run {number}\n'.encode(), outputs['Benchmark Results/v0.1.5-submitted-data.md'])
             self.assertIn('Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-' +
                           str(number) + '/record.json', outputs)
 

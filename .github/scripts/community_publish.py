@@ -83,7 +83,7 @@ def index_entry(proposal, index_id):
     version = proposal['claimed_version']
     intake.need(index_id in INDEX_BOOTSTRAP, 'INDEX_FORMAT')
     relative = folder[len(intake.ROOT):] + '/README.md'
-    return f'- [{label} · {version}]({relative})'
+    return f'- [{label} · {version} · Run {proposal["issue"]}]({relative})'
 
 
 def update_index(source, proposal, anchor, prefix):

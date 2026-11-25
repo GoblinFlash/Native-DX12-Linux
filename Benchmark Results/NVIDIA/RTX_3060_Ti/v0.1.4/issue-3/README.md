@@ -1,4 +1,4 @@
-# NVIDIA GeForce RTX 3060 Ti · v0.1.4
+# [NVIDIA GeForce RTX 3060 Ti · v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/issues/3)
 
 ![NVIDIA GeForce RTX 3060 Ti · v0.1.4 · Compute suite](chart.svg)
 

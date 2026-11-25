@@ -4,6 +4,7 @@ Inputs are bounded, sanitized intake proposals, never uploaded code or graphics.
 Writes are explicit, local and create-only; this command has no GitHub client.
 """
 import argparse
+from collections import Counter
 import importlib.util
 from pathlib import Path
 
@@ -28,6 +29,7 @@ def render(version, proposals, existing_issues=()):
     if not proposals:
         return {}
     proposals.sort(key=lambda p: (p['claimed_gpu'], p['issue']))
+    per_gpu = Counter(p['claimed_gpu'] for p in proposals)
     outputs, version_pages = {}, {}
     release = ['# Benchmark ' + version]
     for proposal in proposals:
@@ -37,10 +39,16 @@ def render(version, proposals, existing_issues=()):
         label = core.result_label(proposal)
         if proposal['issue'] not in existing_issues:
             outputs.update(core.render(proposal))
-        version_pages.setdefault(version_folder, ['# ' + label]).append(
-            core.chart_media(proposal, folder[len(version_folder):] + '/'))
+        repeated = per_gpu[proposal['claimed_gpu']] > 1
+        page = version_pages.setdefault(version_folder, ['# ' + label])
+        if repeated:
+            run = f'Run {proposal["issue"]}'
+            page.append('## ' + run)
+            label += ' · ' + run
+        page.append(core.chart_media(proposal, folder[len(version_folder):] + '/', distinguish_run=repeated))
         outputs[gpu + 'README.md'] = f'- [{version}]({version}/)\n'.encode()
-        release.extend(['## ' + label, core.chart_media(proposal, folder[len(core.ROOT):] + '/')])
+        release.extend(['## ' + label, core.chart_media(proposal, folder[len(core.ROOT):] + '/',
+                                                        distinguish_run=repeated)])
     for folder, sections in version_pages.items():
         outputs[folder + 'README.md'] = ('\n\n'.join(sections) + '\n').encode()
     outputs[core.ROOT + version + '-submitted-data.md'] = ('\n\n'.join(release) + '\n').encode()

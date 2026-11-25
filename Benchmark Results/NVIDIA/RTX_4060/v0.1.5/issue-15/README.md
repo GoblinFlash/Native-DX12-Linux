@@ -1,4 +1,4 @@
-# NVIDIA GeForce RTX 4060 · v0.1.5
+# [NVIDIA GeForce RTX 4060 · v0.1.5](https://github.com/GoblinFlash/Native-DX12-Linux/issues/15)
 
 ![NVIDIA GeForce RTX 4060 · v0.1.5 · Compute suite](chart.svg)
 

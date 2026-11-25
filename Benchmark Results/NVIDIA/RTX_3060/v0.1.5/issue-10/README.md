@@ -1,4 +1,4 @@
-# NVIDIA GeForce RTX 3060 · v0.1.5
+# [NVIDIA GeForce RTX 3060 · v0.1.5](https://github.com/user-attachments/files/34688925/share-results-v0.1.5.tar.gz)
 
 ![NVIDIA GeForce RTX 3060 · v0.1.5 · Compute suite](chart.svg)
 

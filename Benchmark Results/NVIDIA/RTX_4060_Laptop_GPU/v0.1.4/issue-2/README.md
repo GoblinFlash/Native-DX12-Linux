@@ -1,4 +1,4 @@
-# NVIDIA GeForce RTX 4060 Laptop GPU · v0.1.4
+# [NVIDIA GeForce RTX 4060 Laptop GPU · v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/issues/2)
 
 ![NVIDIA GeForce RTX 4060 Laptop GPU · v0.1.4 · Compute suite](chart.svg)
 

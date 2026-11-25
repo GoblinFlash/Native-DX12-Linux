@@ -1,4 +1,4 @@
-# NVIDIA GeForce RTX 3090 · v0.1.4
+# [NVIDIA GeForce RTX 3090 · v0.1.4](https://github.com/GoblinFlash/Native-DX12-Linux/issues/5)
 
 ![NVIDIA GeForce RTX 3090 · v0.1.4 · Compute suite](chart.svg)
 

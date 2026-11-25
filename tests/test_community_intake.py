@@ -285,7 +285,7 @@ class IntakeTests(unittest.TestCase):
                 self.assertEqual(len(core.summaries(p)), 27)
                 self.assertEqual(core.summaries(p)[0]['n'], 7)
                 outputs = core.render(p)
-                self.assertEqual(len(outputs), 10)  # memory-backing.json is a separate artifact
+                self.assertEqual(len(outputs), 11)
                 self.assertTrue(all('/NVIDIA/RTX_3060_Ti/'+version+'/issue-12/' in path for path in outputs))
 
     def test_deterministic_bytes(self):
@@ -1068,7 +1068,7 @@ class PublisherTests(unittest.TestCase):
         p = ready()
         result = writer.publish(p, api, 12)
         # Record, data, chart and CSV files, the release report, two GPU pages and the indexes.
-        self.assertEqual(len(result['files']), 15)
+        self.assertEqual(len(result['files']), 16)
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
                 baseline = index_fixture(path)

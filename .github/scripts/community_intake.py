@@ -1171,11 +1171,13 @@ NATIVE_NANOSECOND_ARCHIVES = frozenset((
 ))
 
 
-def format_gpu_duration(value, group=False):
+def format_gpu_duration(value, group=False, *, exact=False):
     """Display nanoseconds below 1 ms and milliseconds at or above 1 ms."""
     duration = Fraction(value)
     if duration >= 1_000_000:
         milliseconds = Decimal(exact_timing_number(duration / 1_000_000))
+        if exact:
+            return f'{milliseconds:f} ms'
         rounded = milliseconds.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         return format(rounded, 'f').rstrip('0').rstrip('.') + ' ms'
     number = exact_timing_number(duration)
@@ -1255,9 +1257,38 @@ def result_label(proposal):
     return model_name(proposal['claimed_gpu']) + ' · ' + proposal['claimed_version']
 
 
-def chart_media(proposal, prefix=''):
+# Reviewed historical observations are bound to both the submission and the exact share archive.
+# Never import free-form OS strings, kernel identifiers or reporter prose.
+REVIEWED_RUN_CONTEXT = {
+    (3, '1a2e6db004472d83194e25ca09180b725ddc483a4ae78a2f7a2c2abcc9ffeba7'): {
+        'reported_gpu_load': 'Concurrent ONNX workload'},
+    (4, '96d095c11364e83cf196144c9aac341c1a7a0be43355ef90820b9a9a8ff29345'): {
+        'reported_os': 'Ubuntu 26.04.1 LTS',
+        'archive_url': 'https://github.com/user-attachments/files/34638824/share-results-v0.1.4.tar.gz'},
+    (10, 'f424668009885acad705fc0baf2fd40bac7dd9154813926001e2360ad604d6ff'): {
+        'reported_os': 'Ubuntu 26.04.1 LTS',
+        'archive_url': 'https://github.com/user-attachments/files/34688925/share-results-v0.1.5.tar.gz'},
+}
+
+
+def run_context(proposal):
+    version = proposal['archive_version']
+    context = {'source_url': f'https://github.com/{REPOSITORY}/issues/{proposal["issue"]}',
+               'bundle_sha256': proposal['bundle_sha256']}
+    if release_schema(version) == SHARE_V2:
+        # report_measurements admits this projection only for the pinned NVIDIA semaphore profiles.
+        context['native_timestamp'] = {'source_field_unit': 'GPU_TICKS', 'published_unit': 'NS',
+                                       'ns_per_tick': 1, 'basis': 'RELEASE_SEMAPHORE_TIMESTAMP',
+                                       'release_artifact_sha256': catalog()[version]['archive_sha256']}
+    context.update(REVIEWED_RUN_CONTEXT.get((proposal['issue'], proposal['bundle_sha256']), {}))
+    return context
+
+
+def chart_media(proposal, prefix='', *, distinguish_run=False):
     measured = {row['suite'] for row in proposal['measurements']}
     label = result_label(proposal)
+    if distinguish_run:
+        label += f' · Run {proposal["issue"]}'
     return '\n\n'.join(f'![{label} · {title}]({prefix}{name})'
                         for suite, (name, title) in CHARTS.items() if suite in measured)
 
@@ -1275,8 +1306,11 @@ def render(proposal):
     renderer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(renderer)
     backing = memory_backing(proposal)
-    files = {'README.md': (f'# {label}\n\n' + chart_media(proposal) + '\n').encode(),
+    context = run_context(proposal)
+    source = context.get('archive_url', context['source_url'])
+    files = {'README.md': (f'# [{label}]({source})\n\n' + chart_media(proposal) + '\n').encode(),
              'record.json': json_bytes(proposal),
+             'run-context.json': json_bytes(context),
              'memory-backing.json': json_bytes(backing),
              'processes.csv': csv_text(proposal['processes'], PROCESS_COLUMNS),
              'measurements.csv': csv_text(report_measurements(proposal),
@@ -1291,7 +1325,7 @@ def render(proposal):
             schedule = {(row['case'], row['variant'], row['path']) for row in proposal['processes']
                         if row['suite'] == suite}
             files[name] = renderer.render_suite(title, label, proposal, step, selected, schedule,
-                                                format_gpu_duration, backing)
+                                                format_gpu_duration, backing, context)
     return {folder + '/' + name: raw for name, raw in files.items()}
 
 
