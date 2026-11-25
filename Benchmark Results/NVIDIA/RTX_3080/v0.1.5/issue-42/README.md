@@ -16,7 +16,7 @@ Backing is classified from documented release identity, not independently observ
 | --- | --- |
 | State | DATA_READY |
 | Reason | OK |
-| Claimed GPU | NVIDIA/RTX_3080_12GB |
+| Claimed GPU | NVIDIA/RTX_3080 |
 | Archive GPU | NVIDIA/RTX_3080 |
 | Claimed release | v0.1.5 |
 | Archive release | v0.1.5 |

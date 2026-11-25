@@ -23,26 +23,6 @@
       "10de:1f51",
       "10de:1f55"
     ],
-    "NVIDIA/RTX_2060_12GB": [
-      "10de:1e89",
-      "10de:1f03",
-      "10de:1f08",
-      "10de:1f11",
-      "10de:1f12",
-      "10de:1f15",
-      "10de:1f51",
-      "10de:1f55"
-    ],
-    "NVIDIA/RTX_2060_6GB": [
-      "10de:1e89",
-      "10de:1f03",
-      "10de:1f08",
-      "10de:1f11",
-      "10de:1f12",
-      "10de:1f15",
-      "10de:1f51",
-      "10de:1f55"
-    ],
     "NVIDIA/RTX_2060_Super": [
       "10de:1f06",
       "10de:1f42",
@@ -80,23 +60,7 @@
     ],
     "NVIDIA/RTX_3050": [
       "10de:2507",
-      "10de:2582",
-      "10de:2584"
-    ],
-    "NVIDIA/RTX_3050_4GB_Laptop_GPU": [
-      "10de:25ab"
-    ],
-    "NVIDIA/RTX_3050_6GB": [
-      "10de:2507",
-      "10de:2582",
-      "10de:2584"
-    ],
-    "NVIDIA/RTX_3050_6GB_Laptop_GPU": [
-      "10de:25ac",
-      "10de:25ec"
-    ],
-    "NVIDIA/RTX_3050_8GB": [
-      "10de:2507",
+      "10de:2508",
       "10de:2582",
       "10de:2584"
     ],
@@ -108,11 +72,11 @@
     "NVIDIA/RTX_3050_Laptop_GPU": [
       "10de:25a2",
       "10de:25a5",
+      "10de:25ab",
+      "10de:25ac",
       "10de:25e2",
-      "10de:25e5"
-    ],
-    "NVIDIA/RTX_3050_OEM": [
-      "10de:2508"
+      "10de:25e5",
+      "10de:25ec"
     ],
     "NVIDIA/RTX_3050_Ti_Laptop_GPU": [
       "10de:2523",
@@ -122,20 +86,6 @@
       "10de:25e0"
     ],
     "NVIDIA/RTX_3060": [
-      "10de:2487",
-      "10de:24c7",
-      "10de:2503",
-      "10de:2504",
-      "10de:2544"
-    ],
-    "NVIDIA/RTX_3060_12GB": [
-      "10de:2487",
-      "10de:24c7",
-      "10de:2503",
-      "10de:2504",
-      "10de:2544"
-    ],
-    "NVIDIA/RTX_3060_8GB": [
       "10de:2487",
       "10de:24c7",
       "10de:2503",
@@ -178,13 +128,6 @@
       "10de:220a",
       "10de:2216"
     ],
-    "NVIDIA/RTX_3080_10GB": [
-      "10de:2206",
-      "10de:2216"
-    ],
-    "NVIDIA/RTX_3080_12GB": [
-      "10de:220a"
-    ],
     "NVIDIA/RTX_3080_Laptop_GPU": [
       "10de:249c",
       "10de:24dc"
@@ -215,16 +158,6 @@
       "10de:28e0"
     ],
     "NVIDIA/RTX_4060_Ti": [
-      "10de:2788",
-      "10de:2803",
-      "10de:2805"
-    ],
-    "NVIDIA/RTX_4060_Ti_16GB": [
-      "10de:2788",
-      "10de:2803",
-      "10de:2805"
-    ],
-    "NVIDIA/RTX_4060_Ti_8GB": [
       "10de:2788",
       "10de:2803",
       "10de:2805"
@@ -285,12 +218,6 @@
     "NVIDIA/RTX_5060_Ti": [
       "10de:2d04"
     ],
-    "NVIDIA/RTX_5060_Ti_16GB": [
-      "10de:2d04"
-    ],
-    "NVIDIA/RTX_5060_Ti_8GB": [
-      "10de:2d04"
-    ],
     "NVIDIA/RTX_5070": [
       "10de:2c09",
       "10de:2f04"
@@ -327,5 +254,5 @@
       "10de:2c58"
     ]
   },
-  "source_additions": "RTX 20, RTX 2050, RTX 3050 OEM/4GB/6GB Laptop, RTX 5050 and RTX 5090 D v2 rows: NVIDIA supported-gpus.json of drivers 615.78.08 and 620.70.06, as used by the v0.1.6 runtime identity tables. Memory-size rows (RTX 2060/3050/3060/3080/4060 Ti/5060 Ti): that catalogue names no size, so each size lists every PCI ID of its model, except RTX 3080 10GB (2206, 2216) and 12GB (220a)."
+  "source_additions": "RTX 20, RTX 2050, RTX 3050 OEM/4GB/6GB Laptop, RTX 5050 and RTX 5090 D v2 rows: NVIDIA supported-gpus.json of drivers 615.78.08 and 620.70.06, as used by the v0.1.6 runtime identity tables"
 }

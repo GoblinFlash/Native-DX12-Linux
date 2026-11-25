@@ -312,57 +312,36 @@ class IntakeTests(unittest.TestCase):
             self.assertEqual(p['reason'], 'GPU_UNKNOWN')
             self.assertIn('/Pending_Classification/', core.record_folder(p))
 
-    def test_memory_size_variants_are_separate_categories(self):
-        """Keep memory sizes, OEM, Ti/Super/D/v2 and Laptop distinct; drop a size only without size categories."""
-        for value, expected in [('Nvidia Geforce RTX 3080 12gb', 'NVIDIA/RTX_3080_12GB'),
-            ('NVIDIA GeForce RTX 3080 10 GB', 'NVIDIA/RTX_3080_10GB'),
-            ('NVIDIA GeForce RTX 3080', 'NVIDIA/RTX_3080'),
-            ('RTX 4060 Ti 16 GB', 'NVIDIA/RTX_4060_Ti_16GB'), ('RTX 3060 12GB', 'NVIDIA/RTX_3060_12GB'),
-            ('RTX 5060 Ti 8gb', 'NVIDIA/RTX_5060_Ti_8GB'), ('RTX 2060 12GB', 'NVIDIA/RTX_2060_12GB'),
-            ('NVIDIA GeForce RTX 3050 6GB Laptop GPU', 'NVIDIA/RTX_3050_6GB_Laptop_GPU'),
-            ('NVIDIA GeForce RTX 3050 4GB Laptop GPU', 'NVIDIA/RTX_3050_4GB_Laptop_GPU'),
-            ('NVIDIA GeForce RTX 3050 OEM', 'NVIDIA/RTX_3050_OEM'),
+    def test_memory_size_and_oem_variants_share_the_base_category(self):
+        """Accept one memory size or OEM marker; keep Ti/Super/D/v2/Laptop distinct and the PCI check."""
+        for value, expected in [('Nvidia Geforce RTX 3080 12gb', 'NVIDIA/RTX_3080'),
+            ('NVIDIA GeForce RTX 3080 10GB', 'NVIDIA/RTX_3080'),
+            ('RTX 4060 Ti 16 GB', 'NVIDIA/RTX_4060_Ti'), ('RTX 3060 12GB', 'NVIDIA/RTX_3060'),
+            ('NVIDIA GeForce RTX 3050 6GB Laptop GPU', 'NVIDIA/RTX_3050_Laptop_GPU'),
+            ('NVIDIA GeForce RTX 3050 4GB Laptop GPU', 'NVIDIA/RTX_3050_Laptop_GPU'),
+            ('NVIDIA GeForce RTX 3050 OEM', 'NVIDIA/RTX_3050'),
             ('NVIDIA GeForce RTX 2060 SUPER', 'NVIDIA/RTX_2060_Super'),
-            ('NVIDIA GeForce RTX 2080 Ti 11GB', 'NVIDIA/RTX_2080_Ti'),
-            ('NVIDIA GeForce RTX 3090 24GB', 'NVIDIA/RTX_3090'),
+            ('NVIDIA GeForce RTX 2060 12GB', 'NVIDIA/RTX_2060'),
             ('NVIDIA GeForce RTX 5090 D v2', 'NVIDIA/RTX_5090_D_v2'),
             ('NVIDIA GeForce RTX 5050 Laptop GPU', 'NVIDIA/RTX_5050_Laptop_GPU')]:
             with self.subTest(value=value):self.assertEqual(core.gpu_category(value), expected)
         names = ('RTX 5090', 'RTX 5090 D', 'RTX 5090 D v2', 'RTX 2060', 'RTX 2060 Super',
-                 'RTX 2080', 'RTX 2080 Super', 'RTX 2080 Ti', 'RTX 5050', 'RTX 5050 Laptop GPU',
-                 'RTX 3080', 'RTX 3080 10GB', 'RTX 3080 12GB', 'RTX 3050', 'RTX 3050 OEM',
-                 'RTX 3050 Laptop GPU', 'RTX 3050 6GB Laptop GPU')
+                 'RTX 2080', 'RTX 2080 Super', 'RTX 2080 Ti', 'RTX 5050', 'RTX 5050 Laptop GPU')
         self.assertEqual(len({core.gpu_category(x) for x in names}), len(names))
-        for value in ('RTX 3080 13GB', 'RTX 3080 16GB', 'RTX 3080 12GB 10GB', 'RTX 3080 12',
-                      'RTX 308012GB', 'RTX 3080 Ti12GB', 'OEM RTX 3080', 'RTX 5060 Ti 12GB'):
+        for value in ('RTX 3080 13GB', 'RTX 3080 12GB 10GB', 'RTX 3080 12',
+                      'RTX 308012GB', 'RTX 3080 Ti12GB', 'OEM RTX 3080'):
             with self.subTest(value=value):self.assertIsNone(core.gpu_category(value))
-
-    def test_memory_size_claim_is_checked_against_pci_where_it_differs(self):
-        """RTX 3080 12GB needs 10de:220a; a shared PCI ID (RTX 5060 Ti) adds MEMORY_SIZE_NOT_VERIFIED."""
-        cases = (('Nvidia Geforce RTX 3080 12gb', 'NVIDIA GeForce RTX 3080', '10de:220a', 'OK', False),
-                 ('RTX 3080 10GB', 'NVIDIA GeForce RTX 3080', '10de:2206', 'OK', False),
-                 ('Nvidia Geforce RTX 3080 12gb', 'NVIDIA GeForce RTX 3080', '10de:2206', 'GPU_PCI_MISMATCH', False),
-                 ('RTX 3080', 'NVIDIA GeForce RTX 3080', '10de:220a', 'OK', False),
-                 ('RTX 5060 Ti 16GB', 'NVIDIA GeForce RTX 5060 Ti', '10de:2d04', 'OK', True),
-                 ('RTX 3080 12GB', 'NVIDIA GeForce RTX 3080 Ti', '10de:2208', 'GPU_MISMATCH', False))
-        for claim, model, pci, reason, unverified in cases:
-            with self.subTest(claim=claim, pci=pci):
-                files = raw_files(gpu=model)
+        for pci, state, reason in (('10de:220a', 'DATA_READY', 'OK'),
+                                   ('10de:2208', 'MANUAL_REVIEW', 'GPU_PCI_MISMATCH')):
+            with self.subTest(pci=pci):
+                files = raw_files(gpu='NVIDIA GeForce RTX 3080')
                 run = json.loads(files['run.json'])
                 run['gpu']['pci'] = pci
                 files['run.json'] = core.json_bytes(run)
-                p = core.prepare(issue(gpu=claim), bundle(files))
-                self.assertEqual(p['reason'], reason)
-                if reason == 'OK':
-                    self.assertEqual(p['state'], 'DATA_READY')
-                    core.validate_proposal(p)
-                    self.assertIn('/' + core.gpu_category(claim).split('/')[1] + '/v0.1.5/issue-12',
-                                  core.record_folder(p))
-                    self.assertEqual('MEMORY_SIZE_NOT_VERIFIED' in p['warnings'], unverified)
-                    forged = dict(p, warnings=[w for w in p['warnings'] if w != 'MEMORY_SIZE_NOT_VERIFIED'])
-                    if unverified:
-                        with self.assertRaises(core.Refused):
-                            core.validate_proposal(forged)
+                p = core.prepare(issue(gpu='Nvidia Geforce RTX 3080 12gb'), bundle(files))
+                self.assertEqual((p['state'], p['reason']), (state, reason))
+                if state == 'DATA_READY':
+                    self.assertIn('/RTX_3080/v0.1.5/issue-12', core.record_folder(p))
 
     def test_gpu_vendor_prefixes_match_only_the_corresponding_model_family(self):
         """Accept supported vendor aliases and reject contradictory cross-vendor model names."""
