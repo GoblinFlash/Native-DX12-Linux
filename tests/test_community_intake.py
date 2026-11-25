@@ -310,7 +310,7 @@ class IntakeTests(unittest.TestCase):
         for model in ('../../RTX 3090', 'RTX 3090; $(id)', 'Unrecognized Test GPU'):
             p = core.prepare(issue(gpu=model), bundle())
             self.assertEqual(p['reason'], 'GPU_UNKNOWN')
-            self.assertIn('/Pending_Classification/', core.record_folder(p))
+            self.assertEqual(core.render(p), {})
 
     def test_memory_size_variants_are_separate_categories(self):
         """Keep memory sizes, OEM, Ti/Super/D/v2 and Laptop distinct; drop a size only without size categories."""
@@ -418,16 +418,17 @@ class IntakeTests(unittest.TestCase):
                     self.assertEqual(proposal['state'], 'MANUAL_REVIEW')
                     self.assertEqual(proposal['reason'], 'GPU_UNKNOWN')
                     self.assertEqual(proposal['measurements'], [])
-                    self.assertIn('/Pending_Classification/v0.1.5/issue-12', core.record_folder(proposal))
+                    self.assertEqual(core.render(proposal), {})
 
     def test_gpu_mismatch_refuses_numeric_data(self):
-        """Route a claimed/archive GPU mismatch to a metadata-only manual-review result."""
+        """A conflicting GPU has no results directory or files."""
         p = core.prepare(issue(gpu='RTX 3090'), bundle(raw_files(gpu='NVIDIA GeForce RTX 3060')))
         self.assertEqual(p['reason'], 'GPU_MISMATCH')
         self.assertEqual(p['state'], 'MANUAL_REVIEW')
         self.assertEqual(p['measurements'], [])
-        self.assertIn('/Pending_Classification/v0.1.5/', core.record_folder(p))
-        self.assertEqual(len(core.render(p)), 3)  # metadata includes memory-backing
+        self.assertEqual(core.render(p), {})
+        with self.assertRaisesRegex(core.Refused, "^NO_PUBLISHABLE_RESULT$"):
+            core.record_folder(p)
 
     def test_version_identity_driver_mismatches(self):
         """Reject mismatched release identity, catalogue fields and Issue/archive driver values."""
@@ -1413,15 +1414,12 @@ class PublisherTests(unittest.TestCase):
         with self.assertRaisesRegex(core.Refused, '^AWAITING_INTAKE_APPROVAL$'):writer.publish(ready(), api, 12)
         self.assertEqual(api.writes, [])
 
-    def test_unknown_gpu_metadata_draft_uses_pending_classification(self):
-        """Limit an unknown-GPU draft to two metadata files in Pending_Classification."""
+    def test_unknown_gpu_stays_in_issues(self):
         api = FakeAPI(issue(gpu='Unknown Model'))
-        p = core.prepare(api.issue, bundle())
-        result = writer.publish(p, api, 12)
-        records = {name for name in result['files'] if '/issue-12/' in name}
-        self.assertTrue(all('/Pending_Classification/v0.1.5/' in name for name in records))
-        self.assertEqual(len(records), 3)  # metadata includes memory-backing
-        self.assertEqual(len(result['files']), 6)  # plus indexes and a refusal-only release report
+        proposal = core.prepare(api.issue, bundle())
+        result = writer.publish(proposal, api, 12)
+        self.assertEqual(result, {'status': 'ISSUE_ONLY', 'reason': 'GPU_UNKNOWN', 'issue': 12})
+        self.assertEqual(api.calls, [])
 
 
 class WorkflowTests(unittest.TestCase):
@@ -1433,6 +1431,23 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('name: community-intake-${{ github.run_id }}-${{ github.run_attempt }}', prepare)
         self.assertIn('name: ${{ needs.prepare.outputs.artifact_name }}', propose)
         self.assertNotIn('github.run_attempt', propose)
+
+    def test_issue_only_prepare_skips_workflow_artifact_and_writer(self):
+        api = FakeAPI(issue(gpu='RTX 3060'))
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            event, output, proposal = root/'event', root/'output', root/'proposal'
+            event.write_bytes(core.json_bytes({'issue': {'number': 12}}))
+            archive = root/'bundle'
+            archive.write_bytes(bundle())
+            env = {'GITHUB_EVENT_NAME': 'issues', 'GITHUB_REPOSITORY': core.REPOSITORY,
+                   'GITHUB_OUTPUT': str(output)}
+            with mock.patch.dict(os.environ, env), mock.patch.object(core, 'GitHub', return_value=api):
+                self.assertEqual(core.prepare_main(['--event', str(event), '--bundle', str(archive),
+                                                    '--output', str(proposal)]), 0)
+            self.assertFalse(proposal.exists())
+            self.assertFalse(output.exists())
+            self.assertEqual(api.writes, [])
 
     def test_production_entrypoints_with_fake_api_and_attachment(self):
         """Exercise both real workflow CLIs using fake transport and local files only."""

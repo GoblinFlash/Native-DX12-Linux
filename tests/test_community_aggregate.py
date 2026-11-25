@@ -66,11 +66,17 @@ class AggregateTests(unittest.TestCase):
                 self.assertEqual(proposal['state'], 'DATA_READY')
                 self.assertEqual(bool(proposal['measurements']), not empty)
                 api = FakeAPI(current=source)
-                self.assertEqual(writer.publish(proposal, api, 12)['status'], 'DRAFT_PR_CREATED')
-                outputs = draft_files(api)
-                for name in writer.INDEXES:
-                    self.assertIn(f'{0 if empty else 1} matching exports have measurements'.encode(),
-                                  outputs[name])
+                result = writer.publish(proposal, api, 12)
+                if empty:
+                    self.assertEqual(result['reason'], 'NO_MEASUREMENTS')
+                    self.assertEqual(result['status'], 'ISSUE_ONLY')
+                    self.assertEqual(core.render(proposal), {})
+                    self.assertEqual(aggregate.document_set('v0.1.5', [proposal], core), {})
+                    self.assertEqual(api.writes, [])
+                else:
+                    self.assertEqual(result['status'], 'DRAFT_PR_CREATED')
+                    for name in writer.INDEXES:
+                        self.assertIn(b'issue-12/README.md', draft_files(api)[name])
 
     def test_new_record_and_its_version_report_are_in_the_same_draft(self):
         """A successful draft must include the new record, overview table and release report."""
@@ -85,18 +91,12 @@ class AggregateTests(unittest.TestCase):
         self.assertIn('| GPU | Exported process status |', root)
         self.assertIn('v0.1.5-submitted-data.md', root)
 
-    def test_issue_11_conflict_explains_duplicate_and_required_correction(self):
-        """A shared bundle cannot supply RTX3090 values; changing its name is no correction."""
-        proposals = [core.load_json((ROOT / core.ROOT / name).read_bytes()) for name in (
-            'NVIDIA/RTX_3060/v0.1.5/issue-10/record.json',
-            'Pending_Classification/v0.1.5/issue-11/record.json')]
-        docs = aggregate.document_set('v0.1.5', proposals, core)
-        text = docs[core.ROOT + 'v0.1.5-submitted-data.md'][0].decode()
-        self.assertIn('identical to Issue #10', text)
-        self.assertIn('10de:2503', text)
-        self.assertIn('genuine share-results bundle', text)
-        self.assertIn('Renaming', text)
-        self.assertNotIn('RTX_3090/v0.1.5/issue-11/chart.svg', text)
+    def test_conflicting_submission_is_omitted_from_all_release_documents(self):
+        measured = ready(10)
+        conflict = core.prepare(issue(11, 'RTX 3060'), bundle())
+        self.assertEqual(conflict['reason'], 'GPU_MISMATCH')
+        self.assertEqual(aggregate.document_set('v0.1.5', [measured, conflict], core),
+                         aggregate.document_set('v0.1.5', [measured], core))
 
     def test_real_records_refresh_and_preserve_prior_data_and_owner_notes(self):
         """Actual v2 and pinned legacy15 sources feed one release refresh without old-data rewrites."""
@@ -211,13 +211,13 @@ class AggregateTests(unittest.TestCase):
                        name.startswith('Benchmark Results/README') else b'\n## Curated v0.1.4 report')
             self.assertEqual(files[name][files[name].index(heading):], old[old.index(heading):])
 
-    def test_unknown_release_remains_individual_manual_record(self):
+    def test_unknown_release_remains_in_issues(self):
         """No arbitrary unrecognized release path is created."""
         api = FakeAPI(issue(version='v9.9.9'))
         p = core.prepare(api.issue, bundle())
         result = writer.publish(p, api, 12)
-        self.assertEqual(len(result['files']), 5)
-        self.assertFalse(any('v9.9.9' in name for name in result['files']))
+        self.assertEqual(result['status'], 'ISSUE_ONLY')
+        self.assertEqual(api.writes, [])
 
     def test_oversized_record_and_too_many_records_are_rejected(self):
         """Count and byte ceilings apply before any remote write."""

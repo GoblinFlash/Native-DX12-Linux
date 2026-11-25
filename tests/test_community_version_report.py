@@ -129,17 +129,10 @@ class VersionReportTests(unittest.TestCase):
         with self.assertRaisesRegex(report.core.Refused, '^VERSION_REPORT_DUPLICATE$'):
             report.render('v0.1.5', [proposal, proposal])
 
-    def test_conflicting_gpu_is_listed_without_measurements_or_chart(self):
-        """A refused archive may explain the conflict but cannot become GPU benchmark data."""
+    def test_conflicting_gpu_alone_creates_no_report(self):
         refused = core.prepare(issue(gpu='RTX 3060'), bundle())
         self.assertEqual(refused['reason'], 'GPU_MISMATCH')
-        outputs = report.render('v0.1.5', [refused])
-        self.assertEqual(list(outputs), ['Benchmark Results/v0.1.5-submitted-data.md'])
-        text = next(iter(outputs.values())).decode()
-        self.assertIn('GPU_MISMATCH', text)
-        self.assertIn('No measurements or chart', text)
-        self.assertNotIn('![', text)
-        self.assertNotIn('189/189 VERIFIED', text)
+        self.assertEqual(report.render('v0.1.5', [refused]), {})
 
     def test_existing_issue_record_and_csv_are_not_regenerated(self):
         """Re-charting a legacy Issue does not upgrade its record schema or overwrite data."""

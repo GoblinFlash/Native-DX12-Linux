@@ -1139,19 +1139,20 @@ def _validate_proposal(value):
     return value
 
 
-def record_folder(proposal):
-    """Return the fixed GPU/release/Issue directory for a revalidated proposal.
+def issue_only_reason(proposal):
+    """Return the reason a validated proposal must stay in its source Issue."""
+    if proposal['state'] != 'DATA_READY':
+        return proposal['reason']
+    if not proposal['measurements']:
+        return 'NO_MEASUREMENTS'
+    return None
 
-    Unknown or conflicting identities use literal pending/unidentified
-    categories. Only catalogue keys and a bounded Issue number form the path;
-    no untrusted free-form path is accepted or created here.
-    """
+
+def record_folder(proposal):
+    """Build a results path only for validated measurements from a known GPU and release."""
     validate_proposal(proposal)
-    ambiguous = proposal['reason'] in ('GPU_UNKNOWN', 'GPU_MISMATCH', 'GPU_PCI_FORMAT',
-        'GPU_PCI_UNVERIFIED', 'GPU_PCI_MISMATCH', 'VERSION_UNKNOWN', 'VERSION_MISMATCH', 'IDENTITY_MISMATCH')
-    gpu = proposal['claimed_gpu'] if not ambiguous else None
-    version = proposal['claimed_version']
-    return ROOT + (gpu or 'Pending_Classification') + '/' + (version or 'Unidentified_Version') + '/issue-' + str(proposal['issue'])
+    need(issue_only_reason(proposal) is None, 'NO_PUBLISHABLE_RESULT')
+    return ROOT + proposal['claimed_gpu'] + '/' + proposal['claimed_version'] + '/issue-' + str(proposal['issue'])
 
 
 # These exact archives use NVIDIA semaphore timestamps with a nanosecond time base.
@@ -1270,13 +1271,12 @@ def chart(proposal, rows):
 def render(proposal):
     """Return fixed output paths and bytes for a revalidated proposal.
 
-    DATA_READY produces seven sanitized files, including derived memory metadata;
-    MANUAL_REVIEW produces its record, backing metadata and caveated README. Charts/tables are generated from typed data,
-    never uploaded prose or graphics. This function performs no filesystem
-    or network writes. Export checks and unrecorded owner acceptance are shown
-    separately; no result is automatically accepted or GPU-qualified.
+    Only classified exports with measurements produce files. This renderer
+    performs no filesystem or network writes.
     """
     validate_proposal(proposal)
+    if issue_only_reason(proposal):
+        return {}
     folder = record_folder(proposal)
     context = memory_backing(proposal)
     issue = proposal['issue']
@@ -1307,38 +1307,34 @@ def render(proposal):
          else 'A reported 189/189 VERIFIED count is not independent GPU qualification.'), '']
     public = {folder+'/record.json': json_bytes(proposal),
               folder+'/memory-backing.json': json_bytes(context)}
-    if proposal['state'] == 'DATA_READY':
-        lines += ['Reported overall state: `' + proposal['run']['overall'] + '`; failure marker present: `' +
-                  str(proposal['run']['failure_reported']).lower() + '`.', '',
-                  '## Reported process counts', '', '| Suite | Expected | VERIFIED (reported) | FAIL | HELD | NOT_RUN | UNKNOWN | Reported clock check |',
-                  '| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |']
-        for step in proposal['run']['steps']:
-            c = step['counts']
-            lines.append('| ' + step['suite'] + ' | ' + ' | '.join(str(c[k]) for k in
-                ('expected', 'verified', 'failed', 'held', 'not_run', 'unknown')) + ' | ' + step['reported_clock_qualification'] + ' |')
-        rows = summaries(proposal)
-        lines += ['', '## Recalculated exported measurements', '',
-            'Medians below are calculated from exported per-process values, not from uploaded prose or charts.',
-            'Frame-suite values are medians of process medians. No uploaded HTML, image or raw log is reused.', '',
-            '| Suite | Case | Variant | Path | n | Median GPU time |', '| --- | --- | --- | --- | ---: | ---: |']
-        for row in rows:
-            fields = [str(row[k]) for k in ('suite', 'case', 'variant', 'path', 'n')]
-            lines.append('| ' + ' | '.join(fields + [format_gpu_duration(row['median'])]) + ' |')
-        svg = chart(proposal, rows)
-        if svg is not None:
-            lines += ['', f'![Exported measurements for Issue #{issue}](chart.svg)', '']
-            public[folder+'/chart.svg'] = svg
-        prefix = '[Open SVG](chart.svg). ' if svg is not None else ''
-        lines += [prefix + 'Full sanitized data: [measurements.csv](measurements.csv),',
-                  '[summary.csv](summary.csv), [processes.csv](processes.csv).', '']
-        public[folder+'/processes.csv'] = csv_text(proposal['processes'], PROCESS_COLUMNS)
-        public[folder+'/measurements.csv'] = csv_text(report_measurements(proposal),
-            ['suite', 'case', 'variant', 'path', 'repeat', 'value', 'unit', 'clock_mode', 'telemetry'])
-        public[folder+'/summary.csv'] = csv_text(rows,
-            ['suite', 'case', 'variant', 'path', 'unit', 'n', 'median', 'minimum', 'maximum'])
-    else:
-        lines += ['No numeric result or uploaded chart is proposed while this refusal remains unresolved.',
-                  'Inspect and correct the source Issue/attachment, then request a new reviewed intake.', '']
+    lines += ['Reported overall state: `' + proposal['run']['overall'] + '`; failure marker present: `' +
+              str(proposal['run']['failure_reported']).lower() + '`.', '',
+              '## Reported process counts', '', '| Suite | Expected | VERIFIED (reported) | FAIL | HELD | NOT_RUN | UNKNOWN | Reported clock check |',
+              '| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |']
+    for step in proposal['run']['steps']:
+        c = step['counts']
+        lines.append('| ' + step['suite'] + ' | ' + ' | '.join(str(c[k]) for k in
+            ('expected', 'verified', 'failed', 'held', 'not_run', 'unknown')) + ' | ' + step['reported_clock_qualification'] + ' |')
+    rows = summaries(proposal)
+    lines += ['', '## Recalculated exported measurements', '',
+        'Medians below are calculated from exported per-process values, not from uploaded prose or charts.',
+        'Frame-suite values are medians of process medians. No uploaded HTML, image or raw log is reused.', '',
+        '| Suite | Case | Variant | Path | n | Median GPU time |', '| --- | --- | --- | --- | ---: | ---: |']
+    for row in rows:
+        fields = [str(row[k]) for k in ('suite', 'case', 'variant', 'path', 'n')]
+        lines.append('| ' + ' | '.join(fields + [format_gpu_duration(row['median'])]) + ' |')
+    svg = chart(proposal, rows)
+    if svg is not None:
+        lines += ['', f'![Exported measurements for Issue #{issue}](chart.svg)', '']
+        public[folder+'/chart.svg'] = svg
+    prefix = '[Open SVG](chart.svg). ' if svg is not None else ''
+    lines += [prefix + 'Full sanitized data: [measurements.csv](measurements.csv),',
+              '[summary.csv](summary.csv), [processes.csv](processes.csv).', '']
+    public[folder+'/processes.csv'] = csv_text(proposal['processes'], PROCESS_COLUMNS)
+    public[folder+'/measurements.csv'] = csv_text(report_measurements(proposal),
+        ['suite', 'case', 'variant', 'path', 'repeat', 'value', 'unit', 'clock_mode', 'telemetry'])
+    public[folder+'/summary.csv'] = csv_text(rows,
+        ['suite', 'case', 'variant', 'path', 'unit', 'n', 'median', 'minimum', 'maximum'])
     lines += ['## Mandatory caveats', '', *('- '+warning for warning in sorted(proposal['warnings'])), '',
         'Owner acceptance is a separate manual decision; this import does not record it.',
         'Intake approval labels authorize processing only; they do not accept these results.', '']
@@ -1471,8 +1467,8 @@ def prepare_main(argv=None):
     """Run preparation for a workflow event or explicit local JSON/archive fixtures.
 
     Event mode checks the repository, fetches the Issue and enforces eligibility.
-    Write one new validated proposal; event mode then appends ready=true to
-    GITHUB_OUTPUT. Return zero for success/expected ineligibility; other
+    Local mode writes the validated diagnostic proposal. Event mode emits an
+    artifact and ready=true only for classified exports with measurements. Return zero for success/expected ineligibility; other
     refusals propagate without pretending a ready artifact exists.
     """
     parser = argparse.ArgumentParser(description=__doc__)
@@ -1501,6 +1497,10 @@ def prepare_main(argv=None):
         need(args.bundle.stat().st_size <= MAX_COMPRESSED, 'COMPRESSED_LIMIT')
         compressed = args.bundle.read_bytes()
     proposal = validate_proposal(prepare(issue, compressed))
+    reason = issue_only_reason(proposal)
+    if args.event and reason:
+        print(f'Issue #{issue_number} remains in Issues: {reason}')
+        return 0
     write_new(args.output, json_bytes(proposal))
     if args.event:
         with open(os.environ['GITHUB_OUTPUT'], 'a') as output:

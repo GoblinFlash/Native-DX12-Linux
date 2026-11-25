@@ -9,7 +9,6 @@ Community submissions are collected as public [Benchmark Results issues](https:/
 
 <!-- ndx12-community-intake:start -->
 - [NVIDIA RTX 3080 12GB / v0.1.5 / Issue #42](NVIDIA/RTX_3080_12GB/v0.1.5/issue-42/README.md)
-- [Pending classification / v0.1.5 / Issue #11](Pending_Classification/v0.1.5/issue-11/README.md)
 - [NVIDIA RTX 3060 / v0.1.5 / Issue #10](NVIDIA/RTX_3060/v0.1.5/issue-10/README.md)
 - [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md)
 - [NVIDIA RTX 4090 / v0.1.5 / Issue #14](NVIDIA/RTX_4090/v0.1.5/issue-14/README.md)
@@ -20,13 +19,12 @@ Community submissions are collected as public [Benchmark Results issues](https:/
 ## Community Benchmark Data — v0.1.5
 
 <!-- ndx12:overview:v0.1.5:start -->
-5 submissions checked for **v0.1.5 / v21-r16**. 4 matching exports have measurements; refused submissions contribute no numeric results.
+4 submissions checked for **v0.1.5 / v21-r16** with measurements.
 
 | GPU | Exported process status | Reported host/GPU clock check | Important limitation |
 | --- | --- | --- | --- |
 | [RTX 3060](v0.1.5-submitted-data.md#rtx-3060--issue-10) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 | [RTX 3080 12GB](v0.1.5-submitted-data.md#rtx-3080-12gb--issue-42) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
-| [RTX 3090 (claimed)](https://github.com/GoblinFlash/Native-DX12-Linux/issues/11) | No imported values | NOT_RECORDED | GPU_MISMATCH: archive reports RTX 3060 |
 | [RTX 4060](v0.1.5-submitted-data.md#rtx-4060--issue-15) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 | [RTX 4090](v0.1.5-submitted-data.md#rtx-4090--issue-14) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 
@@ -64,11 +62,11 @@ The GPU categorizer labels Issues. The separate intake workflow described below 
 
 The intake workflow reads only a bounded, supported share-results data format and proposes a **draft PR**. A maintainer must authorize processing for an outside contributor with `benchmark:intake-approved` or a manual workflow dispatch. This authorization permits intake only; it does not accept the result. No workflow merges, approves, closes Issues or changes the existing GPU-category labels.
 
-New records use `<vendor>/<exact_GPU>/<release>/issue-<number>/`. Ti, Laptop GPU, Super and D models remain distinct. Unknown GPUs and conflicting model/release identities go to `Pending_Classification/<release>/issue-<number>/`; unknown releases use `Unidentified_Version`. Strings from an Issue never become arbitrary paths.
+New records use `<vendor>/<exact_GPU>/<release>/issue-<number>/`. Ti, Laptop GPU, Super and D models remain distinct. Only submissions with matching identities and measurements receive a results folder. Strings from an Issue never become arbitrary paths.
 
-Supported, internally consistent archives produce sanitized process/measurement CSV, recalculated medians and a fresh chart using ns below 1 ms and ms from 1 ms. Uploaded HTML, SVG, prose, system details and raw logs are not copied. A missing, malformed, unsupported or inconsistent archive produces only a clearly marked manual-review record, with no extracted measurements.
+Supported, internally consistent archives produce sanitized process/measurement CSV, recalculated medians and a fresh chart using ns below 1 ms and ms from 1 ms. Uploaded HTML, SVG, prose, system details and raw logs are not copied. Submissions requiring correction or lacking measurements stay in their source Issues.
 
-Generated reports show **Export consistency: CHECKED** only after supported export checks pass; otherwise they show **REQUIRES_REVIEW**. **Owner acceptance: NOT_RECORDED** describes what intake records, not whether a maintainer has reviewed the result. Intake never infers acceptance from an Issue, label or merged PR. The machine-readable `UNVERIFIED_SUBMISSION` caveat remains, including for a reported 189/189 count or QUALIFIED clock status. The share export does not establish independent GPU execution, readback correctness, actual per-dispatch clocks, receipt provenance or absence of background contention. Review the source Issue and its caveats before approval.
+Generated reports show **Export consistency: CHECKED** after supported export checks pass. **Owner acceptance: NOT_RECORDED** describes what intake records, not whether a maintainer has reviewed the result. Intake never infers acceptance from an Issue, label or merged PR. The machine-readable `UNVERIFIED_SUBMISSION` caveat remains, including for a reported 189/189 count or QUALIFIED clock status. The share export does not establish independent GPU execution, readback correctness, actual per-dispatch clocks, receipt provenance or absence of background contention. Review the source Issue and its caveats before approval.
 
 Existing curated records stay in place. Version indexes link to those records and the centralized tables instead of duplicating them:
 
@@ -78,7 +76,6 @@ Existing curated records stay in place. Version indexes link to those records an
 | #3 | [RTX 3060 Ti / v0.1.4](NVIDIA/RTX_3060_Ti/v0.1.4/README.md) | Preserve disclosed concurrent ONNX GPU usage. |
 | #4 | [RTX 3060 / v0.1.4](NVIDIA/RTX_3060/v0.1.4/README.md) | Preserve model explanation received and maintainer acceptance pending. |
 | #5 | [RTX 3090 / v0.1.4](NVIDIA/RTX_3090/v0.1.4/README.md) | Preserve all four NOT_QUALIFIED timestamp checks. |
-| #11 | Claimed RTX 3090 / v0.1.5 | The inspected attachment reports RTX 3060: GPU_MISMATCH. Manual review under Pending_Classification; no RTX 3090 measurements are imported. Recheck the live Issue before processing. |
 
 One Issue has one stable intake branch and draft PR. Duplicate, edited or reopened events never overwrite an existing review, PR or curated record. The source is checked immediately before creating a new branch ref. A later Issue change is shown in the draft body as `STALE`, with prepared/observed source fingerprints and the pinned snapshot commit; an unavailable final observation is `UNKNOWN`. Reviewers reconcile these observations before acceptance. Recovery of a pre-existing orphan still requires matching source, permission and exact branch bytes. See [the intake operator guide](https://github.com/GoblinFlash/Native-DX12-Linux/blob/main/.github/scripts/README.md) for permissions, limits, tests, failure handling and the owner approval gate.
 

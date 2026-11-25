@@ -11,7 +11,9 @@ class DisplayTests(unittest.TestCase):
         index = (ROOT / 'Benchmark Results/NVIDIA/README.md').read_text()
         self.assertIn('[GeForce RTX 4090](RTX_4090/v0.1.5/README.md)', index)
         report = (ROOT / 'Benchmark Results/NVIDIA/RTX_4090/v0.1.5/README.md').read_text()
-        self.assertIn('Issue #14: full measurements and chart', report)
+        self.assertIn('[Issue #14](https://github.com/GoblinFlash/Native-DX12-Linux/issues/14)', report)
+        self.assertIn('](issue-14/chart.svg)', report)
+        self.assertIn('| Affine |', report)
         self.assertIn('not independent GPU qualification', report)
 
     def test_flat_vendor_layout_preserves_classification_and_existing_issues(self):
@@ -22,8 +24,7 @@ class DisplayTests(unittest.TestCase):
         self.assertEqual(core.gpu_category('AMD Radeon RX 7900 XTX'), 'AMD/RX_7900_XTX')
         self.assertEqual(core.gpu_category('Intel Arc A770'), 'Intel/Arc_A770')
         mismatch = core.prepare(issue(gpu='RTX 3060'), bundle())
-        self.assertEqual(core.record_folder(mismatch),
-                         'Benchmark Results/Pending_Classification/v0.1.5/issue-12')
+        self.assertEqual(core.render(mismatch), {})
         paths = [
             'Benchmark Results/NVIDIA/RTX_3090/issue-5.md',
             'Benchmark Results/NVIDIA/RTX_3060/v0.1.5/issue-10/record.json',
@@ -88,19 +89,8 @@ class DisplayTests(unittest.TestCase):
         self.assertEqual(proposal['state'], 'MANUAL_REVIEW')
         api = FakeAPI(current=source)
         result = writer.publish(proposal, api, 12)
-        self.assertFalse(any(path.endswith('.svg') for path in result['files']))
-        for row in api.trees['c' * 40]:
-            if row['path'] in writer.INDEXES:
-                text = api.blobs[row['sha']]
-                managed = text.split(writer.INDEX_START)[1].split(writer.INDEX_END)[0]
-                self.assertIn('Pending classification', managed)
-                self.assertNotIn('![', managed)
-                self.assertNotIn('**CHECKED**', managed)
-            elif row['path'].endswith('/README.md'):
-                text = api.blobs[row['sha']]
-                self.assertIn('**Export consistency: REQUIRES_REVIEW**', text)
-                self.assertNotIn('![', text)
-                self.assertIn('Native DX12 memory backing: UNKNOWN', text)
+        self.assertEqual(result['status'], 'ISSUE_ONLY')
+        self.assertEqual(api.writes, [])
 
     def test_next_entry_preserves_legacy_entries_and_report_links(self):
         """New and legacy managed entries coexist without duplicate or lost previews."""

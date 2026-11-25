@@ -47,11 +47,7 @@ def anchor(proposal):
 
 
 def observations(proposal):
-    """Keep refusal, process completion and reported clock evidence separate."""
-    if proposal['state'] != 'DATA_READY':
-        actual = core.GPUS.get(proposal['archive_gpu'], 'unknown')
-        return ('No imported values', 'NOT_RECORDED',
-                proposal['reason'] + ': archive reports ' + actual)
+    """Describe process completion and clock evidence for a measured export."""
     run = proposal['run']
     counts = run['counts']
     qualified = sum(s['reported_clock_qualification'] == 'QUALIFIED' for s in run['steps'])
@@ -67,11 +63,7 @@ def overview(version, proposals, prefix=''):
              '| --- | --- | --- | --- |']
     for proposal in proposals:
         name = gpu_name(proposal)
-        if proposal['state'] == 'DATA_READY':
-            url = prefix + version + '-submitted-data.md#' + anchor(proposal)
-        else:
-            name += ' (claimed)'
-            url = 'https://github.com/' + core.REPOSITORY + '/issues/' + str(proposal['issue'])
+        url = prefix + version + '-submitted-data.md#' + anchor(proposal)
         lines.append('| [' + name + '](' + url + ') | ' + ' | '.join(observations(proposal)) + ' |')
     return '\n'.join(lines)
 
@@ -134,7 +126,7 @@ GPU_NOTE = 'Exported statuses and clock checks are reported evidence, not indepe
 
 
 def render(version, proposals, existing_issues=()):
-    """Render a single release; preserve existing Issue data and retain refusals."""
+    """Render a single release; preserve existing measurements and omit Issue-only submissions."""
     core.need(version in core.catalog() and type(proposals) is list and
               0 < len(proposals) <= 32, 'VERSION_REPORT_INPUT')
     seen = set()
@@ -144,17 +136,19 @@ def render(version, proposals, existing_issues=()):
                   (proposal['state'] != 'DATA_READY' or proposal['archive_version'] == version), 'VERSION_MISMATCH')
         core.need(proposal['issue'] not in seen, 'VERSION_REPORT_DUPLICATE')
         seen.add(proposal['issue'])
+    proposals = [p for p in proposals if not core.issue_only_reason(p)]
+    if not proposals:
+        return {}
     proposals = sorted(proposals, key=lambda p: (gpu_name(p), p['issue']))
-    ready = [p for p in proposals if p['state'] == 'DATA_READY']
     modern = core.release_schema(version) == core.SHARE_V3
-    backing = ('SYSMEM (system-memory buffers, not VRAM)' if ready and
-               all(core.memory_backing(p)['native_dx12']['backing'] == 'SYSMEM' for p in ready)
+    backing = ('SYSMEM (system-memory buffers, not VRAM)' if
+               all(core.memory_backing(p)['native_dx12']['backing'] == 'SYSMEM' for p in proposals)
                else 'UNKNOWN (release evidence NOT_RECORDED)')
     lines = ['# Community benchmark ' + version + ' — submitted measurement data', '',
              '**Native DX12 memory backing: ' + backing + '**, from the release-artifact evidence below. '
              'Vulkan memory backing: **NOT_RECORDED**; do not infer it from Native DX12.', '',
              f'{len(proposals)} public submissions checked for **{version} / {core.catalog()[version]["package_id"]}**. '
-             f'{len(ready)} have matching GPU/release exports. Values are extracted from public share archives; '
+             'Values are extracted from public share archives; '
              'this is not an independent GPU rerun or blanket acceptance.', '',
              '## Submission overview', '', overview(version, proposals, ''), '',
              '## How to read these numbers', '',
@@ -176,23 +170,6 @@ def render(version, proposals, existing_issues=()):
         issue = proposal['issue']
         lines += ['## ' + gpu_name(proposal) + ' — [Issue #' + str(issue) +
                   '](https://github.com/' + core.REPOSITORY + '/issues/' + str(issue) + ')', '']
-        status, clock, limit = observations(proposal)
-        if proposal['state'] != 'DATA_READY':
-            lines += ['**Manual review — ' + limit + '. No measurements or chart are assigned to this claimed GPU.**', '',
-                      'Submitted archive SHA-256: `' + (proposal['bundle_sha256'] or 'NOT_RECORDED') + '`.', '']
-            if proposal['reason'] == 'GPU_MISMATCH':
-                matches = [p for p in ready if p['bundle_sha256'] == proposal['bundle_sha256']]
-                if matches:
-                    match = matches[0]
-                    lines += ['This archive is identical to Issue #' + str(match['issue']) +
-                              ': it identifies **' + gpu_name(match) + '**, PCI `' + match['pci'] +
-                              '`. It supplies no results for the claimed GPU.', '']
-                lines += ['The reporter must provide a genuine share-results bundle for **' + version +
-                          '** from the claimed **' + gpu_name(proposal) + '**, with matching GPU model/PCI ID, '
-                          'release identity and driver in `run.json` and the corresponding exported tables. '
-                          'Renaming the archive or changing the Issue declaration does not correct the measurements. '
-                          'A maintainer must reconcile the corrected submission before importing it.', '']
-            continue
         rendered = core.render(proposal)
         folder = core.record_folder(proposal)
         if issue not in existing_issues:

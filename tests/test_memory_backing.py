@@ -81,10 +81,8 @@ class MemoryBackingTests(unittest.TestCase):
         """A refused identity remains unknown even when it names a documented release."""
         p = core.prepare(fixtures.issue(gpu='RTX 3060'), fixtures.bundle())
         self.assertEqual(p['reason'], 'GPU_MISMATCH')
-        outputs = core.render(p)
-        metadata = json.loads(next(v for k, v in outputs.items() if k.endswith('/memory-backing.json')))
-        self.assertEqual(metadata['native_dx12']['backing'], 'UNKNOWN')
-        self.assertFalse(any(k.endswith('/measurements.csv') for k in outputs))
+        self.assertEqual(core.memory_backing(p)['native_dx12']['backing'], 'UNKNOWN')
+        self.assertEqual(core.render(p), {})
 
     def test_writer_derives_memory_output_without_accepting_extra_proposal_fields(self):
         """Real writer rendering emits release-derived metadata; forged extra fields fail before API."""
@@ -135,9 +133,12 @@ class MemoryBackingTests(unittest.TestCase):
         self.assertIn('| Affine | 15,776 | 10,112 |', text)
 
     def test_unknown_generated_page_can_coexist_with_curated_sysmem_pages(self):
-        """A real refused-identity README must not inherit historical pages' SYSMEM requirement."""
-        proposal = core.prepare(fixtures.issue(gpu='RTX 3060'), fixtures.bundle())
-        outputs = core.render(proposal)
+        """A measured export with unknown backing can coexist with the historical SYSMEM pages."""
+        catalog = copy.deepcopy(core.catalog())
+        catalog['v0.1.6'] = dict(catalog['v0.1.5'], public_version='v0.1.6')
+        with mock.patch.object(core, 'catalog', return_value=catalog):
+            proposal = core.prepare(fixtures.issue(version='v0.1.6'), fixtures.bundle(fixtures.raw_files('v0.1.6')))
+            outputs = core.render(proposal)
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
             shutil.copytree(ROOT/'Benchmark Results', target/'Benchmark Results')
