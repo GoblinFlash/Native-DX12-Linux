@@ -931,7 +931,6 @@ def prepare(issue, compressed=None, fetch=download):
         pci = gpu_pci(actual_gpu, run['gpu'].get('pci'))
         gpu = size_category(gpu, actual_gpu, pci)
         need(gpu_pci(gpu, pci) == pci, 'GPU_PCI_MISMATCH')
-        result['claimed_gpu'] = gpu
         for model_text in (run['gpu']['model'], first_line(fields.get('GPU model', ''))):
             inline = re.search(r' \(PCI ([0-9a-f]{4}:[0-9a-f]{4})\)$', model_text, re.I)
             need(inline is None or inline.group(1).lower() == pci, 'GPU_PCI_MISMATCH')
@@ -979,7 +978,8 @@ def prepare(issue, compressed=None, fetch=download):
             else:
                 need(set(requested) == set(SUITES), 'RUN_CLAIM_MISMATCH')
         values = measurements(files, processes, schema)
-        result.update(driver=driver, pci=pci, state='DATA_READY', reason='OK', run=sanitized,
+        # The resolved size enters the record only together with the data it was checked on.
+        result.update(claimed_gpu=gpu, driver=driver, pci=pci, state='DATA_READY', reason='OK', run=sanitized,
                       processes=processes, measurements=values)
         if modern:
             result['warnings'].remove('SEPARATE_TIMING_UNITS')

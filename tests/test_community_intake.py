@@ -377,6 +377,20 @@ class IntakeTests(unittest.TestCase):
                     with self.assertRaises(core.Refused):
                         core.validate_proposal(dict(p, claimed_gpu='NVIDIA/RTX_3090'))
 
+    def test_rejected_unsized_claim_keeps_the_claimed_category(self):
+        """A PCI-derived size is recorded only with DATA_READY; a later refusal keeps the Issue's own claim."""
+        files = raw_files(gpu='NVIDIA GeForce RTX 3080')
+        run = json.loads(files['run.json'])
+        run['gpu']['pci'] = '10de:220a'
+        run['gpu']['driver'] = '999.1.1'
+        files['run.json'] = core.json_bytes(run)
+        p = core.prepare(issue(gpu='RTX 3080'), bundle(files))
+        self.assertEqual(p['state'], 'MANUAL_REVIEW')
+        self.assertNotEqual(p['reason'], 'OK')
+        self.assertEqual(p['claimed_gpu'], 'NVIDIA/RTX_3080')
+        self.assertIsNone(p['pci'])
+        core.validate_proposal(p)
+
     def test_gpu_vendor_prefixes_match_only_the_corresponding_model_family(self):
         """Accept supported vendor aliases and reject contradictory cross-vendor model names."""
         for value, expected in [('NVIDIA GeForce RTX 3090', 'NVIDIA/RTX_3090'),
