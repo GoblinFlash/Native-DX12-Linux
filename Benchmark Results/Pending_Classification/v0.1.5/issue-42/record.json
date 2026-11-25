@@ -1,0 +1,27 @@
+{
+  "archive_gpu": null,
+  "archive_version": null,
+  "bundle_sha256": null,
+  "claimed_gpu": null,
+  "claimed_version": "v0.1.5",
+  "driver": null,
+  "issue": 42,
+  "measurements": [],
+  "pci": null,
+  "processes": [],
+  "reason": "GPU_UNKNOWN",
+  "run": null,
+  "schema": "ndx12.community-intake.v2",
+  "source_revision": "4c2416711f45231911c0db8700a1a967c54b90296a1b36a6514a4dad11017026",
+  "state": "MANUAL_REVIEW",
+  "warnings": [
+    "BACKGROUND_NOT_ASSESSED",
+    "CLOCKS_NOT_PROVEN_PER_DISPATCH",
+    "IDENTITY_SELF_REPORTED",
+    "NO_INDEPENDENT_GPU_RERUN",
+    "RAW_READBACKS_NOT_INCLUDED",
+    "REVIEW_ISSUE_CONTEXT",
+    "SEPARATE_TIMING_UNITS",
+    "UNVERIFIED_SUBMISSION"
+  ]
+}
