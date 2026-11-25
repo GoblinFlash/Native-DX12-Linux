@@ -2,7 +2,9 @@
 
 ![NVIDIA GeForce RTX 3060 · v0.1.5](chart.svg)
 
-[All medians (CSV)](summary.csv)
+[All medians (CSV)](summary.csv) · Source: [Issue #10](https://github.com/GoblinFlash/Native-DX12-Linux/issues/10)
+
+Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM). Vulkan memory backing: NOT_RECORDED.
 
 <details>
 <summary>Reported COMPLETE · 189/189 VERIFIED</summary>

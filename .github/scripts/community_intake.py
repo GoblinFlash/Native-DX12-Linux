@@ -1281,17 +1281,22 @@ def clock_summary(steps):
 
 
 def chart_media(proposal, label, prefix, has_chart):
-    """Present measured data with reported status and expandable measurement limits."""
+    """Present measured data with its source, release backing and reported limits."""
     run = proposal['run']
     counts = run['counts']
     state = run['overall']
     status = f'Reported {state} · {counts["verified"]}/{counts["expected"]} VERIFIED'
     media = (f'![{label}]({prefix}chart.svg)\n\n[All medians (CSV)]({prefix}summary.csv)'
              if has_chart else f'[Measurements]({prefix}measurements.csv)')
+    issue = proposal['issue']
+    source = f'[Issue #{issue}](https://github.com/{REPOSITORY}/issues/{issue})'
+    context = memory_backing(proposal)
+    backing = f'{memory_label(context)}. Vulkan memory backing: {context["vulkan"]["backing"]}.'
     outcomes = ' · '.join(f'{key.upper()} {counts[key]}' for key in
                           ('completed', 'failed', 'held', 'not_run', 'unknown'))
     warnings = '\n'.join('- ' + warning for warning in sorted(proposal['warnings']))
-    return (f'{media}\n\n<details>\n<summary>{status}</summary>\n\n{outcomes}\n\n'
+    return (f'{media} · Source: {source}\n\n{backing}\n\n'
+            f'<details>\n<summary>{status}</summary>\n\n{outcomes}\n\n'
             f'Host/GPU clock checks: {clock_summary(run["steps"])}.\n\n'
             f'Owner acceptance: NOT_RECORDED.\n\n{warnings}\n\n</details>')
 

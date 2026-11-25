@@ -3,7 +3,9 @@
 
 ![NVIDIA GeForce RTX 3090 · v0.1.5](issue-11/chart.svg)
 
-[All medians (CSV)](issue-11/summary.csv)
+[All medians (CSV)](issue-11/summary.csv) · Source: [Issue #11](https://github.com/GoblinFlash/Native-DX12-Linux/issues/11)
+
+Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM). Vulkan memory backing: NOT_RECORDED.
 
 <details>
 <summary>Reported COMPLETE · 189/189 VERIFIED</summary>
