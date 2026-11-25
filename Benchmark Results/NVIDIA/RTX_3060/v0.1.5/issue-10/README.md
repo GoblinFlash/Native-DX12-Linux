@@ -1,28 +1,9 @@
-# NVIDIA GeForce RTX 3060 · v0.1.5
+# [NVIDIA GeForce RTX 3060 · v0.1.5](https://github.com/user-attachments/files/34688925/share-results-v0.1.5.tar.gz)
 
-![NVIDIA GeForce RTX 3060 · v0.1.5](chart.svg)
+![NVIDIA GeForce RTX 3060 · v0.1.5 · Compute suite](chart.svg)
 
-[All medians (CSV)](summary.csv) · Source: [Issue #10](https://github.com/GoblinFlash/Native-DX12-Linux/issues/10)
+![NVIDIA GeForce RTX 3060 · v0.1.5 · Test 1 — D4](d4-chart.svg)
 
-Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM). Vulkan memory backing: NOT_RECORDED.
+![NVIDIA GeForce RTX 3060 · v0.1.5 · Test 2 — K](k-chart.svg)
 
-<details>
-<summary>Reported COMPLETE · 189/189 VERIFIED</summary>
-
-COMPLETED 189 · FAILED 0 · HELD 0 · NOT_RUN 0 · UNKNOWN 0
-
-Host/GPU clock checks: QUALIFIED, 4/4 suites.
-
-Owner acceptance: NOT_RECORDED.
-
-- BACKGROUND_NOT_ASSESSED
-- CLOCKS_NOT_PROVEN_PER_DISPATCH
-- IDENTITY_SELF_REPORTED
-- KERNEL_RECORDS_REPORTED
-- NO_INDEPENDENT_GPU_RERUN
-- RAW_READBACKS_NOT_INCLUDED
-- REVIEW_ISSUE_CONTEXT
-- SEPARATE_TIMING_UNITS
-- UNVERIFIED_SUBMISSION
-
-</details>
+![NVIDIA GeForce RTX 3060 · v0.1.5 · Test 3 — K WaveForm](kw-chart.svg)

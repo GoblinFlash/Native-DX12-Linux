@@ -86,11 +86,6 @@ def records(api, entries, version, core):
     return result
 
 
-def basename(version):
-    """Keep the original curated v0.1.4 report outside automatic ownership."""
-    return version + ('-intake-data.md' if version == 'v0.1.4' else '-submitted-data.md')
-
-
 def markers(key):
     """Build fixed-format markers from validated catalogue/path keys only."""
     return ('<!-- ndx12:' + key + ':start -->', '<!-- ndx12:' + key + ':end -->')
@@ -125,15 +120,10 @@ def document_set(version, proposals, core):
     result = {}
     for path, raw in output.items():
         if path == core.ROOT + version + '-submitted-data.md':
-            raw = raw.replace((version + '-submitted-data.md').encode(), basename(version).encode())
-            result[core.ROOT + basename(version)] = (raw, 'aggregate:' + version)
+            result[path] = (raw, 'aggregate:' + version)
         elif path.endswith('/' + version + '/README.md'):
-            target = path if version != 'v0.1.4' else path[:-len('README.md')] + 'intake-README.md'
-            raw = raw.replace((version + '-submitted-data.md').encode(), basename(version).encode())
-            result[target] = (raw, 'gpu:' + target[len(core.ROOT):-len('/README.md')]
-                              if version != 'v0.1.4' else 'gpu:' + target[len(core.ROOT):])
-        elif gpu_page(path, core) and version != 'v0.1.4':
-            # The curated v0.1.4 GPU pages keep their reviewed text; later releases add a results region.
+            result[path] = (raw, 'gpu:' + path[len(core.ROOT):-len('/README.md')])
+        elif gpu_page(path, core):
             result[path] = (raw, 'results:' + path[len(core.ROOT):-len('/README.md')] + '/' + version)
     return result
 
@@ -185,28 +175,15 @@ def add_results(raw, content, key, core):
 
 def new_gpu_page(path, content, key, core):
     """A GPU folder without a main page gets a titled page holding only the generated region."""
-    title = core.GPUS[path[len(core.ROOT):-len('/README.md')]]
-    return ('# ' + title + ' — community results\n\n').encode() + wrap(content, key)
+    title = core.model_name(path[len(core.ROOT):-len('/README.md')])
+    return ('# ' + title + '\n\n').encode() + wrap(content, key)
 
 
 def overview(version, proposals, prefix, core):
-    """Build the generated table/link block, without owner acceptance decisions."""
-    report = load('community_version_report')
-    report.core = core
-    proposals = sorted(proposals, key=lambda p: (report.gpu_name(p), p['issue']))
-    contexts = [core.memory_backing(p)['native_dx12']['backing'] for p in proposals]
-    backing = ('SYSMEM (system-memory buffers, not VRAM)' if contexts and
-               all(x == 'SYSMEM' for x in contexts) else 'UNKNOWN (release evidence NOT_RECORDED)')
-    table = report.overview(version, proposals, prefix).replace(version + '-submitted-data.md', basename(version))
-    reports = (f'{len(proposals)} submission-specific charts and complete available median tables, with sources and caveats.'
-               if core.release_schema(version) == core.SHARE_V2 else
-               'Median tables for matching submissions and charts when the selected workloads have measurements.')
-    return (f'{len(proposals)} submissions checked for **{version} / {core.catalog()[version]["package_id"]}** with measurements.\n\n' +
-            table + '\n\n**[View charts and extracted benchmark measurements](' + prefix + basename(version) +
-            ')** — ' + reports + '\n\n' +
-            'These are **reported export statuses**, not independently repeated GPU qualifications. '
-            'Original GPU receipts are unavailable. No overall ranking or owner acceptance is implied.\n\n' +
-            '**Native DX12 memory backing: ' + backing + '**. Vulkan memory backing: **NOT_RECORDED**.\n').encode()
+    """Link each GPU to its complete release charts."""
+    models = sorted({p['claimed_gpu'] for p in proposals})
+    links = [f'- [{core.model_name(gpu)} · {version}]({prefix}{gpu}/{version}/)' for gpu in models]
+    return ('\n'.join(links) + f'\n\n[All {version} charts]({prefix}{version}-submitted-data.md)\n').encode()
 
 
 def update_overview(raw, version, proposals, previous, prefix, core):
@@ -218,8 +195,7 @@ def update_overview(raw, version, proposals, previous, prefix, core):
         core.need(previous, 'AGGREGATE_SOURCE_MISSING')
         return replace_region(raw, content, overview(version, previous, prefix, core), key, core)
     core.need(not previous, 'AGGREGATE_MARKERS')
-    heading = ('## Additional community intake — ' if version == 'v0.1.4' else
-               '## Community Benchmark Data — ') + version
+    heading = '## Community Benchmark Data — ' + version
     block = ('\n' + heading + '\n\n').encode() + wrap(content, key) + b'\n'
     position = raw.find(b'\n## ')
     position = len(raw) if position < 0 else position
@@ -273,8 +249,8 @@ def source_signature(entries, version, core):
     pattern = re.compile(re.escape(core.ROOT) + r'(?:[A-Za-z0-9_]+/){1,2}' +
                          re.escape(version) + r'/issue-[1-9][0-9]*/record\.json')
     return sorted((r['path'], r.get('sha'), r.get('mode')) for r in entries
-                  if pattern.fullmatch(r['path']) or r['path'] == core.ROOT + basename(version) or
-                  (r['path'].startswith(core.ROOT) and r['path'].endswith(('/' + version + '/README.md', '/' + version + '/intake-README.md'))) or
+                  if pattern.fullmatch(r['path']) or r['path'] == core.ROOT + (version + '-submitted-data.md') or
+                  (r['path'].startswith(core.ROOT) and r['path'].endswith('/' + version + '/README.md')) or
                   gpu_page(r['path'], core))
 
 
@@ -317,16 +293,15 @@ def verify(root, core=None):
                   path.stat().st_size <= MAX_DOCUMENT, 'AGGREGATE_LOCAL_FILE')
         return path.read_bytes()
     # Generated release blocks must not disappear from checking when the last
-    # source record is removed. Curated v0.1.4 pages have no such markers.
+    # source record is removed.
     managed = re.compile(
         rb'<!-- ndx12:((?:overview:|aggregate:|(?:gpu|results):[A-Za-z0-9_/]+/)'
-        rb'(v[0-9]+\.[0-9]+\.[0-9]+)(?:/intake-README\.md)?):(?:start|end) -->')
+        rb'(v[0-9]+\.[0-9]+\.[0-9]+)):(?:start|end) -->')
     documents = list(community.glob('v*-data.md'))
     core.need(len(documents) <= 32, 'AGGREGATE_DOCUMENT_LIMIT')
     for version in core.catalog():
-        suffix = '/intake-README.md' if version == 'v0.1.4' else '/README.md'
         for gpu in core.GPUS:
-            path = community / (gpu + '/' + version + suffix)
+            path = community / (gpu + '/' + version + '/README.md')
             if path.exists() or path.is_symlink():
                 documents.append(path)
     for gpu in core.GPUS:

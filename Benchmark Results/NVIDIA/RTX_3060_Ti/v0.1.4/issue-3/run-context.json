@@ -1,0 +1,12 @@
+{
+  "bundle_sha256": "1a2e6db004472d83194e25ca09180b725ddc483a4ae78a2f7a2c2abcc9ffeba7",
+  "native_timestamp": {
+    "basis": "RELEASE_SEMAPHORE_TIMESTAMP",
+    "ns_per_tick": 1,
+    "published_unit": "NS",
+    "release_artifact_sha256": "a4d707dd50fa9fa22d554732d4e97dfbb54c5ab4ce6fee225c7d554afd1f399a",
+    "source_field_unit": "GPU_TICKS"
+  },
+  "reported_gpu_load": "Concurrent ONNX workload",
+  "source_url": "https://github.com/GoblinFlash/Native-DX12-Linux/issues/3"
+}

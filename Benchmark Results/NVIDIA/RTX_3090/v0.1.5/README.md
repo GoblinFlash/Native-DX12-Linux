@@ -1,30 +1,11 @@
 <!-- ndx12:gpu:NVIDIA/RTX_3090/v0.1.5:start -->
 # NVIDIA GeForce RTX 3090 · v0.1.5
 
-![NVIDIA GeForce RTX 3090 · v0.1.5](issue-11/chart.svg)
+![NVIDIA GeForce RTX 3090 · v0.1.5 · Compute suite](issue-11/chart.svg)
 
-[All medians (CSV)](issue-11/summary.csv) · Source: [Issue #11](https://github.com/GoblinFlash/Native-DX12-Linux/issues/11)
+![NVIDIA GeForce RTX 3090 · v0.1.5 · Test 1 — D4](issue-11/d4-chart.svg)
 
-Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM). Vulkan memory backing: NOT_RECORDED.
+![NVIDIA GeForce RTX 3090 · v0.1.5 · Test 2 — K](issue-11/k-chart.svg)
 
-<details>
-<summary>Reported COMPLETE · 189/189 VERIFIED</summary>
-
-COMPLETED 189 · FAILED 0 · HELD 0 · NOT_RUN 0 · UNKNOWN 0
-
-Host/GPU clock checks: NOT_QUALIFIED, 4/4 suites.
-
-Owner acceptance: NOT_RECORDED.
-
-- BACKGROUND_NOT_ASSESSED
-- CLOCKS_NOT_PROVEN_PER_DISPATCH
-- IDENTITY_SELF_REPORTED
-- KERNEL_RECORDS_REPORTED
-- NO_INDEPENDENT_GPU_RERUN
-- RAW_READBACKS_NOT_INCLUDED
-- REVIEW_ISSUE_CONTEXT
-- SEPARATE_TIMING_UNITS
-- UNVERIFIED_SUBMISSION
-
-</details>
+![NVIDIA GeForce RTX 3090 · v0.1.5 · Test 3 — K WaveForm](issue-11/kw-chart.svg)
 <!-- ndx12:gpu:NVIDIA/RTX_3090/v0.1.5:end -->

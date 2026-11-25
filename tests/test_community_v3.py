@@ -110,14 +110,15 @@ class ShareV3Tests(unittest.TestCase):
         folder = core.record_folder(proposal)
         self.assertIn(folder + '/chart.svg', data)
         output = core.render(proposal)
-        self.assertIn(b'2.61 ms', output[folder + '/README.md'])
+        self.assertIn(b'2.61 ms', output[folder + '/chart.svg'])
         self.assertIn(b'2610752', output[folder + '/measurements.csv'])
         ET.fromstring(output[folder + '/chart.svg'])
-        self.assertIn(b'HOST/GPU CLOCK CHECK QUALIFIED 7/7', output[folder + '/chart.svg'])
+        self.assertIn(b'Host/GPU clock check: QUALIFIED', output[folder + '/chart.svg'])
         report = load('community_version_report')
         report.core = core
         combined = report.render(VERSION, [proposal])[core.ROOT + VERSION + '-submitted-data.md']
-        for title in (b'Q8PL', b'FWHT', b'Sponza', b'Neural Grid'):
+        self.assertIn(b'Q8PL', output[folder + '/d4-chart.svg'])
+        for title in (b'FWHT', b'Sponza', b'Neural Grid'):
             self.assertIn(title, combined)
 
     def test_v3_rejected_for_uncataloged_release_and_legacy_release(self):
@@ -150,7 +151,7 @@ class ShareV3Tests(unittest.TestCase):
         self.files['processes.csv'] = core.csv_text(process, core.PROCESS_COLUMNS)
         self.assertEqual(self.prepared()['reason'], 'ENUM')
 
-    def test_sponza_only_results_have_report_links_without_chart(self):
+    def test_sponza_only_results_show_the_two_measured_bars(self):
         run = json.loads(self.files['run.json'])
         run['run']['requested'] = run['run']['completed'] = ['sponza']
         run['steps'] = [step for step in run['steps'] if step['suite'] == 'sponza']
@@ -169,10 +170,11 @@ class ShareV3Tests(unittest.TestCase):
         outputs = report.render(VERSION, [proposal])
         self.assertNotIn(core.record_folder(proposal) + '/chart.svg', outputs)
         index = core.ROOT + proposal['claimed_gpu'] + '/' + VERSION + '/README.md'
-        # The GPU pages show the submission's tables; without times there is no chart to show.
-        self.assertIn(b'## [Issue #1200](', outputs[index])
-        self.assertIn(b'| 64\xc3\x9764 Scalar 4-bit | 1 ms |', outputs[index])
-        self.assertNotIn(b'chart.svg', outputs[index])
+        self.assertIn(b'](issue-1200/sponza-chart.svg)', outputs[index])
+        self.assertEqual(outputs[index].count(b'!['), 1)
+        svg = ET.fromstring(outputs[core.record_folder(proposal) + '/sponza-chart.svg'])
+        self.assertEqual(len(svg.findall('.//{*}g/{*}title')), 2)
+        self.assertIn('1 ms', ''.join(svg.itertext()))
 
     def test_unverified_scheduled_q8pl_remains_visible_without_times(self):
         archive = json.loads(self.files['run.json'])
@@ -196,12 +198,11 @@ class ShareV3Tests(unittest.TestCase):
         self.assertEqual(proposal['state'], 'DATA_READY', proposal['reason'])
         report = load('community_version_report')
         report.core = core
-        output = report.render(VERSION, [proposal])[core.ROOT + VERSION + '-submitted-data.md']
-        q8pl_rows = [line for line in output.splitlines() if b'Q8PL |' in line]
-        self.assertEqual(len(q8pl_rows), 3)
-        for line in q8pl_rows:
-            self.assertEqual(line.split(b'|')[2].strip(), b'NOT_RECORDED')
-            self.assertTrue(line.split(b'|')[3].strip().endswith(b' ns'))
+        output = report.render(VERSION, [proposal])
+        svg = ET.fromstring(output[core.record_folder(proposal) + '/d4-chart.svg'])
+        self.assertEqual(len(svg.findall('.//{*}g/{*}title')), 9)
+        self.assertEqual(sum(t.text == 'not measured' for t in svg.findall('.//{*}text')), 3)
+        self.assertIn('Q8PL', ''.join(svg.itertext()))
 
 
 if __name__ == '__main__':

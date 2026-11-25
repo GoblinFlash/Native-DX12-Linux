@@ -79,11 +79,11 @@ def index_entry(proposal, index_id):
     """Format one plain report link from validated catalogue identity and a fixed path."""
     folder = intake.record_folder(proposal)
     gpu = proposal['claimed_gpu']
-    label = gpu.split('/')[0] + ' ' + intake.GPUS[gpu]
+    label = intake.model_name(gpu)
     version = proposal['claimed_version']
     intake.need(index_id in INDEX_BOOTSTRAP, 'INDEX_FORMAT')
     relative = folder[len(intake.ROOT):] + '/README.md'
-    return f'- [{label} / {version} / Issue #{proposal["issue"]}]({relative})'
+    return f'- [{label} · {version} · Run {proposal["issue"]}]({relative})'
 
 
 def update_index(source, proposal, anchor, prefix):

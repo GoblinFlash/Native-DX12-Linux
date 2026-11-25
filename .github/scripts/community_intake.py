@@ -43,9 +43,14 @@ V3_SUITES = SUITES + tuple(V3_FRAME_SUITES)
 NATIVE_ONLY = ('sponza', 'bounce')
 NATIVE_CODES = ('CONTROL_ARENA', 'SYSMEM_BUFFER', 'VRAM_BUFFER')
 TELEMETRY_MODES = ('LIVE', 'OFF', 'DISABLED', 'NOT_RECORDED')
-CHART_ONLY_MODELS = {
-    'NVIDIA/RTX_3060': 'NVIDIA GeForce RTX 3060',
-    'NVIDIA/RTX_3090': 'NVIDIA GeForce RTX 3090',
+CHARTS = {
+    'compute': ('chart.svg', 'Compute suite'),
+    'd4': ('d4-chart.svg', 'Test 1 — D4'),
+    'k': ('k-chart.svg', 'Test 2 — K'),
+    'kw': ('kw-chart.svg', 'Test 3 — K WaveForm'),
+    'fwht': ('fwht-chart.svg', 'Test 4 — FWHT'),
+    'sponza': ('sponza-chart.svg', 'Test 5 — Sponza'),
+    'bounce': ('bounce-chart.svg', 'Test 5 — Neural Grid'),
 }
 LEGACY_DRIVERS = ('615.78.08', '620.70.06')
 V3_DRIVERS = LEGACY_DRIVERS + ('620.73.04',)
@@ -1166,16 +1171,18 @@ NATIVE_NANOSECOND_ARCHIVES = frozenset((
 ))
 
 
-def format_gpu_duration(value, group=False):
+def format_gpu_duration(value, group=False, *, exact=False):
     """Display nanoseconds below 1 ms and milliseconds at or above 1 ms."""
     duration = Fraction(value)
     if duration >= 1_000_000:
         milliseconds = Decimal(exact_timing_number(duration / 1_000_000))
+        if exact:
+            return f'{milliseconds:f} ms'
         rounded = milliseconds.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         return format(rounded, 'f').rstrip('0').rstrip('.') + ' ms'
     number = exact_timing_number(duration)
     if group:
-        number = format(Decimal(str(number)), ',f')
+        number = format(Decimal(str(number)), ',f').replace(',', ' ')
     return f'{number} ns'
 
 
@@ -1241,142 +1248,85 @@ def memory_backing(proposal):
             'vulkan': {'backing': 'NOT_RECORDED', 'basis': 'NOT_INFERRED_FROM_NATIVE'}}
 
 
-def memory_label(context):
-    """Return a fixed Native-only label from derived backing metadata."""
-    if context['native_dx12']['backing'] == 'SYSMEM':
-        return 'Native DX12 memory backing: SYSMEM (system-memory buffers, not VRAM)'
-    return 'Native DX12 memory backing: UNKNOWN (release evidence NOT_RECORDED)'
+def model_name(gpu):
+    vendor = gpu.split('/')[0]
+    return ('NVIDIA GeForce' if vendor == 'NVIDIA' else vendor) + ' ' + GPUS[gpu]
 
 
-def export_consistency(proposal):
-    """Describe typed export checks, without implying execution or owner acceptance."""
-    state = enum(proposal['state'], ('DATA_READY', 'MANUAL_REVIEW'))
-    return 'CHECKED' if state == 'DATA_READY' else 'REQUIRES_REVIEW'
+def result_label(proposal):
+    return model_name(proposal['claimed_gpu']) + ' · ' + proposal['claimed_version']
 
 
-def chart(proposal, rows):
-    """Reuse pinned project v0.1.4 layouts with new numeric summaries and evidence.
-
-    Qualified complete exports use its four workload panels; other exports use
-    its panels with independent scales. No uploaded graphics or filesystem writes.
-    """
-    spec = importlib.util.spec_from_file_location('community_chart_renderer',
-                                                  Path(__file__).with_name('community_charts.py'))
-    renderer = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(renderer)
-    if release_schema(proposal['archive_version']) == SHARE_V3:
-        selected = set(renderer.SELECTED) | {(suite, case, '') for suite, case, _ in renderer.SELECTED}
-        if not any((r['suite'], r['case'], r['variant']) in selected for r in rows):
-            return None
-    return renderer.render(proposal, rows, memory_backing(proposal),
-                           catalog()[proposal['claimed_version']]['package_id'], format_gpu_duration,
-                           panels_only=proposal['claimed_gpu'] in CHART_ONLY_MODELS)
+# Reviewed historical observations are bound to both the submission and the exact share archive.
+# Never import free-form OS strings, kernel identifiers or reporter prose.
+REVIEWED_RUN_CONTEXT = {
+    (3, '1a2e6db004472d83194e25ca09180b725ddc483a4ae78a2f7a2c2abcc9ffeba7'): {
+        'reported_gpu_load': 'Concurrent ONNX workload'},
+    (4, '96d095c11364e83cf196144c9aac341c1a7a0be43355ef90820b9a9a8ff29345'): {
+        'reported_os': 'Ubuntu 26.04.1 LTS',
+        'archive_url': 'https://github.com/user-attachments/files/34638824/share-results-v0.1.4.tar.gz'},
+    (10, 'f424668009885acad705fc0baf2fd40bac7dd9154813926001e2360ad604d6ff'): {
+        'reported_os': 'Ubuntu 26.04.1 LTS',
+        'archive_url': 'https://github.com/user-attachments/files/34688925/share-results-v0.1.5.tar.gz'},
+}
 
 
-def clock_summary(steps):
-    """Count the exact clock status reported for each suite."""
-    statuses = [step['reported_clock_qualification'] for step in steps]
-    return ', '.join(f'{status}, {statuses.count(status)}/{len(statuses)} suites'
-                     for status in sorted(set(statuses)))
+def run_context(proposal):
+    version = proposal['archive_version']
+    context = {'source_url': f'https://github.com/{REPOSITORY}/issues/{proposal["issue"]}',
+               'bundle_sha256': proposal['bundle_sha256']}
+    if release_schema(version) == SHARE_V2:
+        # report_measurements admits this projection only for the pinned NVIDIA semaphore profiles.
+        context['native_timestamp'] = {'source_field_unit': 'GPU_TICKS', 'published_unit': 'NS',
+                                       'ns_per_tick': 1, 'basis': 'RELEASE_SEMAPHORE_TIMESTAMP',
+                                       'release_artifact_sha256': catalog()[version]['archive_sha256']}
+    context.update(REVIEWED_RUN_CONTEXT.get((proposal['issue'], proposal['bundle_sha256']), {}))
+    return context
 
 
-def chart_media(proposal, label, prefix, has_chart):
-    """Present measured data with its source, release backing and reported limits."""
-    run = proposal['run']
-    counts = run['counts']
-    state = run['overall']
-    status = f'Reported {state} · {counts["verified"]}/{counts["expected"]} VERIFIED'
-    media = (f'![{label}]({prefix}chart.svg)\n\n[All medians (CSV)]({prefix}summary.csv)'
-             if has_chart else f'[Measurements]({prefix}measurements.csv)')
-    issue = proposal['issue']
-    source = f'[Issue #{issue}](https://github.com/{REPOSITORY}/issues/{issue})'
-    context = memory_backing(proposal)
-    backing = f'{memory_label(context)}. Vulkan memory backing: {context["vulkan"]["backing"]}.'
-    outcomes = ' · '.join(f'{key.upper()} {counts[key]}' for key in
-                          ('completed', 'failed', 'held', 'not_run', 'unknown'))
-    warnings = '\n'.join('- ' + warning for warning in sorted(proposal['warnings']))
-    return (f'{media} · Source: {source}\n\n{backing}\n\n'
-            f'<details>\n<summary>{status}</summary>\n\n{outcomes}\n\n'
-            f'Host/GPU clock checks: {clock_summary(run["steps"])}.\n\n'
-            f'Owner acceptance: NOT_RECORDED.\n\n{warnings}\n\n</details>')
+def chart_media(proposal, prefix='', *, distinguish_run=False):
+    measured = {row['suite'] for row in proposal['measurements']}
+    label = result_label(proposal)
+    if distinguish_run:
+        label += f' · Run {proposal["issue"]}'
+    return '\n\n'.join(f'![{label} · {title}]({prefix}{name})'
+                        for suite, (name, title) in CHARTS.items() if suite in measured)
 
 
 def render(proposal):
-    """Return fixed output paths and bytes for a revalidated proposal.
-
-    Only classified exports with measurements produce files. This renderer
-    performs no filesystem or network writes.
-    """
+    """Build the public charts from validated numbers, retaining the full export separately."""
     validate_proposal(proposal)
     if issue_only_reason(proposal):
         return {}
     folder = record_folder(proposal)
-    context = memory_backing(proposal)
-    issue = proposal['issue']
-    url = 'https://github.com/' + REPOSITORY + '/issues/' + str(issue)
-    lines = [f'# Community submission — Issue #{issue}', '',
-        '**Export consistency: ' + export_consistency(proposal) + '**',
-        '**Owner acceptance: NOT_RECORDED**', '',
-        'CHECKED refers to export consistency, not a successful or independently verified GPU run.',
-        'Intake does not record owner acceptance or infer it from a merged PR.', '',
-        f'Source: [Issue #{issue}]({url})', '',
-        '**' + memory_label(context) + '**',
-        'Vulkan memory backing: NOT_RECORDED; Native placement is not attributed to the reference.',
-        'Backing is classified from documented release identity, not independently observed host allocations.', '',
-        '| Field | Intake observation |', '| --- | --- |',
-        '| State | ' + proposal['state'] + ' |', '| Reason | ' + proposal['reason'] + ' |',
-        '| Claimed GPU | ' + (proposal['claimed_gpu'] or 'Pending classification') + ' |',
-        '| Archive GPU | ' + (proposal['archive_gpu'] or 'Not established') + ' |',
-        '| Claimed release | ' + (proposal['claimed_version'] or 'Unidentified') + ' |',
-        '| Archive release | ' + (proposal['archive_version'] or 'Not established') + ' |',
-        '| Driver | ' + (proposal['driver'] or 'Not established') + ' |', '',
-        'Model/PCI field consistency is checked against pinned vendor data; this is not hardware authentication.', '',
-        'The source Issue and attachment are untrusted reports. Matching catalog fields and recalculated',
-        'medians do not authenticate the machine, receipt provenance, GPU readbacks or execution.',
-        'Review background contention and all reporter notes in the Issue; they are not copied here.',
-        'Actual per-dispatch clocks are not proven. GPU durations are shown in ns below 1 ms and in ms from 1 ms.',
-        ('Reported VERIFIED counts do not establish independent GPU qualification.'
-         if proposal['claimed_version'] and release_schema(proposal['claimed_version']) == SHARE_V3
-         else 'A reported 189/189 VERIFIED count is not independent GPU qualification.'), '']
-    public = {folder+'/record.json': json_bytes(proposal),
-              folder+'/memory-backing.json': json_bytes(context)}
-    lines += ['Reported overall state: `' + proposal['run']['overall'] + '`; failure marker present: `' +
-              str(proposal['run']['failure_reported']).lower() + '`.', '',
-              '## Reported process counts', '', '| Suite | Expected | VERIFIED (reported) | FAIL | HELD | NOT_RUN | UNKNOWN | Reported clock check |',
-              '| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |']
-    for step in proposal['run']['steps']:
-        c = step['counts']
-        lines.append('| ' + step['suite'] + ' | ' + ' | '.join(str(c[k]) for k in
-            ('expected', 'verified', 'failed', 'held', 'not_run', 'unknown')) + ' | ' + step['reported_clock_qualification'] + ' |')
     rows = summaries(proposal)
-    lines += ['', '## Recalculated exported measurements', '',
-        'Medians below are calculated from exported per-process values, not from uploaded prose or charts.',
-        'Frame-suite values are medians of process medians. No uploaded HTML, image or raw log is reused.', '',
-        '| Suite | Case | Variant | Path | n | Median GPU time |', '| --- | --- | --- | --- | ---: | ---: |']
-    for row in rows:
-        fields = [str(row[k]) for k in ('suite', 'case', 'variant', 'path', 'n')]
-        lines.append('| ' + ' | '.join(fields + [format_gpu_duration(row['median'])]) + ' |')
-    svg = chart(proposal, rows)
-    if svg is not None:
-        lines += ['', f'![Exported measurements for Issue #{issue}](chart.svg)', '']
-        public[folder+'/chart.svg'] = svg
-    prefix = '[Open SVG](chart.svg). ' if svg is not None else ''
-    lines += [prefix + 'Full sanitized data: [measurements.csv](measurements.csv),',
-              '[summary.csv](summary.csv), [processes.csv](processes.csv).', '']
-    public[folder+'/processes.csv'] = csv_text(proposal['processes'], PROCESS_COLUMNS)
-    public[folder+'/measurements.csv'] = csv_text(report_measurements(proposal),
-        ['suite', 'case', 'variant', 'path', 'repeat', 'value', 'unit', 'clock_mode', 'telemetry'])
-    public[folder+'/summary.csv'] = csv_text(rows,
-        ['suite', 'case', 'variant', 'path', 'unit', 'n', 'median', 'minimum', 'maximum'])
-    lines += ['## Mandatory caveats', '', *('- '+warning for warning in sorted(proposal['warnings'])), '',
-        'Owner acceptance is a separate manual decision; this import does not record it.',
-        'Intake approval labels authorize processing only; they do not accept these results.', '']
-    model = CHART_ONLY_MODELS.get(proposal['claimed_gpu'])
-    if model:
-        label = model + ' · ' + proposal['claimed_version']
-        lines = ['# ' + label, '', chart_media(proposal, label, '', svg is not None), '']
-    public[folder+'/README.md'] = '\n'.join(lines).encode()
-    return public
+    label = result_label(proposal)
+    spec = importlib.util.spec_from_file_location('community_chart_renderer',
+                                                  Path(__file__).with_name('community_charts.py'))
+    renderer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(renderer)
+    backing = memory_backing(proposal)
+    context = run_context(proposal)
+    source = context.get('archive_url', context['source_url'])
+    files = {'README.md': (f'# [{label}]({source})\n\n' + chart_media(proposal) + '\n').encode(),
+             'record.json': json_bytes(proposal),
+             'run-context.json': json_bytes(context),
+             'memory-backing.json': json_bytes(backing),
+             'processes.csv': csv_text(proposal['processes'], PROCESS_COLUMNS),
+             'measurements.csv': csv_text(report_measurements(proposal),
+                 ['suite', 'case', 'variant', 'path', 'repeat', 'value', 'unit', 'clock_mode', 'telemetry']),
+             'summary.csv': csv_text(rows, ['suite', 'case', 'variant', 'path', 'unit', 'n',
+                                            'median', 'minimum', 'maximum'])}
+    for step in proposal['run']['steps']:
+        suite = step['suite']
+        selected = [row for row in rows if row['suite'] == suite]
+        if selected:
+            name, title = CHARTS[suite]
+            schedule = {(row['case'], row['variant'], row['path']) for row in proposal['processes']
+                        if row['suite'] == suite}
+            files[name] = renderer.render_suite(title, label, proposal, step, selected, schedule,
+                                                format_gpu_duration, backing, context)
+    return {folder + '/' + name: raw for name, raw in files.items()}
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):

@@ -1,0 +1,11 @@
+{
+  "bundle_sha256": "1f353838bc9a83488a261f9f31adaa4baf33058fb3ffd7e0a269ef5b1e7ce817",
+  "native_timestamp": {
+    "basis": "RELEASE_SEMAPHORE_TIMESTAMP",
+    "ns_per_tick": 1,
+    "published_unit": "NS",
+    "release_artifact_sha256": "eed38c254c8e8cc8310c8fc84fbca6081696f114aadcb63cc584cb2828b448a5",
+    "source_field_unit": "GPU_TICKS"
+  },
+  "source_url": "https://github.com/GoblinFlash/Native-DX12-Linux/issues/15"
+}

@@ -26,8 +26,7 @@ class MemoryBackingTests(unittest.TestCase):
                 outputs = core.render(proposal)
                 readme = next(v.decode() for k, v in outputs.items() if k.endswith('/README.md'))
                 svg = next(v for k, v in outputs.items() if k.endswith('/chart.svg'))
-                self.assertIn(SYSMEM, readme)
-                self.assertIn(SYSMEM, svg.decode())
+                self.assertNotIn(SYSMEM, readme)
                 metadata = json.loads(next(v for k, v in outputs.items() if k.endswith('/memory-backing.json')))
                 self.assertEqual(metadata['native_dx12']['backing'], 'SYSMEM')
                 self.assertEqual(metadata['native_dx12']['scope'], 'data_buffers')
@@ -46,12 +45,12 @@ class MemoryBackingTests(unittest.TestCase):
             self.assertEqual(p['state'], 'DATA_READY')
             outputs = core.render(p)
             text = next(v.decode() for k, v in outputs.items() if k.endswith('/README.md'))
-            self.assertIn('Native DX12 memory backing: UNKNOWN', text)
+            self.assertNotIn('memory backing:', text)
             self.assertNotIn(SYSMEM, text)
             metadata = json.loads(next(v for k, v in outputs.items() if k.endswith('/memory-backing.json')))
             self.assertEqual(metadata['native_dx12']['basis'], 'NOT_RECORDED')
             svg = next(v for k, v in outputs.items() if k.endswith('/chart.svg'))
-            self.assertIn('Native DX12 memory backing: UNKNOWN', svg.decode())
+            self.assertEqual(json.loads(ET.fromstring(svg).find('{*}metadata').text), metadata)
             self.assertNotIn(SYSMEM, svg.decode())
             self.assertEqual(metadata['vulkan']['backing'], 'NOT_RECORDED')
 
@@ -74,7 +73,7 @@ class MemoryBackingTests(unittest.TestCase):
         files['run.json'] = core.json_bytes(run)
         outputs = core.render(core.prepare(issue, fixtures.bundle(files)))
         text = b''.join(outputs.values()).decode()
-        self.assertIn(SYSMEM, text)
+        self.assertEqual(core.memory_backing(core.prepare(issue, fixtures.bundle(files)))['native_dx12']['backing'], 'SYSMEM')
         self.assertNotIn('PRIVATE_MEMORY_CLAIM', text)
 
     def test_manual_review_has_no_established_memory_claim(self):
@@ -96,46 +95,22 @@ class MemoryBackingTests(unittest.TestCase):
             fixtures.writer.publish(p, rejected, 12)
         self.assertEqual(rejected.calls, [])
 
-    def test_curated_charts_expose_native_label_and_separate_vulkan_metadata(self):
-        """Every existing community chart carries visible Native-only backing and version evidence."""
-        charts = sorted((ROOT/'Benchmark Results/charts').glob('*.svg'))
-        self.assertEqual(len(charts), 4)
-        for path in charts:
-            with self.subTest(chart=path.name):
-                root = ET.fromstring(path.read_bytes())
-                caption = root.find('.//{http://www.w3.org/2000/svg}g[@id="memory-backing-label"]')
-                self.assertIn(SYSMEM, ''.join(caption.itertext()))
-                self.assertIn('Vulkan memory backing: NOT_RECORDED', ''.join(caption.itertext()))
-                meta = root.find('{http://www.w3.org/2000/svg}metadata[@id="native-memory-backing"]')
-                context = json.loads(meta.text)
-                self.assertEqual(context['native_dx12']['release'], 'v0.1.4')
-                self.assertEqual(context['native_dx12']['release_artifact_sha256'], core.catalog()['v0.1.4']['archive_sha256'])
-                self.assertEqual(context['vulkan']['backing'], 'NOT_RECORDED')
-                legend = root.find('.//{http://www.w3.org/2000/svg}g[@id="legend_1"]')
-                if legend is not None:
-                    self.assertEqual([t.text for t in legend.iter('{http://www.w3.org/2000/svg}text')],
-                                     ['Native', 'Vulkan reference'])
-
     def test_curated_pages_label_existing_results_without_removing_negative_evidence(self):
-        """Label every existing result page while keeping clock/contention caveats and values."""
-        root = ROOT/'Benchmark Results'
-        pages = ['SUBMISSIONS.md', 'v0.1.4-submitted-data.md']
-        for gpu in ('RTX_3060_Ti', 'RTX_4060_Laptop_GPU'):
-            pages += ['NVIDIA/' + gpu + '/README.md', 'NVIDIA/' + gpu + '/v0.1.4/README.md']
-        pages += ['NVIDIA/RTX_3060_Ti/issue-3.md', 'NVIDIA/RTX_3090/issue-5.md',
-                  'NVIDIA/RTX_4060_Laptop_GPU/issue-2.md']
-        for name in pages:
-            with self.subTest(page=name):
-                self.assertIn(SYSMEM, (root/name).read_text())
-        for model in ('RTX_3060', 'RTX_3090'):
-            gpu = root/'NVIDIA'/model/'v0.1.4'
-            self.assertIn('](chart.svg)', (gpu/'README.md').read_text())
-            meta = ET.parse(gpu/'chart.svg').find('{http://www.w3.org/2000/svg}metadata[@id="native-memory-backing"]')
-            self.assertEqual(json.loads(meta.text)['native_dx12']['backing'], 'SYSMEM')
-        self.assertIn('NOT_QUALIFIED', (root/'NVIDIA/RTX_3090/issue-5.md').read_text())
-        self.assertIn('ONNX', (root/'NVIDIA/RTX_3060_Ti/issue-3.md').read_text())
-        text = (root/'NVIDIA/RTX_4060_Laptop_GPU/issue-2.md').read_text()
-        self.assertIn('| Affine | 15,776 | 10,112 |', text)
+        root = ROOT / 'Benchmark Results/NVIDIA'
+        records = sorted(root.glob('*/v0.1.4/issue-*/record.json'))
+        self.assertEqual(len(records), 4)
+        for path in records:
+            proposal = json.loads(path.read_text())
+            folder = path.parent
+            metadata = json.loads((folder / 'memory-backing.json').read_text())
+            self.assertEqual(metadata, core.memory_backing(proposal))
+            self.assertEqual(metadata['native_dx12']['backing'], 'SYSMEM')
+            self.assertEqual(metadata['vulkan']['backing'], 'NOT_RECORDED')
+            self.assertEqual((folder / 'README.md').read_text().count('!['), 4)
+            if proposal['claimed_gpu'] == 'NVIDIA/RTX_3090':
+                self.assertTrue(all(s['reported_clock_qualification'] == 'NOT_QUALIFIED'
+                                    for s in proposal['run']['steps']))
+                self.assertIn('independent scale', (folder / 'chart.svg').read_text())
 
     def test_unknown_generated_page_can_coexist_with_curated_sysmem_pages(self):
         """A measured export with unknown backing can coexist with the historical SYSMEM pages."""
@@ -152,7 +127,7 @@ class MemoryBackingTests(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(data)
             readme = next(data.decode() for name, data in outputs.items() if name.endswith('/README.md'))
-            self.assertIn('Native DX12 memory backing: UNKNOWN', readme)
+            self.assertNotIn('memory backing:', readme)
             with mock.patch(__name__ + '.ROOT', target):
                 self.test_curated_pages_label_existing_results_without_removing_negative_evidence()
 

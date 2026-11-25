@@ -1,0 +1,9 @@
+# [NVIDIA GeForce RTX 3060 · v0.1.4](https://github.com/user-attachments/files/34638824/share-results-v0.1.4.tar.gz)
+
+![NVIDIA GeForce RTX 3060 · v0.1.4 · Compute suite](chart.svg)
+
+![NVIDIA GeForce RTX 3060 · v0.1.4 · Test 1 — D4](d4-chart.svg)
+
+![NVIDIA GeForce RTX 3060 · v0.1.4 · Test 2 — K](k-chart.svg)
+
+![NVIDIA GeForce RTX 3060 · v0.1.4 · Test 3 — K WaveForm](kw-chart.svg)
