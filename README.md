@@ -4,14 +4,13 @@
 
 **Help test and shape the next optimizations!**
 
-**I strongly encourage anyone with a supported NVIDIA RTX 20/30/40/50 Series GPU on Linux to download the benchmark and [submit your results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml). Every single submission, including, full/partial runs or even failures provides critical real-world hardware data needed to guide next low-level compiler and runtime optimizations.**
+**Release notice (25 November 2026):** Benchmark v0.1.6 downloads are temporarily paused while compatibility issues are addressed. Existing results, including partial runs and failures, remain welcome through the [benchmark results form](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml).
 
 **Andrew Kapica — GoblinFlash**
 
 **AI-assisted development:** This project uses AI tools to assist with research, implementation, testing, code review, and documentation. AI-assisted contributions are subject to the same technical review, testing, and licensing requirements as other contributions. See the [contribution guidelines](AGENTS.md).
 
 <p>
-  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.6"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.6" height="54"></a>
   <a href="NDX12_GPU_Benchmark/HOW_TO_RUN.md"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
   <a href="Benchmark%20Results/README.md"><img src=".github/readme-assets/button-results.svg" alt="Results" height="54"></a>
   <a href="Experiments/README.md"><img src=".github/readme-assets/button-experiments.svg" alt="Experiments" height="54"></a>
@@ -30,7 +29,7 @@ Both are mature, game-oriented projects. A translation layer introduces an API b
 
 **Native-DX12-Linux does not use Vulkan or VKD3D in its experimental NVIDIA compute path.** Shaders are compiled through **DXIL → NIR → NAK**, and compute work is submitted through native NVIDIA Linux driver interfaces. The project is an experimental, compute-focused subset of Direct3D 12, **not** a drop-in replacement for commercial games or a complete D3D12 implementation.
 
-## Native DirectX 12 Benchmark for Linux — v0.1.6
+## Native DirectX 12 Benchmark for Linux — v0.1.6 (downloads paused)
 
 A major update featuring an improved native GPU execution path, expanded benchmark workloads, interactive native graphics demos and a redesigned desktop application.
 
@@ -38,13 +37,9 @@ A major update featuring an improved native GPU execution path, expanded benchma
 - **Demos:** Earth 4K, nBody 128, nBody 10K and nBody 4K.
 - **GPU Monitoring:** Live GPU telemetry, utilization history, temperatures, clocks and memory usage.
 - **GPU Control:** Selected `nvidia-smi` functionality and additional GPU management features, including power limits, fan control, clock locking and Persistence Mode.
-- **Installation:** One download, one command. Includes a desktop launcher, integrated charts and result sharing.
+- **Installation:** Temporarily unavailable while compatibility updates are tested. The single-file desktop installer will return with the next verified release.
 
-```bash
-sudo bash NDX12-Benchmark-v0.1.6.run
-```
-
-Once installed, launch Native DX12 Benchmark from your desktop or application menu.
+**Downloads are paused.** Please use the [Releases](https://github.com/GoblinFlash/Native-DX12-Linux/releases) page to check which versions are currently available.
 
 GPU management options depend on the hardware and driver. Included RTX profiles do not imply full hardware qualification.
 
@@ -64,7 +59,7 @@ GPU management options depend on the hardware and driver. Included RTX profiles 
 
 <picture>
   <source media="(max-width: 650px)" srcset=".github/readme-assets/progress-mobile.svg">
-  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.6 available; community submissions underway" width="950">
+  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.6 downloads paused; community submissions underway" width="950">
 </picture>
 
 ## Current Work
