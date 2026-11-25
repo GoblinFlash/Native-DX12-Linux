@@ -76,6 +76,63 @@ def overview(version, proposals, prefix=''):
     return '\n'.join(lines)
 
 
+def measurement_lines(proposal, has_chart, folder_link, level='###'):
+    """Status, memory backing, chart and every median table of one matching export.
+
+    folder_link is the Issue folder relative to the page that shows it; level is the
+    heading depth of the suite tables. The release report and the GPU pages share it.
+    """
+    status, clock, _ = observations(proposal)
+    context = core.memory_backing(proposal)
+    lines = ['GPU PCI ID: `' + proposal['pci'] + '` · Driver: `' + proposal['driver'] +
+             '` · Export: **' + status + '** · Host/GPU clock check: **' + clock + '**.', '',
+             '**' + core.memory_label(context) + '**. [Release evidence](' +
+             context['native_dx12'].get('evidence_url', 'https://github.com/' + core.REPOSITORY + '/releases') + ').', '',
+             ]
+    if has_chart:
+        lines += ['![' + gpu_name(proposal) + ' selected workload medians](' + folder_link + '/chart.svg)', '',
+                  '*Selected medians from the four suites; all variants appear in the tables below.*', '']
+    rows = core.summaries(proposal)
+    lookup = {(x['suite'], x['case'], x['variant'], x['path']): x['median'] for x in rows}
+
+    def number(key):
+        value = lookup.get(key)
+        if value is None:
+            return 'NOT_RECORDED'
+        return core.format_gpu_duration(value, group=True)
+    suites = SUITES
+    if core.release_schema(proposal['claimed_version']) == core.SHARE_V3:
+        scheduled = {(row['suite'], row['case'], row['variant']) for row in proposal['processes']}
+        suites = tuple((suite, title, variants + tuple(
+            (shape, 'Q8PL', shape.replace('x', '×') + ' Q8PL')
+            for shape in ('128x128', '32x512', '16x1024')
+            if (suite, shape, 'Q8PL') in scheduled)) for suite, title, variants in SUITES)
+        suites += tuple(suite for suite in V3_SUITES
+                        if any(name == suite[0] for name, _, _ in scheduled))
+    for suite, title, variants in suites:
+        lines += [level + ' ' + title, '', '| Workload / native variant | Native ' +
+                  context['native_dx12']['backing'] + ' median GPU time | Vulkan median GPU time (backing: ' +
+                  context['vulkan']['backing'] + ') |',
+                  '| --- | ---: | ---: |']
+        for case, variant, label in variants:
+            lines.append('| ' + label + ' | ' + number((suite, case, variant, 'native')) +
+                         ' | ' + number((suite, case, '', 'vulkan')) + ' |')
+        lines.append('')
+    return lines
+
+
+def gpu_section(proposal, has_chart, folder_link, report_link, level):
+    """One submission on a GPU page: its source, measurements and links to the full data."""
+    issue = str(proposal['issue'])
+    return (['#' * (len(level) - 1) + ' [Issue #' + issue + '](https://github.com/' + core.REPOSITORY +
+             '/issues/' + issue + ')', ''] + measurement_lines(proposal, has_chart, folder_link, level) +
+            ['[Full sanitized per-Issue data](' + folder_link + '/README.md) · [All ' +
+             proposal['claimed_version'] + ' submissions](' + report_link + '#' + anchor(proposal) + ')', ''])
+
+
+GPU_NOTE = 'Exported statuses and clock checks are reported evidence, not independent GPU qualification.'
+
+
 def render(version, proposals, existing_issues=()):
     """Render a single release; preserve existing Issue data and retain refusals."""
     core.need(version in core.catalog() and type(proposals) is list and
@@ -114,7 +171,7 @@ def render(version, proposals, existing_issues=()):
              '- No cross-GPU ranking or speedup is calculated. Reported clock qualification is conditional '
              'and does not prove actual per-dispatch clocks, absence of contention or GPU receipt authenticity.', '']
     outputs = {}
-    version_indexes = {}
+    version_indexes, gpu_results = {}, {}
     for proposal in proposals:
         issue = proposal['issue']
         lines += ['## ' + gpu_name(proposal) + ' — [Issue #' + str(issue) +
@@ -143,53 +200,24 @@ def render(version, proposals, existing_issues=()):
         elif folder + '/chart.svg' in rendered:
             # Existing v1 records/CSV stay in place; only their chart presentation changes.
             outputs[folder + '/chart.svg'] = rendered[folder + '/chart.svg']
-        context = core.memory_backing(proposal)
-        lines += ['GPU PCI ID: `' + proposal['pci'] + '` · Driver: `' + proposal['driver'] +
-                  '` · Export: **' + status + '** · Host/GPU clock check: **' + clock + '**.', '',
-                  '**' + core.memory_label(context) + '**. [Release evidence](' +
-                  context['native_dx12'].get('evidence_url', 'https://github.com/' + core.REPOSITORY + '/releases') + ').', '',
-                  ]
         has_chart = folder + '/chart.svg' in rendered
-        if has_chart:
-            lines += ['![' + gpu_name(proposal) + ' selected workload medians](' + folder[len(core.ROOT):] + '/chart.svg)', '',
-                      '*Selected medians from the four suites; all variants appear in the tables below.*', '']
-        rows = core.summaries(proposal)
-        lookup = {(x['suite'], x['case'], x['variant'], x['path']): x['median'] for x in rows}
-        def number(key):
-            value = lookup.get(key)
-            if value is None:
-                return 'NOT_RECORDED'
-            return core.format_gpu_duration(value, group=True)
-        suites = SUITES
-        if modern:
-            scheduled = {(row['suite'], row['case'], row['variant']) for row in proposal['processes']}
-            suites = tuple((suite, title, variants + tuple(
-                (shape, 'Q8PL', shape.replace('x', '×') + ' Q8PL')
-                for shape in ('128x128', '32x512', '16x1024')
-                if (suite, shape, 'Q8PL') in scheduled)) for suite, title, variants in SUITES)
-            suites += tuple(suite for suite in V3_SUITES
-                            if any(name == suite[0] for name, _, _ in scheduled))
-        for suite, title, variants in suites:
-            lines += ['### ' + title, '', '| Workload / native variant | Native ' +
-                      context['native_dx12']['backing'] + ' median GPU time | Vulkan median GPU time |',
-                      '| --- | ---: | ---: |']
-            for case, variant, label in variants:
-                lines.append('| ' + label + ' | ' + number((suite, case, variant, 'native')) +
-                             ' | ' + number((suite, case, '', 'vulkan')) + ' |')
-            lines.append('')
+        lines += measurement_lines(proposal, has_chart, folder[len(core.ROOT):])
         lines += ['Submitted archive SHA-256: `' + proposal['bundle_sha256'] + '`.', '',
                   '[Full sanitized per-Issue data](' + folder[len(core.ROOT):] + '/README.md).', '']
-        version_index = core.ROOT + proposal['claimed_gpu'] + '/' + version + '/README.md'
+        # The GPU's release page and its main page show the measurements themselves, not only links.
+        gpu = core.ROOT + proposal['claimed_gpu'] + '/'
+        core.need(folder.startswith(gpu + version + '/issue-'), 'VERSION_REPORT_INPUT')
+        version_index = gpu + version + '/README.md'
         version_indexes.setdefault(version_index, ['# ' + gpu_name(proposal) +
                                                   ' — benchmark ' + version, ''])
-        title = 'full measurements and chart' if has_chart else 'submission report'
-        version_indexes[version_index].append('- [Issue #' + str(issue) +
-            ': ' + title + '](../../../' + version + '-submitted-data.md#' +
-            anchor(proposal) + ') · [Source Issue](https://github.com/' + core.REPOSITORY +
-            '/issues/' + str(issue) + ').')
-    for path, links in version_indexes.items():
-        outputs[path] = ('\n'.join(links) + '\n\nExported statuses and clock checks are reported evidence, '
-                         'not independent GPU qualification.\n').encode()
+        version_indexes[version_index] += gpu_section(proposal, has_chart, folder[len(gpu + version) + 1:],
+                                                      '../../../' + version + '-submitted-data.md', '###')
+        results = gpu + 'README.md'
+        gpu_results.setdefault(results, ['## Benchmark ' + version + ' results', ''])
+        gpu_results[results] += gpu_section(proposal, has_chart, folder[len(gpu):],
+                                            '../../' + version + '-submitted-data.md', '####')
+    for path, sections in list(version_indexes.items()) + list(gpu_results.items()):
+        outputs[path] = ('\n'.join(sections) + '\n' + GPU_NOTE + '\n').encode()
     outputs[core.ROOT + version + '-submitted-data.md'] = '\n'.join(lines).encode()
     return outputs
 

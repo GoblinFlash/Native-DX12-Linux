@@ -169,7 +169,10 @@ class ShareV3Tests(unittest.TestCase):
         outputs = report.render(VERSION, [proposal])
         self.assertNotIn(core.record_folder(proposal) + '/chart.svg', outputs)
         index = core.ROOT + proposal['claimed_gpu'] + '/' + VERSION + '/README.md'
-        self.assertIn(b'Issue #1200: submission report', outputs[index])
+        # The GPU pages show the submission's tables; without times there is no chart to show.
+        self.assertIn(b'## [Issue #1200](', outputs[index])
+        self.assertIn(b'| 64\xc3\x9764 Scalar 4-bit | 1 ms |', outputs[index])
+        self.assertNotIn(b'chart.svg', outputs[index])
 
     def test_unverified_scheduled_q8pl_remains_visible_without_times(self):
         archive = json.loads(self.files['run.json'])

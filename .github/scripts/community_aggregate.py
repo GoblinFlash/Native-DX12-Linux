@@ -132,7 +132,61 @@ def document_set(version, proposals, core):
             raw = raw.replace((version + '-submitted-data.md').encode(), basename(version).encode())
             result[target] = (raw, 'gpu:' + target[len(core.ROOT):-len('/README.md')]
                               if version != 'v0.1.4' else 'gpu:' + target[len(core.ROOT):])
+        elif gpu_page(path, core) and version != 'v0.1.4':
+            # The curated v0.1.4 GPU pages keep their reviewed text; later releases add a results region.
+            result[path] = (raw, 'results:' + path[len(core.ROOT):-len('/README.md')] + '/' + version)
     return result
+
+
+def gpu_page(path, core):
+    """The main page of one catalogue GPU folder (the page GitHub shows for that folder)."""
+    return (path.startswith(core.ROOT) and path.endswith('/README.md') and
+            path[len(core.ROOT):-len('/README.md')] in core.GPUS)
+
+
+def add_results(raw, content, key, core):
+    """Insert a release's results region into a GPU page that has none for that release yet.
+
+    Releases appear newest first; the first region goes before the page's first
+    section heading, or at the end. Bytes outside the new region stay as they are.
+    """
+    start = markers(key)[0].encode()
+    core.need(len(raw) <= MAX_DOCUMENT and start not in raw and markers(key)[1].encode() not in raw,
+              'AGGREGATE_MARKERS')
+    block = wrap(content, key) + b'\n'
+    prefix, version = key.rsplit('/', 1)
+    release = tuple(map(int, version[1:].split('.')))
+    starts = rb'<!-- ndx12:' + re.escape(prefix.encode()) + rb'/(v[0-9]+\.[0-9]+\.[0-9]+):start -->'
+    position, last = None, None
+    for match in re.finditer(starts, raw):
+        existing = tuple(map(int, match[1][1:].split(b'.')))
+        if existing < release:
+            position = match.start()
+            break
+        last = match
+    if position is None:
+        if last is None:
+            heading = raw.find(b'\n## ')
+            position = len(raw) if heading < 0 else heading + 1
+        else:
+            end = markers(prefix + '/' + last[1].decode('ascii'))[1].encode()
+            stop = raw.find(end, last.end())
+            core.need(stop >= 0, 'AGGREGATE_MARKERS')
+            position = stop + len(end)
+            if raw[position:position + 2] == b'\r\n':
+                position += 2
+            elif raw[position:position + 1] == b'\n':
+                position += 1
+    separator = b'\n' if position and raw[position - 1:position] != b'\n' else b''
+    updated = raw[:position] + separator + block + raw[position:]
+    core.need(len(updated) <= MAX_DOCUMENT, 'AGGREGATE_DOCUMENT_LIMIT')
+    return updated
+
+
+def new_gpu_page(path, content, key, core):
+    """A GPU folder without a main page gets a titled page holding only the generated region."""
+    title = core.GPUS[path[len(core.ROOT):-len('/README.md')]]
+    return ('# ' + title + ' — community results\n\n').encode() + wrap(content, key)
 
 
 def overview(version, proposals, prefix, core):
@@ -195,15 +249,21 @@ def derive(proposal, api, entries, files, core):
     modified = set()
     for path, (content, key) in generated.items():
         if path in by_path:
-            core.need(path in expected, 'AGGREGATE_COLLISION')
             old = read_blob(api, by_path[path], core, MAX_DOCUMENT)
+            if key.startswith('results:') and path not in expected:
+                # First result of this release for the GPU: its existing page gains the region.
+                files[path] = add_results(old, content, key, core)
+                modified.add(path)
+                continue
+            core.need(path in expected, 'AGGREGATE_COLLISION')
             updated = replace_region(old, content, expected[path][0], key, core)
             if updated != old:
                 files[path] = updated
                 modified.add(path)
         else:
             core.need(path not in expected, 'AGGREGATE_SOURCE_MISSING')
-            files[path] = wrap(content, key)
+            files[path] = (new_gpu_page(path, content, key, core) if key.startswith('results:')
+                           else wrap(content, key))
     for path in ('Benchmark Results/README.md', 'Benchmark Results/SUBMISSIONS.md'):
         prefix = ''
         files[path] = update_overview(files[path], version, combined, previous, prefix, core)
@@ -218,7 +278,8 @@ def source_signature(entries, version, core):
                          re.escape(version) + r'/issue-[1-9][0-9]*/record\.json')
     return sorted((r['path'], r.get('sha'), r.get('mode')) for r in entries
                   if pattern.fullmatch(r['path']) or r['path'] == core.ROOT + basename(version) or
-                  (r['path'].startswith(core.ROOT) and r['path'].endswith(('/' + version + '/README.md', '/' + version + '/intake-README.md'))))
+                  (r['path'].startswith(core.ROOT) and r['path'].endswith(('/' + version + '/README.md', '/' + version + '/intake-README.md'))) or
+                  gpu_page(r['path'], core))
 
 
 def verify(root, core=None):
@@ -262,9 +323,8 @@ def verify(root, core=None):
     # Generated release blocks must not disappear from checking when the last
     # source record is removed. Curated v0.1.4 pages have no such markers.
     managed = re.compile(
-        rb'<!-- ndx12:(?:overview|aggregate):(v[0-9]+\.[0-9]+\.[0-9]+):(?:start|end) -->|'
-        rb'<!-- ndx12:gpu:[A-Za-z0-9_/]+/(v[0-9]+\.[0-9]+\.[0-9]+)'
-        rb'(?:/intake-README\.md)?:(?:start|end) -->')
+        rb'<!-- ndx12:((?:overview:|aggregate:|(?:gpu|results):[A-Za-z0-9_/]+/)'
+        rb'(v[0-9]+\.[0-9]+\.[0-9]+)(?:/intake-README\.md)?):(?:start|end) -->')
     documents = list(community.glob('v*-data.md'))
     core.need(len(documents) <= 32, 'AGGREGATE_DOCUMENT_LIMIT')
     for version in core.catalog():
@@ -273,22 +333,27 @@ def verify(root, core=None):
             path = community / (gpu + '/' + version + suffix)
             if path.exists() or path.is_symlink():
                 documents.append(path)
+    for gpu in core.GPUS:
+        path = community / (gpu + '/README.md')
+        if path.exists() or path.is_symlink():
+            documents.append(path)
     core.need(len(documents) <= 512, 'AGGREGATE_DOCUMENT_LIMIT')
     discovered = {}
     overview_paths = ('Benchmark Results/README.md', 'Benchmark Results/SUBMISSIONS.md')
     for name in list(overview_paths) + [
             p.relative_to(root).as_posix() for p in documents]:
         for match in managed.finditer(local_file(name)):
-            version = (match[1] or match[2]).decode('ascii')
+            key, version = match[1].decode('ascii'), match[2].decode('ascii')
             versions.add(version)
-            discovered.setdefault(version, set()).add(name)
+            discovered.setdefault(version, set()).add((name, key))
     for version in sorted(versions):
         core.need(version in core.catalog(), 'AGGREGATE_VERSION')
         proposals = records(Local(), rows, version, core)
         core.need(proposals, 'AGGREGATE_SOURCE_MISSING')
         expected = document_set(version, proposals, core)
-        core.need(discovered.get(version, set()) <= set(expected) | set(overview_paths),
-                  'AGGREGATE_ORPHAN_DOCUMENT')
+        expected_markers = {(path, key) for path, (_, key) in expected.items()}
+        expected_markers.update((path, 'overview:' + version) for path in overview_paths)
+        core.need(discovered.get(version, set()) <= expected_markers, 'AGGREGATE_ORPHAN_DOCUMENT')
         for path, (content, key) in expected.items():
             raw = local_file(path)
             replace_region(raw, content, content, key, core)

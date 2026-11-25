@@ -1065,7 +1065,8 @@ class PublisherTests(unittest.TestCase):
         api = FakeAPI()
         p = ready()
         result = writer.publish(p, api, 12)
-        self.assertEqual(len(result['files']), 11)
+        # Record, data, chart and CSV files, the release report, two GPU pages and the indexes.
+        self.assertEqual(len(result['files']), 12)
         for path, (anchor, prefix) in writer.INDEXES.items():
             with self.subTest(path=path):
                 baseline = index_fixture(path)
@@ -1156,7 +1157,8 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(set(x[0] for x in api.writes), {'git/blobs','git/trees','git/commits','git/refs','pulls'})
         self.assertEqual(set(r['files']) - set(writer.INDEXES), set(core.render(p)) | {
             core.ROOT + 'v0.1.5-submitted-data.md',
-            core.ROOT + 'NVIDIA/RTX_3090/v0.1.5/README.md'})
+            core.ROOT + 'NVIDIA/RTX_3090/v0.1.5/README.md',
+            core.ROOT + 'NVIDIA/RTX_3090/README.md'})
         for path in writer.INDEXES:
             entry = next(row for row in api.trees['c'*40] if row['path'] == path)
             text = api.blobs[entry['sha']]
