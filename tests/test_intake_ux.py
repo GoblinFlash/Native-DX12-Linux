@@ -189,6 +189,19 @@ class IntakeUXTests(unittest.TestCase):
                 self.assertEqual(writer.publish(proposal, api, 12)['status'],
                                  'DRAFT_PR_CREATED')
 
+        compact_source = issue(gpu='RTX 3090')
+        compact_run = json.loads(files['run.json'])
+        compact_run['gpu'].update(model='NVIDIA GeForce RTX 3090', pci='10de:2204')
+        compact_files = {**files, 'run.json': core.json_bytes(compact_run)}
+        compact = core.prepare(compact_source, bundle(compact_files))
+        readme = core.render(compact)[core.record_folder(compact) + '/README.md']
+        self.assertIn(b'<summary>Reported FAILED', readme)
+        self.assertIn(b'188/189 VERIFIED', readme)
+        self.assertIn(b'FAILED 1', readme)
+        self.assertIn(b'NOT_QUALIFIED, 4/4 suites', readme)
+        self.assertIn(b'NONCOMPLETE_RUN', readme)
+        self.assertNotIn(b'PRIVATE_FAIL_CANARY', readme)
+
         for negative in ('Stopped or interrupted before completion',
                          'Failed or refused to start'):
             with self.subTest(negative=negative):

@@ -50,10 +50,7 @@ def observations(proposal):
     """Describe process completion and clock evidence for a measured export."""
     run = proposal['run']
     counts = run['counts']
-    qualified = sum(s['reported_clock_qualification'] == 'QUALIFIED' for s in run['steps'])
-    clock = ('QUALIFIED' if qualified == len(run['steps']) else 'NOT_QUALIFIED / NOT_RECORDED')
-    return (f'{counts["verified"]}/{counts["expected"]} VERIFIED',
-            f'{clock}, {qualified}/{len(run["steps"])} suites',
+    return (f'{counts["verified"]}/{counts["expected"]} VERIFIED', core.clock_summary(run['steps']),
             'Reported ' + run['overall'] + '; original GPU receipts unavailable')
 
 
@@ -181,10 +178,17 @@ def render(version, proposals, existing_issues=()):
         lines += measurement_lines(proposal, has_chart, folder[len(core.ROOT):])
         lines += ['Submitted archive SHA-256: `' + proposal['bundle_sha256'] + '`.', '',
                   '[Full sanitized per-Issue data](' + folder[len(core.ROOT):] + '/README.md).', '']
-        # The GPU's release page and its main page show the measurements themselves, not only links.
         gpu = core.ROOT + proposal['claimed_gpu'] + '/'
         core.need(folder.startswith(gpu + version + '/issue-'), 'VERSION_REPORT_INPUT')
         version_index = gpu + version + '/README.md'
+        model = core.CHART_ONLY_MODELS.get(proposal['claimed_gpu'])
+        if model:
+            label = f'{model} · {version}'
+            relative = folder[len(gpu + version) + 1:]
+            version_media = core.chart_media(proposal, label, relative + '/', has_chart)
+            version_indexes.setdefault(version_index, [f'# {label}', '']).extend([version_media, ''])
+            outputs[gpu + 'README.md'] = f'- [{version}]({version}/)\n'.encode()
+            continue
         version_indexes.setdefault(version_index, ['# ' + gpu_name(proposal) +
                                                   ' — benchmark ' + version, ''])
         version_indexes[version_index] += gpu_section(proposal, has_chart, folder[len(gpu + version) + 1:],
@@ -194,7 +198,9 @@ def render(version, proposals, existing_issues=()):
         gpu_results[results] += gpu_section(proposal, has_chart, folder[len(gpu):],
                                             '../../' + version + '-submitted-data.md', '####')
     for path, sections in list(version_indexes.items()) + list(gpu_results.items()):
-        outputs[path] = ('\n'.join(sections) + '\n' + GPU_NOTE + '\n').encode()
+        gpu_key = '/'.join(path[len(core.ROOT):].split('/')[:2])
+        footer = '' if gpu_key in core.CHART_ONLY_MODELS else '\n' + GPU_NOTE + '\n'
+        outputs[path] = ('\n'.join(sections) + footer).encode()
     outputs[core.ROOT + version + '-submitted-data.md'] = '\n'.join(lines).encode()
     return outputs
 

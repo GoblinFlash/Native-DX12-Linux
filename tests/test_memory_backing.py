@@ -120,13 +120,18 @@ class MemoryBackingTests(unittest.TestCase):
         """Label every existing result page while keeping clock/contention caveats and values."""
         root = ROOT/'Benchmark Results'
         pages = ['SUBMISSIONS.md', 'v0.1.4-submitted-data.md']
-        for gpu in ('RTX_3060', 'RTX_3060_Ti', 'RTX_3090', 'RTX_4060_Laptop_GPU'):
+        for gpu in ('RTX_3060_Ti', 'RTX_4060_Laptop_GPU'):
             pages += ['NVIDIA/' + gpu + '/README.md', 'NVIDIA/' + gpu + '/v0.1.4/README.md']
         pages += ['NVIDIA/RTX_3060_Ti/issue-3.md', 'NVIDIA/RTX_3090/issue-5.md',
                   'NVIDIA/RTX_4060_Laptop_GPU/issue-2.md']
         for name in pages:
             with self.subTest(page=name):
                 self.assertIn(SYSMEM, (root/name).read_text())
+        for model in ('RTX_3060', 'RTX_3090'):
+            gpu = root/'NVIDIA'/model/'v0.1.4'
+            self.assertIn('](chart.svg)', (gpu/'README.md').read_text())
+            meta = ET.parse(gpu/'chart.svg').find('{http://www.w3.org/2000/svg}metadata[@id="native-memory-backing"]')
+            self.assertEqual(json.loads(meta.text)['native_dx12']['backing'], 'SYSMEM')
         self.assertIn('NOT_QUALIFIED', (root/'NVIDIA/RTX_3090/issue-5.md').read_text())
         self.assertIn('ONNX', (root/'NVIDIA/RTX_3060_Ti/issue-3.md').read_text())
         text = (root/'NVIDIA/RTX_4060_Laptop_GPU/issue-2.md').read_text()

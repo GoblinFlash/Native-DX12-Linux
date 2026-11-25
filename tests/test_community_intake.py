@@ -33,7 +33,7 @@ writer = load('community_publish')
 core = writer.intake
 
 
-def issue(number=12, gpu='RTX 3090', version='v0.1.5'):
+def issue(number=12, gpu='RTX 3060 Ti', version='v0.1.5'):
     """Return an approved synthetic results Issue for the requested GPU/release/number."""
     return {'number': number, 'title': '[Results] '+gpu, 'state': 'open',
             'updated_at': '2026-11-11T00:00:00Z', 'author_association': 'NONE',
@@ -45,7 +45,7 @@ def issue(number=12, gpu='RTX 3090', version='v0.1.5'):
                 '### Additional details (optional)\n\nReview contention in the source Issue.\n')}
 
 
-def raw_files(version='v0.1.5', gpu='NVIDIA GeForce RTX 3090'):
+def raw_files(version='v0.1.5', gpu='NVIDIA GeForce RTX 3060 Ti'):
     """Build deterministic supported-release CSV/JSON fixtures with privacy canaries."""
     processes = []
     for suite in core.SUITES:
@@ -286,7 +286,7 @@ class IntakeTests(unittest.TestCase):
                 self.assertEqual(core.summaries(p)[0]['n'], 7)
                 outputs = core.render(p)
                 self.assertEqual(len(outputs), 7)  # memory-backing.json is a separate artifact
-                self.assertTrue(all('/NVIDIA/RTX_3090/'+version+'/issue-12/' in path for path in outputs))
+                self.assertTrue(all('/NVIDIA/RTX_3060_Ti/'+version+'/issue-12/' in path for path in outputs))
 
     def test_deterministic_bytes(self):
         """Require identical fixture archives and rendered outputs for identical inputs."""
@@ -1158,8 +1158,8 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(set(x[0] for x in api.writes), {'git/blobs','git/trees','git/commits','git/refs','pulls'})
         self.assertEqual(set(r['files']) - set(writer.INDEXES), set(core.render(p)) | {
             core.ROOT + 'v0.1.5-submitted-data.md',
-            core.ROOT + 'NVIDIA/RTX_3090/v0.1.5/README.md',
-            core.ROOT + 'NVIDIA/RTX_3090/README.md'})
+            core.ROOT + 'NVIDIA/RTX_3060_Ti/v0.1.5/README.md',
+            core.ROOT + 'NVIDIA/RTX_3060_Ti/README.md'})
         for path in writer.INDEXES:
             entry = next(row for row in api.trees['c'*40] if row['path'] == path)
             text = api.blobs[entry['sha']]
@@ -1240,7 +1240,7 @@ class PublisherTests(unittest.TestCase):
             """Change the fake Issue only after its new ref has been created."""
             result = original_post(endpoint, data)
             if endpoint == 'git/refs':
-                api.issue['body'] = api.issue['body'].replace('RTX 3090', 'RTX 3060')+'\nPRIVATE_LATE_PROSE'
+                api.issue['body'] = api.issue['body'].replace('RTX 3060 Ti', 'RTX 3060')+'\nPRIVATE_LATE_PROSE'
             return result
         api.post = post
         with tempfile.TemporaryDirectory() as tmp:
@@ -1440,11 +1440,17 @@ class WorkflowTests(unittest.TestCase):
             event.write_bytes(core.json_bytes({'issue': {'number': 12}}))
             archive = root/'bundle'
             archive.write_bytes(bundle())
+            summary = root/'summary'
             env = {'GITHUB_EVENT_NAME': 'issues', 'GITHUB_REPOSITORY': core.REPOSITORY,
-                   'GITHUB_OUTPUT': str(output)}
-            with mock.patch.dict(os.environ, env), mock.patch.object(core, 'GitHub', return_value=api):
+                   'GITHUB_OUTPUT': str(output), 'GITHUB_STEP_SUMMARY': str(summary)}
+            with mock.patch.dict(os.environ, env), mock.patch.object(core, 'GitHub', return_value=api), \
+                    mock.patch('sys.stdout', new_callable=io.StringIO) as log:
                 self.assertEqual(core.prepare_main(['--event', str(event), '--bundle', str(archive),
                                                     '--output', str(proposal)]), 0)
+            self.assertIn('::warning title=Community benchmark intake::', log.getvalue())
+            self.assertIn('GPU_MISMATCH', log.getvalue())
+            self.assertIn('Issue #12', summary.read_text())
+            self.assertIn('`GPU_MISMATCH`', summary.read_text())
             self.assertFalse(proposal.exists())
             self.assertFalse(output.exists())
             self.assertEqual(api.writes, [])

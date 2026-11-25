@@ -20,7 +20,7 @@ class DisplayTests(unittest.TestCase):
         """Results route into GPU folders directly, without a Community directory."""
         self.assertFalse((ROOT / 'Benchmark Results/Community').exists())
         self.assertEqual(core.record_folder(ready()),
-                         'Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-12')
+                         'Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-12')
         self.assertEqual(core.gpu_category('AMD Radeon RX 7900 XTX'), 'AMD/RX_7900_XTX')
         self.assertEqual(core.gpu_category('Intel Arc A770'), 'Intel/Arc_A770')
         mismatch = core.prepare(issue(gpu='RTX 3060'), bundle())
@@ -39,12 +39,12 @@ class DisplayTests(unittest.TestCase):
         api = FakeAPI()
         writer.publish(ready(), api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        folder = 'Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-12'
+        folder = 'Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-12'
         self.assertIn('![Exported measurements for Issue #12](chart.svg)',
                       api.blobs[entries[folder + '/README.md']['sha']])
         expected = {
-            'Benchmark Results/README.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
-            'Benchmark Results/SUBMISSIONS.md': 'NVIDIA/RTX_3090/v0.1.5/issue-12/README.md',
+            'Benchmark Results/README.md': 'NVIDIA/RTX_3060_Ti/v0.1.5/issue-12/README.md',
+            'Benchmark Results/SUBMISSIONS.md': 'NVIDIA/RTX_3060_Ti/v0.1.5/issue-12/README.md',
         }
         for path, relative in expected.items():
             with self.subTest(path=path):
@@ -63,7 +63,7 @@ class DisplayTests(unittest.TestCase):
         api = FakeAPI(current=source)
         writer.publish(proposal, api, 12)
         entries = {row['path']: row for row in api.trees['c' * 40]}
-        folder = 'Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-12'
+        folder = 'Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-12'
         report = api.blobs[entries[folder + '/README.md']['sha']]
         self.assertIn('**Export consistency: CHECKED**', report)
         self.assertIn('**Owner acceptance: NOT_RECORDED**', report)

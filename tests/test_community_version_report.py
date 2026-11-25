@@ -146,11 +146,18 @@ class VersionReportTests(unittest.TestCase):
         first = core.prepare(issue(12), bundle())
         second = core.prepare(issue(13), bundle())
         outputs = report.render('v0.1.5', [first, second])
-        index = outputs['Benchmark Results/NVIDIA/RTX_3090/v0.1.5/README.md'].decode()
+        index = outputs['Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/README.md'].decode()
         for number in (12, 13):
-            self.assertIn('#rtx-3090--issue-' + str(number), index)
-            self.assertIn('Benchmark Results/NVIDIA/RTX_3090/v0.1.5/issue-' +
+            self.assertIn('#rtx-3060-ti--issue-' + str(number), index)
+            self.assertIn('Benchmark Results/NVIDIA/RTX_3060_Ti/v0.1.5/issue-' +
                           str(number) + '/record.json', outputs)
+
+    def test_overview_counts_each_reported_clock_status(self):
+        proposal = core.prepare(issue(), bundle())
+        self.assertEqual(report.observations(proposal)[1], 'NOT_QUALIFIED, 4/4 suites')
+        proposal['run']['steps'][0]['reported_clock_qualification'] = 'NOT_RECORDED'
+        self.assertEqual(report.observations(proposal)[1],
+                         'NOT_QUALIFIED, 3/4 suites, NOT_RECORDED, 1/4 suites')
 
     def test_unqualified_clock_keeps_independent_scales(self):
         """The old unqualified design retains both data series without a shared time axis."""

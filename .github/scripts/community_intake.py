@@ -43,6 +43,10 @@ V3_SUITES = SUITES + tuple(V3_FRAME_SUITES)
 NATIVE_ONLY = ('sponza', 'bounce')
 NATIVE_CODES = ('CONTROL_ARENA', 'SYSMEM_BUFFER', 'VRAM_BUFFER')
 TELEMETRY_MODES = ('LIVE', 'OFF', 'DISABLED', 'NOT_RECORDED')
+CHART_ONLY_MODELS = {
+    'NVIDIA/RTX_3060': 'NVIDIA GeForce RTX 3060',
+    'NVIDIA/RTX_3090': 'NVIDIA GeForce RTX 3090',
+}
 LEGACY_DRIVERS = ('615.78.08', '620.70.06')
 V3_DRIVERS = LEGACY_DRIVERS + ('620.73.04',)
 STATUSES = ('VERIFIED', 'FAIL', 'HELD', 'NOT_RUN', 'UNKNOWN')
@@ -1265,7 +1269,31 @@ def chart(proposal, rows):
         if not any((r['suite'], r['case'], r['variant']) in selected for r in rows):
             return None
     return renderer.render(proposal, rows, memory_backing(proposal),
-                           catalog()[proposal['claimed_version']]['package_id'], format_gpu_duration)
+                           catalog()[proposal['claimed_version']]['package_id'], format_gpu_duration,
+                           panels_only=proposal['claimed_gpu'] in CHART_ONLY_MODELS)
+
+
+def clock_summary(steps):
+    """Count the exact clock status reported for each suite."""
+    statuses = [step['reported_clock_qualification'] for step in steps]
+    return ', '.join(f'{status}, {statuses.count(status)}/{len(statuses)} suites'
+                     for status in sorted(set(statuses)))
+
+
+def chart_media(proposal, label, prefix, has_chart):
+    """Present measured data with reported status and expandable measurement limits."""
+    run = proposal['run']
+    counts = run['counts']
+    state = run['overall']
+    status = f'Reported {state} · {counts["verified"]}/{counts["expected"]} VERIFIED'
+    media = (f'![{label}]({prefix}chart.svg)\n\n[All medians (CSV)]({prefix}summary.csv)'
+             if has_chart else f'[Measurements]({prefix}measurements.csv)')
+    outcomes = ' · '.join(f'{key.upper()} {counts[key]}' for key in
+                          ('completed', 'failed', 'held', 'not_run', 'unknown'))
+    warnings = '\n'.join('- ' + warning for warning in sorted(proposal['warnings']))
+    return (f'{media}\n\n<details>\n<summary>{status}</summary>\n\n{outcomes}\n\n'
+            f'Host/GPU clock checks: {clock_summary(run["steps"])}.\n\n'
+            f'Owner acceptance: NOT_RECORDED.\n\n{warnings}\n\n</details>')
 
 
 def render(proposal):
@@ -1338,6 +1366,10 @@ def render(proposal):
     lines += ['## Mandatory caveats', '', *('- '+warning for warning in sorted(proposal['warnings'])), '',
         'Owner acceptance is a separate manual decision; this import does not record it.',
         'Intake approval labels authorize processing only; they do not accept these results.', '']
+    model = CHART_ONLY_MODELS.get(proposal['claimed_gpu'])
+    if model:
+        label = model + ' · ' + proposal['claimed_version']
+        lines = ['# ' + label, '', chart_media(proposal, label, '', svg is not None), '']
     public[folder+'/README.md'] = '\n'.join(lines).encode()
     return public
 
@@ -1448,7 +1480,12 @@ def report_intake_skip(issue_number, reason):
             'The Issue must be OPEN, start with [Results], and carry the '
             'benchmark:submission label. Reopen/correct it before retrying.'),
     }
-    title, guidance = notes[reason]
+    if reason in notes:
+        title, guidance = notes[reason]
+    else:
+        need(reason == 'NO_MEASUREMENTS' or (reason in REASONS and reason != 'OK'), 'INPUT_FORMAT')
+        title = 'The submission remains in its source Issue.'
+        guidance = 'Check the reported reason and supply a matching export with measurements before retrying.'
     print(reason)
     print('::warning title=Community benchmark intake::' + reason + ' - ' + title)
     summary = os.environ.get('GITHUB_STEP_SUMMARY')
@@ -1499,7 +1536,7 @@ def prepare_main(argv=None):
     proposal = validate_proposal(prepare(issue, compressed))
     reason = issue_only_reason(proposal)
     if args.event and reason:
-        print(f'Issue #{issue_number} remains in Issues: {reason}')
+        report_intake_skip(issue_number, reason)
         return 0
     write_new(args.output, json_bytes(proposal))
     if args.event:
