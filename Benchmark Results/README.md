@@ -6,6 +6,7 @@ Recorded GPU experiments, CPU-side development checks and community benchmark su
 <summary>Individual intake records (all benchmark versions)</summary>
 
 <!-- ndx12-community-intake:start -->
+- [NVIDIA RTX 3080 / v0.1.5 / Issue #42](NVIDIA/RTX_3080/v0.1.5/issue-42/README.md)
 - [Pending classification / v0.1.5 / Issue #11](Pending_Classification/v0.1.5/issue-11/README.md)
 - [NVIDIA RTX 3060 / v0.1.5 / Issue #10](NVIDIA/RTX_3060/v0.1.5/issue-10/README.md)
 - [NVIDIA RTX 4060 / v0.1.5 / Issue #15](NVIDIA/RTX_4060/v0.1.5/issue-15/README.md)
@@ -17,16 +18,17 @@ Recorded GPU experiments, CPU-side development checks and community benchmark su
 ## Community Benchmark Data — v0.1.5
 
 <!-- ndx12:overview:v0.1.5:start -->
-4 submissions checked for **v0.1.5 / v21-r16**. 3 matching exports have measurements; refused submissions contribute no numeric results.
+5 submissions checked for **v0.1.5 / v21-r16**. 4 matching exports have measurements; refused submissions contribute no numeric results.
 
 | GPU | Exported process status | Reported host/GPU clock check | Important limitation |
 | --- | --- | --- | --- |
 | [RTX 3060](v0.1.5-submitted-data.md#rtx-3060--issue-10) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
+| [RTX 3080](v0.1.5-submitted-data.md#rtx-3080--issue-42) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 | [RTX 3090 (claimed)](https://github.com/GoblinFlash/Native-DX12-Linux/issues/11) | No imported values | NOT_RECORDED | GPU_MISMATCH: archive reports RTX 3060 |
 | [RTX 4060](v0.1.5-submitted-data.md#rtx-4060--issue-15) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 | [RTX 4090](v0.1.5-submitted-data.md#rtx-4090--issue-14) | 189/189 VERIFIED | QUALIFIED, 4/4 suites | Reported COMPLETE; original GPU receipts unavailable |
 
-**[View charts and extracted benchmark measurements](v0.1.5-submitted-data.md)** — 3 submission-specific charts and complete available median tables, with sources and caveats.
+**[View charts and extracted benchmark measurements](v0.1.5-submitted-data.md)** — 4 submission-specific charts and complete available median tables, with sources and caveats.
 
 These are **reported export statuses**, not independently repeated GPU qualifications. Original GPU receipts are unavailable. No overall ranking or owner acceptance is implied.
 
