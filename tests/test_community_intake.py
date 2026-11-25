@@ -322,6 +322,7 @@ class IntakeTests(unittest.TestCase):
             ('NVIDIA GeForce RTX 3050 OEM', 'NVIDIA/RTX_3050'),
             ('NVIDIA GeForce RTX 2060 SUPER', 'NVIDIA/RTX_2060_Super'),
             ('NVIDIA GeForce RTX 2060 12GB', 'NVIDIA/RTX_2060'),
+            ('NVIDIA GeForce RTX 2080 Ti 11GB', 'NVIDIA/RTX_2080_Ti'),
             ('NVIDIA GeForce RTX 5090 D v2', 'NVIDIA/RTX_5090_D_v2'),
             ('NVIDIA GeForce RTX 5050 Laptop GPU', 'NVIDIA/RTX_5050_Laptop_GPU')]:
             with self.subTest(value=value):self.assertEqual(core.gpu_category(value), expected)

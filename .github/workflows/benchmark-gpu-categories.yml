@@ -103,7 +103,7 @@ jobs:
                 .replace(/ \(pci [0-9a-f]{4}:[0-9a-f]{4}\)$/, '').trim()
                 // Same as community_intake.gpu_category: one memory size and a
                 // trailing OEM marker do not form a separate category.
-                .replace(/ (?:4|6|8|10|12|16|20|24|32) ?gb(?= |$)/, '')
+                .replace(/ (?:4|6|8|10|11|12|16|20|24|32) ?gb(?= |$)/, '')
                 .replace(/ oem$/, '');
               const match = known.find(([, regex]) => regex.test(model));
               desired.add('benchmark:submission');

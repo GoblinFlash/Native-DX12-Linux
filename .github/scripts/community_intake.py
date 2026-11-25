@@ -188,7 +188,7 @@ def gpu_category(value):
     value = ' '.join(value.split()).casefold()
     # A memory size (RTX 3080 12GB, RTX 3050 6GB Laptop GPU) or an OEM marker does
     # not form a separate category: the record keeps the PCI ID that tells them apart.
-    value = re.sub(r' (?:4|6|8|10|12|16|20|24|32) ?gb(?= |$)', '', value, count=1)
+    value = re.sub(r' (?:4|6|8|10|11|12|16|20|24|32) ?gb(?= |$)', '', value, count=1)
     value = re.sub(r' oem$', '', value)
     # Laptop aliases remain Laptop; Ti, Super, D and Laptop suffixes are never discarded.
     if value.endswith(' laptop'):

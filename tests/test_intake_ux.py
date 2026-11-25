@@ -85,6 +85,7 @@ class IntakeUXTests(unittest.TestCase):
             ('NVIDIA GeForce RTX 3050 6GB Laptop GPU', 'gpu:rtx-3050-laptop'),
             ('NVIDIA GeForce RTX 3050 OEM', 'gpu:rtx-3050'),
             ('NVIDIA GeForce RTX 2060 SUPER', 'gpu:rtx-2060-super'),
+            ('NVIDIA GeForce RTX 2080 Ti 11GB', 'gpu:rtx-2080-ti'),
             ('NVIDIA GeForce RTX 5090 D v2', 'gpu:rtx-5090-d-v2'),
             ('RTX 3080 12GB 10GB', 'gpu:unclassified'),
             ('RTX 3080 13GB', 'gpu:unclassified'),
