@@ -380,7 +380,7 @@
    <path d="M 59.292 569.43  L 912.708 569.43  " style="fill: none; stroke: #d1deea; stroke-width: 1.15; stroke-linecap: square" />
   </g>
   <g id="text_45">
-   <text style="font-weight: 700; font-size: 25.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="30.78" transform="rotate(-0 59.292 30.78)">Community Benchmark — RTX 3080</text>
+   <text style="font-weight: 700; font-size: 25.4px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="30.78" transform="rotate(-0 59.292 30.78)">Community Benchmark — RTX 3080 12GB</text>
   </g>
   <g id="text_46">
    <text style="font-size: 14.8px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #152e4c" x="59.292" y="56.0196" transform="rotate(-0 59.292 56.0196)">Whole-workload measurements — selected v0.1.5 medians</text>

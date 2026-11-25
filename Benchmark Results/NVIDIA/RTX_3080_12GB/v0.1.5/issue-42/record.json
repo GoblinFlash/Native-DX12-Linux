@@ -2,7 +2,7 @@
   "archive_gpu": "NVIDIA/RTX_3080",
   "archive_version": "v0.1.5",
   "bundle_sha256": "ddc30c80161d3cddb8e26a1dd8e81e762b43681c99ca8ab66b7fb189f87b5e00",
-  "claimed_gpu": "NVIDIA/RTX_3080",
+  "claimed_gpu": "NVIDIA/RTX_3080_12GB",
   "claimed_version": "v0.1.5",
   "driver": "615.78.08",
   "issue": 42,

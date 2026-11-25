@@ -69,8 +69,19 @@ jobs:
               "RTX 5060 Ti", "RTX 5060 Laptop GPU", "RTX 5090 D v2",
               "RTX 5050", "RTX 5050 Laptop GPU", "RTX 2080 Ti",
               "RTX 2080 Super", "RTX 2080", "RTX 2070 Super", "RTX 2070",
-              "RTX 2060 Super", "RTX 2060", "RTX 2050"
+              "RTX 2060 Super", "RTX 2060", "RTX 2050", "RTX 3050 OEM",
+              "RTX 3050 4GB Laptop GPU", "RTX 3050 6GB Laptop GPU",
+              "RTX 3080 10GB", "RTX 3080 12GB", "RTX 3060 8GB", "RTX 3060 12GB",
+              "RTX 4060 Ti 8GB", "RTX 4060 Ti 16GB", "RTX 5060 Ti 8GB",
+              "RTX 5060 Ti 16GB", "RTX 2060 6GB", "RTX 2060 12GB", "RTX 3050 6GB",
+              "RTX 3050 8GB"
             ];
+            // Same as community_intake: memory-size spelling is normalized; a size is
+            // dropped only for a model without memory-size categories.
+            const memoryToken = / (4|6|8|10|11|12|16|20|24|32) ?gb(?= |$)/;
+            const variantBases = new Set(supportedNvidia
+              .filter(name => memoryToken.test(name.toLowerCase()))
+              .map(name => name.toLowerCase().replace(memoryToken, '')));
             const known = supportedNvidia.map(name => {
               const lower = name.toLowerCase();
               const model = lower.endsWith(' laptop gpu')
@@ -101,11 +112,16 @@ jobs:
               const model = readField('GPU model')
                 .toLowerCase().replace(/[\s\u00a0]+/g, ' ')
                 .replace(/ \(pci [0-9a-f]{4}:[0-9a-f]{4}\)$/, '').trim()
-                // Same as community_intake.gpu_category: one memory size and a
-                // trailing OEM marker do not form a separate category.
-                .replace(/ (?:4|6|8|10|12|16|20|24|32) ?gb(?= |$)/, '')
-                .replace(/ oem$/, '');
-              const match = known.find(([, regex]) => regex.test(model));
+                .replace(memoryToken, ' $1gb');
+              let match = known.find(([, regex]) => regex.test(model));
+              const bare = model.replace(memoryToken, '');
+              if (!match && bare !== model && !memoryToken.test(bare)) {
+                const base = known.find(([, regex]) => regex.test(bare));
+                const baseName = base && supportedNvidia.find(name =>
+                  'gpu:' + name.toLowerCase().replace(/ laptop gpu$/, ' laptop')
+                    .replace(/\s+/g, '-') === base[0]);
+                if (base && !(baseName && variantBases.has(baseName.toLowerCase()))) match = base;
+              }
               desired.add('benchmark:submission');
               desired.add(match ? match[0] : 'gpu:unclassified');
             }
