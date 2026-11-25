@@ -132,7 +132,43 @@ def document_set(version, proposals, core):
             raw = raw.replace((version + '-submitted-data.md').encode(), basename(version).encode())
             result[target] = (raw, 'gpu:' + target[len(core.ROOT):-len('/README.md')]
                               if version != 'v0.1.4' else 'gpu:' + target[len(core.ROOT):])
+        elif gpu_page(path, core) and version != 'v0.1.4':
+            # The curated v0.1.4 GPU pages keep their reviewed text; later releases add a results region.
+            result[path] = (raw, 'results:' + path[len(core.ROOT):-len('/README.md')] + '/' + version)
     return result
+
+
+def gpu_page(path, core):
+    """The main page of one catalogue GPU folder (the page GitHub shows for that folder)."""
+    return (path.startswith(core.ROOT) and path.endswith('/README.md') and
+            path[len(core.ROOT):-len('/README.md')] in core.GPUS)
+
+
+def add_results(raw, content, key, core):
+    """Insert a release's results region into a GPU page that has none for that release yet.
+
+    A newer release goes above earlier results; the first goes before the page's first
+    section heading, or at the end. Bytes outside the new region stay as they are.
+    """
+    start = markers(key)[0].encode()
+    core.need(len(raw) <= MAX_DOCUMENT and start not in raw and markers(key)[1].encode() not in raw,
+              'AGGREGATE_MARKERS')
+    block = wrap(content, key) + b'\n'
+    position = raw.find(b'<!-- ndx12:results:')
+    if position < 0:
+        heading = raw.find(b'\n## ')
+        position = len(raw) if heading < 0 else heading + 1
+    elif not raw[:position].endswith(b'\n'):
+        raise core.Refused('AGGREGATE_MARKERS')
+    updated = raw[:position] + block + raw[position:]
+    core.need(len(updated) <= MAX_DOCUMENT, 'AGGREGATE_DOCUMENT_LIMIT')
+    return updated
+
+
+def new_gpu_page(path, content, key, core):
+    """A GPU folder without a main page gets a titled page holding only the generated region."""
+    title = core.GPUS[path[len(core.ROOT):-len('/README.md')]]
+    return ('# ' + title + ' — community results\n\n').encode() + wrap(content, key)
 
 
 def overview(version, proposals, prefix, core):
@@ -195,15 +231,21 @@ def derive(proposal, api, entries, files, core):
     modified = set()
     for path, (content, key) in generated.items():
         if path in by_path:
-            core.need(path in expected, 'AGGREGATE_COLLISION')
             old = read_blob(api, by_path[path], core, MAX_DOCUMENT)
+            if key.startswith('results:') and path not in expected:
+                # First result of this release for the GPU: its existing page gains the region.
+                files[path] = add_results(old, content, key, core)
+                modified.add(path)
+                continue
+            core.need(path in expected, 'AGGREGATE_COLLISION')
             updated = replace_region(old, content, expected[path][0], key, core)
             if updated != old:
                 files[path] = updated
                 modified.add(path)
         else:
             core.need(path not in expected, 'AGGREGATE_SOURCE_MISSING')
-            files[path] = wrap(content, key)
+            files[path] = (new_gpu_page(path, content, key, core) if key.startswith('results:')
+                           else wrap(content, key))
     for path in ('Benchmark Results/README.md', 'Benchmark Results/SUBMISSIONS.md'):
         prefix = ''
         files[path] = update_overview(files[path], version, combined, previous, prefix, core)
@@ -218,7 +260,8 @@ def source_signature(entries, version, core):
                          re.escape(version) + r'/issue-[1-9][0-9]*/record\.json')
     return sorted((r['path'], r.get('sha'), r.get('mode')) for r in entries
                   if pattern.fullmatch(r['path']) or r['path'] == core.ROOT + basename(version) or
-                  (r['path'].startswith(core.ROOT) and r['path'].endswith(('/' + version + '/README.md', '/' + version + '/intake-README.md'))))
+                  (r['path'].startswith(core.ROOT) and r['path'].endswith(('/' + version + '/README.md', '/' + version + '/intake-README.md'))) or
+                  gpu_page(r['path'], core))
 
 
 def verify(root, core=None):
@@ -263,7 +306,7 @@ def verify(root, core=None):
     # source record is removed. Curated v0.1.4 pages have no such markers.
     managed = re.compile(
         rb'<!-- ndx12:(?:overview|aggregate):(v[0-9]+\.[0-9]+\.[0-9]+):(?:start|end) -->|'
-        rb'<!-- ndx12:gpu:[A-Za-z0-9_/]+/(v[0-9]+\.[0-9]+\.[0-9]+)'
+        rb'<!-- ndx12:(?:gpu|results):[A-Za-z0-9_/]+/(v[0-9]+\.[0-9]+\.[0-9]+)'
         rb'(?:/intake-README\.md)?:(?:start|end) -->')
     documents = list(community.glob('v*-data.md'))
     core.need(len(documents) <= 32, 'AGGREGATE_DOCUMENT_LIMIT')
@@ -273,6 +316,10 @@ def verify(root, core=None):
             path = community / (gpu + '/' + version + suffix)
             if path.exists() or path.is_symlink():
                 documents.append(path)
+    for gpu in core.GPUS:
+        path = community / (gpu + '/README.md')
+        if path.exists() or path.is_symlink():
+            documents.append(path)
     core.need(len(documents) <= 512, 'AGGREGATE_DOCUMENT_LIMIT')
     discovered = {}
     overview_paths = ('Benchmark Results/README.md', 'Benchmark Results/SUBMISSIONS.md')
