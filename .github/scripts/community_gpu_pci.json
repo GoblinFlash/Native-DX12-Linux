@@ -7,8 +7,60 @@
   },
   "scope": "NVIDIA vendor/device pairs; subsystem IDs omitted; consistency only, never hardware authentication",
   "models": {
+    "NVIDIA/RTX_2050": [
+      "10de:25a7",
+      "10de:25a9",
+      "10de:25ad",
+      "10de:25ed"
+    ],
+    "NVIDIA/RTX_2060": [
+      "10de:1e89",
+      "10de:1f03",
+      "10de:1f08",
+      "10de:1f11",
+      "10de:1f12",
+      "10de:1f15",
+      "10de:1f51",
+      "10de:1f55"
+    ],
+    "NVIDIA/RTX_2060_Super": [
+      "10de:1f06",
+      "10de:1f42",
+      "10de:1f47"
+    ],
+    "NVIDIA/RTX_2070": [
+      "10de:1f02",
+      "10de:1f07",
+      "10de:1f10",
+      "10de:1f14",
+      "10de:1f50",
+      "10de:1f54"
+    ],
+    "NVIDIA/RTX_2070_Super": [
+      "10de:1e84",
+      "10de:1e91",
+      "10de:1ec2",
+      "10de:1ec7",
+      "10de:1ed1"
+    ],
+    "NVIDIA/RTX_2080": [
+      "10de:1e82",
+      "10de:1e87",
+      "10de:1e90",
+      "10de:1ed0"
+    ],
+    "NVIDIA/RTX_2080_Super": [
+      "10de:1e81",
+      "10de:1e93",
+      "10de:1ed3"
+    ],
+    "NVIDIA/RTX_2080_Ti": [
+      "10de:1e04",
+      "10de:1e07"
+    ],
     "NVIDIA/RTX_3050": [
       "10de:2507",
+      "10de:2508",
       "10de:2582",
       "10de:2584"
     ],
@@ -20,8 +72,11 @@
     "NVIDIA/RTX_3050_Laptop_GPU": [
       "10de:25a2",
       "10de:25a5",
+      "10de:25ab",
+      "10de:25ac",
       "10de:25e2",
-      "10de:25e5"
+      "10de:25e5",
+      "10de:25ec"
     ],
     "NVIDIA/RTX_3050_Ti_Laptop_GPU": [
       "10de:2523",
@@ -145,6 +200,13 @@
       "10de:2717",
       "10de:2757"
     ],
+    "NVIDIA/RTX_5050": [
+      "10de:2d83"
+    ],
+    "NVIDIA/RTX_5050_Laptop_GPU": [
+      "10de:2d98",
+      "10de:2dd8"
+    ],
     "NVIDIA/RTX_5060": [
       "10de:2d05",
       "10de:2f06"
@@ -184,9 +246,13 @@
     "NVIDIA/RTX_5090_D": [
       "10de:2b87"
     ],
+    "NVIDIA/RTX_5090_D_v2": [
+      "10de:2b8c"
+    ],
     "NVIDIA/RTX_5090_Laptop_GPU": [
       "10de:2c18",
       "10de:2c58"
     ]
-  }
+  },
+  "source_additions": "RTX 20, RTX 2050, RTX 3050 OEM/4GB/6GB Laptop, RTX 5050 and RTX 5090 D v2 rows: NVIDIA supported-gpus.json of drivers 615.78.08 and 620.70.06, as used by the v0.1.6 runtime identity tables"
 }

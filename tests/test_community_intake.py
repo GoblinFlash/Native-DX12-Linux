@@ -312,6 +312,37 @@ class IntakeTests(unittest.TestCase):
             self.assertEqual(p['reason'], 'GPU_UNKNOWN')
             self.assertIn('/Pending_Classification/', core.record_folder(p))
 
+    def test_memory_size_and_oem_variants_share_the_base_category(self):
+        """Accept one memory size or OEM marker; keep Ti/Super/D/v2/Laptop distinct and the PCI check."""
+        for value, expected in [('Nvidia Geforce RTX 3080 12gb', 'NVIDIA/RTX_3080'),
+            ('NVIDIA GeForce RTX 3080 10GB', 'NVIDIA/RTX_3080'),
+            ('RTX 4060 Ti 16 GB', 'NVIDIA/RTX_4060_Ti'), ('RTX 3060 12GB', 'NVIDIA/RTX_3060'),
+            ('NVIDIA GeForce RTX 3050 6GB Laptop GPU', 'NVIDIA/RTX_3050_Laptop_GPU'),
+            ('NVIDIA GeForce RTX 3050 4GB Laptop GPU', 'NVIDIA/RTX_3050_Laptop_GPU'),
+            ('NVIDIA GeForce RTX 3050 OEM', 'NVIDIA/RTX_3050'),
+            ('NVIDIA GeForce RTX 2060 SUPER', 'NVIDIA/RTX_2060_Super'),
+            ('NVIDIA GeForce RTX 2060 12GB', 'NVIDIA/RTX_2060'),
+            ('NVIDIA GeForce RTX 5090 D v2', 'NVIDIA/RTX_5090_D_v2'),
+            ('NVIDIA GeForce RTX 5050 Laptop GPU', 'NVIDIA/RTX_5050_Laptop_GPU')]:
+            with self.subTest(value=value):self.assertEqual(core.gpu_category(value), expected)
+        names = ('RTX 5090', 'RTX 5090 D', 'RTX 5090 D v2', 'RTX 2060', 'RTX 2060 Super',
+                 'RTX 2080', 'RTX 2080 Super', 'RTX 2080 Ti', 'RTX 5050', 'RTX 5050 Laptop GPU')
+        self.assertEqual(len({core.gpu_category(x) for x in names}), len(names))
+        for value in ('RTX 3080 13GB', 'RTX 3080 12GB 10GB', 'RTX 3080 12',
+                      'RTX 308012GB', 'RTX 3080 Ti12GB', 'OEM RTX 3080'):
+            with self.subTest(value=value):self.assertIsNone(core.gpu_category(value))
+        for pci, state, reason in (('10de:220a', 'DATA_READY', 'OK'),
+                                   ('10de:2208', 'MANUAL_REVIEW', 'GPU_PCI_MISMATCH')):
+            with self.subTest(pci=pci):
+                files = raw_files(gpu='NVIDIA GeForce RTX 3080')
+                run = json.loads(files['run.json'])
+                run['gpu']['pci'] = pci
+                files['run.json'] = core.json_bytes(run)
+                p = core.prepare(issue(gpu='Nvidia Geforce RTX 3080 12gb'), bundle(files))
+                self.assertEqual((p['state'], p['reason']), (state, reason))
+                if state == 'DATA_READY':
+                    self.assertIn('/RTX_3080/v0.1.5/issue-12', core.record_folder(p))
+
     def test_gpu_vendor_prefixes_match_only_the_corresponding_model_family(self):
         """Accept supported vendor aliases and reject contradictory cross-vendor model names."""
         for value, expected in [('NVIDIA GeForce RTX 3090', 'NVIDIA/RTX_3090'),
