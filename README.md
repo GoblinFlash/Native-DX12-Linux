@@ -52,15 +52,33 @@ GPU management options depend on the hardware and driver. Included RTX profiles 
 
 ### Benchmark
 
-<img src=".github/readme-assets/v0.1.6/benchmark.png" alt="Native DX12 Benchmark v0.1.6 — workload selection and GPU clock profiles" width="950">
+<img src=".github/readme-assets/v0.1.6/screenshots/g7at-benchmark.png" alt="Native DX12 Benchmark — Benchmark" width="950">
+
+### Running Benchmark
+
+<img src=".github/readme-assets/v0.1.6/screenshots/g7at-running-benchmark.png" alt="Native DX12 Benchmark — Running Benchmark" width="950">
 
 ### GPU Monitoring
 
-<img src=".github/readme-assets/v0.1.6/gpu-monitoring.png" alt="Native DX12 Benchmark — live GPU telemetry and utilization history" width="950">
+<img src=".github/readme-assets/v0.1.6/screenshots/g7at-1.png" alt="Native DX12 Benchmark — GPU Monitoring" width="950">
+
+### Bug Report and Live Output
+
+<img src=".github/readme-assets/v0.1.6/screenshots/g7at-9.png" alt="Native DX12 Benchmark — Bug Report and Live Output" width="950">
+
+### Saved Reports
+
+<img src=".github/readme-assets/v0.1.6/screenshots/g7at-8.png" alt="Native DX12 Benchmark — Saved Reports" width="950">
 
 ### GPU Control
 
-<img src=".github/readme-assets/v0.1.6/gpu-control.png" alt="Native DX12 Benchmark — NVIDIA GPU control, fan speed, power limits and GPU processes" width="950">
+<img src=".github/readme-assets/v0.1.6/screenshots/gpu-control.png" alt="Native DX12 Benchmark — GPU Control" width="950">
+
+### GPU Control — unavailable controls (UI test)
+
+UI test showing unavailable controls when nvidia-smi is missing, with illustrative process entries.
+
+<img src=".github/readme-assets/v0.1.6/screenshots/gpu-control-fallback.png" alt="Native DX12 Benchmark — GPU Control — unavailable controls (UI test)" width="950">
 
 ## Current Progress
 
