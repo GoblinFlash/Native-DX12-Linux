@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 502" width="950" height="502" role="img">
+<title>RTX 4060 G7f — D4 Histogram — unqualified timing comparison</title>
+<rect width="950" height="502" rx="12" fill="#f3f5f8"/>
+<g font-family="DejaVu Sans,Arial,sans-serif" fill="#233343">
+<text x="24" y="30" font-size="22" font-weight="bold">D4 Histogram — RTX 4060</text>
+<text x="24" y="53" font-size="13">v0.1.6 G7f · 615.78.08 · Native VRAM / Vulkan VRAM · median of 7 samples (ns)</text>
+<text x="24" y="75" font-size="13" font-weight="bold" fill="#8c4c0e">NOT QUALIFIED — host/GPU timestamp bracket failed</text>
+<rect x="24" y="86" width="14" height="14" fill="#2878c7"/><text x="44" y="98" font-size="13">Native</text><rect x="135" y="86" width="14" height="14" fill="#dc8a31"/><text x="155" y="98" font-size="13">Vulkan reference</text>
+<text x="24" y="135" font-size="14">128x128 Original</text>
+<rect x="275" y="115" width="102.09" height="17" rx="2" fill="#2878c7"/><text x="385.09" y="128" font-size="13">12,448</text>
+<rect x="275" y="137" width="56.29" height="17" rx="2" fill="#dc8a31"/><text x="339.29" y="150" font-size="13">6,864</text>
+<text x="24" y="198" font-size="14">128x128 D4</text>
+<rect x="275" y="178" width="75.45" height="17" rx="2" fill="#2878c7"/><text x="358.45" y="191" font-size="13">9,200</text>
+<rect x="275" y="200" width="56.29" height="17" rx="2" fill="#dc8a31"/><text x="339.29" y="213" font-size="13">6,864</text>
+<text x="24" y="261" font-size="14">32x512 Original</text>
+<rect x="275" y="241" width="278.45" height="17" rx="2" fill="#2878c7"/><text x="561.45" y="254" font-size="13">33,952</text>
+<rect x="275" y="263" width="80.83" height="17" rx="2" fill="#dc8a31"/><text x="363.83" y="276" font-size="13">9,856</text>
+<text x="24" y="324" font-size="14">32x512 D4</text>
+<rect x="275" y="304" width="186.59" height="17" rx="2" fill="#2878c7"/><text x="469.59" y="317" font-size="13">22,752</text>
+<rect x="275" y="326" width="80.83" height="17" rx="2" fill="#dc8a31"/><text x="363.83" y="339" font-size="13">9,856</text>
+<text x="24" y="387" font-size="14">16x1024 Original</text>
+<rect x="275" y="367" width="480.00" height="17" rx="2" fill="#2878c7"/><text x="763.00" y="380" font-size="13">58,528</text>
+<rect x="275" y="389" width="115.47" height="17" rx="2" fill="#dc8a31"/><text x="398.47" y="402" font-size="13">14,080</text>
+<text x="24" y="450" font-size="14">16x1024 D4</text>
+<rect x="275" y="430" width="298.13" height="17" rx="2" fill="#2878c7"/><text x="581.13" y="443" font-size="13">36,352</text>
+<rect x="275" y="452" width="115.47" height="17" rx="2" fill="#dc8a31"/><text x="398.47" y="465" font-size="13">14,080</text>
+</g></svg>

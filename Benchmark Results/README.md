@@ -1,5 +1,9 @@
 # Benchmark Results
 
+## Community Benchmark Data — v0.1.6
+
+- [NVIDIA GeForce RTX 4060 · G7f · Run 53 (historical, timing not qualified)](NVIDIA/RTX_4060/v0.1.6/issue-53/README.md)
+
 ## Community Benchmark Data — v0.1.5
 
 <!-- ndx12:overview:v0.1.5:start -->

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 376" width="950" height="376" role="img">
+<title>RTX 4060 G7f — K WaveForm — unqualified timing comparison</title>
+<rect width="950" height="376" rx="12" fill="#f3f5f8"/>
+<g font-family="DejaVu Sans,Arial,sans-serif" fill="#233343">
+<text x="24" y="30" font-size="22" font-weight="bold">K WaveForm — RTX 4060</text>
+<text x="24" y="53" font-size="13">v0.1.6 G7f · 615.78.08 · Native VRAM / Vulkan VRAM · median of 7 samples (ns)</text>
+<text x="24" y="75" font-size="13" font-weight="bold" fill="#8c4c0e">NOT QUALIFIED — host/GPU timestamp bracket failed</text>
+<rect x="24" y="86" width="14" height="14" fill="#2878c7"/><text x="44" y="98" font-size="13">Native</text><rect x="135" y="86" width="14" height="14" fill="#dc8a31"/><text x="155" y="98" font-size="13">Vulkan reference</text>
+<text x="24" y="135" font-size="14">64x64 Scalar</text>
+<rect x="275" y="115" width="315.90" height="17" rx="2" fill="#2878c7"/><text x="598.90" y="128" font-size="13">24,240</text>
+<rect x="275" y="137" width="119.27" height="17" rx="2" fill="#dc8a31"/><text x="402.27" y="150" font-size="13">9,152</text>
+<text x="24" y="198" font-size="14">64x64 uint4</text>
+<rect x="275" y="178" width="407.44" height="17" rx="2" fill="#2878c7"/><text x="690.44" y="191" font-size="13">31,264</text>
+<rect x="275" y="200" width="119.27" height="17" rx="2" fill="#dc8a31"/><text x="402.27" y="213" font-size="13">9,152</text>
+<text x="24" y="261" font-size="14">127x65 Scalar</text>
+<rect x="275" y="241" width="443.51" height="17" rx="2" fill="#2878c7"/><text x="726.51" y="254" font-size="13">34,032</text>
+<rect x="275" y="263" width="121.36" height="17" rx="2" fill="#dc8a31"/><text x="404.36" y="276" font-size="13">9,312</text>
+<text x="24" y="324" font-size="14">127x65 uint4</text>
+<rect x="275" y="304" width="480.00" height="17" rx="2" fill="#2878c7"/><text x="763.00" y="317" font-size="13">36,832</text>
+<rect x="275" y="326" width="121.36" height="17" rx="2" fill="#dc8a31"/><text x="404.36" y="339" font-size="13">9,312</text>
+</g></svg>
