@@ -195,14 +195,17 @@ class ShareV3Tests(unittest.TestCase):
         self.assertEqual(len(panels), 4)
         self.assertEqual(len({p.get('y') for p in panels}), 1)
         self.assertIn(b'parallel-sort4096-24', chart)
-        for index in range(5):
-            self.files = add_case(f'sort-{index}', range(1, 8))
+        for name in ('exclusive-scan', 'scan-4x8', '4x8-tiled', '256x128', '2x4x8'):
+            self.files = add_case(name, range(1, 8))
         proposal = self.prepared()
         compute = next(step for step in proposal['run']['steps'] if step['suite'] == 'compute')
         for clock, row_sizes in (('QUALIFIED', [4, 4, 1]), ('NOT_QUALIFIED', [4, 4, 1, 3])):
             with self.subTest(clock=clock):
                 compute['reported_clock_qualification'] = clock
                 svg = ET.fromstring(core.render(proposal)[core.record_folder(proposal) + '/chart.svg'])
+                headings = {t.text for t in svg.findall('.//{*}text[@font-size="22"]')}
+                self.assertTrue({'exclusive-scan', 'scan-4x8', '4x8-tiled', '256 × 128', '2 × 4 × 8'} <= headings,
+                                headings)
                 panels = svg.findall('.//{*}rect[@rx="12"]')
                 rows_by_y = Counter(float(p.get('y')) for p in panels)
                 self.assertEqual([rows_by_y[y] for y in sorted(rows_by_y)], row_sizes)

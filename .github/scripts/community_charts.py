@@ -2,6 +2,7 @@
 import html
 import json
 import math
+import re
 from itertools import cycle
 
 WIDTH = 1400
@@ -276,7 +277,8 @@ def render_suite(title, label, proposal, step, rows, schedule, format_duration, 
                                 f'{row["n"]} processes'))
             bars.append(bar)
         if bars:
-            groups.append(dict(label=case.replace('x', ' × '), bars=bars))
+            heading = case.replace('x', ' × ') if re.fullmatch(r'[0-9]+(?:x[0-9]+)+', case) else case
+            groups.append(dict(label=heading, bars=bars))
     envelope = step['reported_ns_per_tick_envelope']
     overall = proposal['run']['overall']
     shared = (overall == 'COMPLETE' and step['reported_clock_qualification'] == 'QUALIFIED'
