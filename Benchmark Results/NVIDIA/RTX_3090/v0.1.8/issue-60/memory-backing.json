@@ -1,0 +1,12 @@
+{
+  "native_dx12": {
+    "backing": "UNKNOWN",
+    "basis": "NOT_RECORDED",
+    "scope": "data_buffers"
+  },
+  "schema": "ndx12.community-memory.v1",
+  "vulkan": {
+    "backing": "NOT_RECORDED",
+    "basis": "NOT_INFERRED_FROM_NATIVE"
+  }
+}
