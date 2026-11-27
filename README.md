@@ -43,10 +43,18 @@ A major update featuring an improved native GPU execution path, expanded benchma
 Download the installer from the [v0.1.6 release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.6), then run:
 
 ```bash
-sudo bash NDX12-Benchmark-v0.1.6-G7ax.run
+sudo bash NDX12-Benchmark-v0.1.6-G7ay.run
 ```
 
 Once installed, launch Native DX12 Benchmark from your desktop or application menu.
+
+For troubleshooting, start the launcher as your normal desktop user (without sudo):
+
+```bash
+ndx12-benchmark --debug
+```
+
+This displays the Run Log and process output in the terminal.
 
 GPU management options depend on the hardware and driver. Included RTX profiles do not imply full hardware qualification.
 
