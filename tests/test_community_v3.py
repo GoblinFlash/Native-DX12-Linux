@@ -3,6 +3,7 @@ import csv
 import io
 import json
 import unittest
+from collections import Counter
 from unittest.mock import patch
 from xml.etree import ElementTree as ET
 
@@ -121,21 +122,187 @@ class ShareV3Tests(unittest.TestCase):
         for title in (b'FWHT', b'Sponza', b'Neural Grid'):
             self.assertIn(title, combined)
 
-    def test_v3_rejected_for_uncataloged_release_and_legacy_release(self):
-        with patch.object(core, 'catalog', return_value={}):
-            self.assertEqual(self.prepared()['reason'], 'VERSION_UNKNOWN')
+    def test_v3_release_without_catalogue_entry_is_imported_and_legacy_release_refused(self):
+        self.assertNotIn('PACKAGE_NOT_CATALOGUED', self.prepared()['warnings'])
+        uncatalogued = {key: value for key, value in core.catalog().items() if key != VERSION}
+        with patch.object(core, 'catalog', return_value=uncatalogued):
+            proposal = self.prepared()
+            self.assertEqual((proposal['state'], proposal['reason']), ('DATA_READY', 'OK'))
+            self.assertIn('PACKAGE_NOT_CATALOGUED', proposal['warnings'])
+            self.assertEqual(core.validate_proposal(core.load_json(core.json_bytes(proposal))), proposal)
+            forged = dict(proposal, warnings=[w for w in proposal['warnings'] if w != 'PACKAGE_NOT_CATALOGUED'])
+            with self.assertRaisesRegex(core.Refused, '^PROPOSAL_SCHEMA$'):
+                core.validate_proposal(forged)
+            self.assertIn('/' + VERSION + '/issue-1200', core.record_folder(proposal))
         source = issue(gpu='RTX 5060 Ti', version='v0.1.5')
+        self.assertEqual(core.prepare(source, bundle(self.files))['reason'], 'VERSION_MISMATCH')
+        run = json.loads(self.files['run.json'])
+        run['identity']['public_version'] = 'v0.1.5'
+        self.files['run.json'] = core.json_bytes(run)
         self.assertEqual(core.prepare(source, bundle(self.files))['reason'], 'SCHEMA')
 
-    def test_v3_refuses_legacy_units_and_wrong_installation_pin(self):
+    def test_v3_refuses_legacy_units_and_marks_another_build_or_installation(self):
         run = json.loads(self.files['run.json'])
         run['units']['native'] = 'GPU_TICKS'
         self.files['run.json'] = core.json_bytes(run)
         self.assertEqual(self.prepared()['reason'], 'UNITS_MISMATCH')
         run['units']['native'] = 'NS'
-        run['identity']['manifest_sha256'] = '0' * 64
+        run['identity'].update(manifest_sha256='0' * 64, status='INSTALLED')
         self.files['run.json'] = core.json_bytes(run)
-        self.assertEqual(self.prepared()['reason'], 'IDENTITY_MISMATCH')
+        proposal = self.prepared()
+        self.assertEqual((proposal['state'], proposal['reason']), ('DATA_READY', 'OK'))
+        self.assertIn('PACKAGE_NOT_CATALOGUED', proposal['warnings'])
+        self.assertEqual(core.validate_proposal(core.load_json(core.json_bytes(proposal))), proposal)
+        for status in ('UNKNOWN', 'MODIFIED', None):
+            run['identity']['status'] = status
+            self.files['run.json'] = core.json_bytes(run)
+            with self.subTest(status=status):
+                self.assertEqual(self.prepared()['reason'], 'IDENTITY_MISMATCH')
+
+    def test_v3_takes_any_driver_version_named_by_both_issue_and_archive(self):
+        run = json.loads(self.files['run.json'])
+        run['gpu']['driver'] = '580.105.08'
+        self.files['run.json'] = core.json_bytes(run)
+        self.assertEqual(self.prepared()['reason'], 'DRIVER_MISMATCH')
+        self.source['body'] = self.source['body'].replace(DRIVER, '580.105.08, NVIDIA Open kernel module')
+        proposal = core.validate_proposal(self.prepared())
+        self.assertEqual((proposal['state'], proposal['driver']), ('DATA_READY', '580.105.08'))
+
+    def test_v3_case_added_by_a_later_release_is_imported_and_charted(self):
+        def add_case(name, repeats):
+            run = json.loads(self.files['run.json'])
+            process = rows(self.files['processes.csv'])
+            template = next(row for row in process if row['suite'] == 'compute' and row['path'] == 'native')
+            process += [dict(template, case=name, repeat=str(r)) for r in repeats]
+            samples = rows(self.files['samples.csv'])
+            samples += [dict(samples[0], case=name, attempt=str(r)) for r in repeats]
+            compute = next(step for step in run['steps'] if step['suite'] == 'compute')
+            for counts in (run['totals'], compute['counts']):
+                for key in ('expected', 'completed', 'verified'):
+                    counts[key] += len(repeats)
+            return dict(self.files, **{'run.json': core.json_bytes(run),
+                                       'processes.csv': core.csv_text(process, core.PROCESS_COLUMNS),
+                                       'samples.csv': core.csv_text(samples, list(samples[0]))})
+
+        source = self.files
+        self.files = add_case('parallel-sort4096-24', range(1, 8))
+        proposal = self.prepared()
+        self.assertEqual((proposal['state'], proposal['reason']), ('DATA_READY', 'OK'))
+        self.assertEqual(proposal['run']['counts']['verified'], 243)
+        self.assertEqual(core.validate_proposal(core.load_json(core.json_bytes(proposal))), proposal)
+        chart = core.render(proposal)[core.record_folder(proposal) + '/chart.svg']
+        panels = ET.fromstring(chart).findall('.//{*}rect[@rx="12"]')
+        self.assertEqual(len(panels), 4)
+        self.assertEqual(len({p.get('y') for p in panels}), 1)
+        self.assertIn(b'parallel-sort4096-24', chart)
+        for name in ('exclusive-scan', 'scan-4x8', '4x8-tiled', '256x128', '2x4x8'):
+            self.files = add_case(name, range(1, 8))
+        proposal = self.prepared()
+        compute = next(step for step in proposal['run']['steps'] if step['suite'] == 'compute')
+        for clock, row_sizes in (('QUALIFIED', [4, 4, 1]), ('NOT_QUALIFIED', [4, 4, 1, 3])):
+            with self.subTest(clock=clock):
+                compute['reported_clock_qualification'] = clock
+                svg = ET.fromstring(core.render(proposal)[core.record_folder(proposal) + '/chart.svg'])
+                headings = {t.text for t in svg.findall('.//{*}text[@font-size="22"]')}
+                self.assertTrue({'exclusive-scan', 'scan-4x8', '4x8-tiled', '256 × 128', '2 × 4 × 8'} <= headings,
+                                headings)
+                panels = svg.findall('.//{*}rect[@rx="12"]')
+                rows_by_y = Counter(float(p.get('y')) for p in panels)
+                self.assertEqual([rows_by_y[y] for y in sorted(rows_by_y)], row_sizes)
+                self.assertTrue(all(float(p.get('width')) > 134 for p in panels))
+                self.assertLess(max(float(p.get('y')) + float(p.get('height')) for p in panels),
+                                float(svg.get('height')))
+        for name, repeats in (('parallel-sort4096-24', range(1, 7)), ('Sort 24', range(1, 8)),
+                              ('../sort', range(1, 8))):
+            self.files = source
+            self.files = add_case(name, repeats)
+            with self.subTest(name=name, repeats=len(repeats)):
+                self.assertEqual(self.prepared()['reason'], 'PROCESS_SCHEDULE')
+
+    def test_new_d4_case_accepts_existing_native_arms_with_all_repeats(self):
+        processes = [r for r in rows(self.files['processes.csv']) if r['suite'] == 'd4']
+        extra = [dict(r, case='256x256') for r in processes if r['case'] == '128x128' and r['path'] == 'native']
+
+        def parse(added):
+            return core.process_rows(core.csv_text(processes + added, core.PROCESS_COLUMNS), ['d4'], core.SHARE_V3)
+
+        parsed = parse(extra)
+        self.assertEqual({r['variant'] for r in parsed if r['case'] == '256x256'}, {'B', 'D4', 'Q8PL'})
+        for invalid in (extra[:-1], [dict(r, case='BadCase') for r in extra],
+                        [dict(r, variant='NEW') for r in extra if r['variant'] == 'B']):
+            with self.assertRaisesRegex(core.Refused, '^PROCESS_SCHEDULE$'):
+                parse(invalid)
+
+    def test_long_case_headings_fit_middle_and_last_panels(self):
+        charts = load('community_charts')
+        names = ['affine', 'parallel-scan-large-input-1024', '128 × 128', 'm' * 48]
+        groups = [dict(label=name, bars=[]) for name in names]
+        svg = ET.fromstring(charts.layout(dict(title='Compute', subtitle='', series=[], groups=groups),
+                                          core.format_gpu_duration, {}))
+        panels = svg.findall('.//{*}rect[@rx="12"]')
+        self.assertEqual(len(panels), 4)
+        self.assertEqual(len({p.get('y') for p in panels}), 1)
+        headings = svg.findall('.//{*}text[@font-size="22"]')
+        axis_titles = [t for t in svg.findall('.//{*}text') if t.text == 'GPU time']
+        for name, panel, axis in zip(names, panels, axis_titles, strict=True):
+            with self.subTest(name=name):
+                x = float(panel.get('x'))
+                lines = [t for t in headings if x <= float(t.get('x')) < x + float(panel.get('width'))]
+                self.assertEqual(''.join(t.text for t in lines), name)
+                # Upper bounds in pixels for these strings in 22 px Liberation Sans Bold.
+                glyph_width = 20 if name.startswith('m') else 14
+                for line in lines:
+                    self.assertLessEqual(float(line.get('x')) + glyph_width * len(line.text),
+                                         x + float(panel.get('width')) - 20)
+                if len(name) >= 30:
+                    self.assertGreater(len(lines), 1)
+                else:
+                    self.assertEqual(len(lines), 1)
+                baselines = [float(t.get('y')) for t in lines]
+                self.assertTrue(all(b - a >= 22 for a, b in zip(baselines, baselines[1:])))
+                self.assertGreater(float(axis.get('y')) - baselines[-1], 22)
+
+    def test_d4_chart_draws_extra_arms_and_wraps_their_legend(self):
+        proposal = self.prepared()
+        extra_arms = ('alpha', 'beta', 'delta', 'gamma')
+        for key in ('processes', 'measurements'):
+            source = [r for r in proposal[key] if r['case'] == '128x128' and r['variant'] == 'B']
+            proposal[key].extend(dict(r, variant=arm) for arm in extra_arms for r in source)
+        proposal['processes'].sort(key=core.process_key)
+        step = next(s for s in proposal['run']['steps'] if s['suite'] == 'd4')
+        for counts in (proposal['run']['counts'], step['counts']):
+            for key in ('expected', 'completed', 'verified'):
+                counts[key] += 7 * len(extra_arms)
+        svg = ET.fromstring(core.render(proposal)[core.record_folder(proposal) + '/d4-chart.svg'])
+        for arm in extra_arms:
+            label = 'Native DX12 · ' + arm
+            self.assertIn(label, [t.text for t in svg.findall('.//{*}text')])
+            bars = [g.find('{*}path') for g in svg.findall('.//{*}g[{*}title]')
+                    if g.find('{*}title').text.startswith(label + ', 128x128:')]
+            self.assertEqual(len(bars), 1)
+            self.assertRegex(bars[0].get('fill'), '^#[0-9a-fA-F]{6}$')
+
+        charts = load('community_charts')
+        swatches = svg.findall('.//{*}rect[@rx="3"]')
+        texts = svg.findall('.//{*}text')
+        by_row = {}
+        for swatch in swatches:
+            x, y = float(swatch.get('x')), float(swatch.get('y')) + 12
+            label = next(t.text for t in texts if float(t.get('y')) == y and
+                         abs(float(t.get('x')) - (x + 28)) < 0.11)
+            right = x + 28 + charts.text_width(label, 17)
+            by_row.setdefault(y, []).append((x, right, label))
+        self.assertEqual([label for row in by_row.values() for _, _, label in row],
+                         ['Native DX12 · ' + arm for arm in ('Original', 'D4', 'Q8PL', *extra_arms)] +
+                         ['Vulkan NVIDIA'])
+        self.assertGreater(len(by_row), 1)
+        for row in by_row.values():
+            left, right = row[0][0], row[-1][1]
+            self.assertGreaterEqual(left, charts.PAD)
+            self.assertLessEqual(right, charts.WIDTH - charts.PAD)
+            self.assertAlmostEqual(left, charts.WIDTH - right, delta=0.11)
+        first_panel = svg.find('.//{*}rect[@rx="12"]')
+        self.assertGreater(float(first_panel.get('y')), max(by_row))
 
     def test_v3_refuses_missing_repeat_and_contradictory_not_run(self):
         process = rows(self.files['processes.csv'])
@@ -144,6 +311,30 @@ class ShareV3Tests(unittest.TestCase):
         process[0].update(status='NOT_RUN', completion='NOT_RUN')
         self.files['processes.csv'] = core.csv_text(process, core.PROCESS_COLUMNS)
         self.assertEqual(self.prepared()['reason'], 'PROCESS_CONTRADICTION')
+
+    def test_dense_sponza_panels_keep_bars_and_readable_value_labels(self):
+        for cases, arms in ((4, 21), (1, 84)):
+            with self.subTest(cases=cases, arms=arms):
+                proposal = self.prepared()
+                for key in ('processes', 'measurements'):
+                    template = [r for r in proposal[key] if r['suite'] == 'sponza' and r['variant'] == 'scalar']
+                    proposal[key].extend(dict(r, case=f'new-{i}', variant=f'arm-{j}')
+                                         for i in range(cases) for j in range(arms) for r in template)
+                proposal['processes'].sort(key=core.process_key)
+                step = next(s for s in proposal['run']['steps'] if s['suite'] == 'sponza')
+                for counts in (step['counts'], proposal['run']['counts']):
+                    for key in ('expected', 'completed', 'verified'):
+                        counts[key] += cases * arms * 3
+                chart = core.render(proposal)[core.record_folder(proposal) + '/sponza-chart.svg']
+                svg = ET.fromstring(chart)
+                bars = svg.findall('.//{*}g[{*}title]')
+                self.assertEqual(len(bars), 2 + cases * arms)
+                self.assertTrue(all('median ' in g.find('{*}title').text and g.find('{*}path') is not None
+                                    for g in bars))
+                labels = [t for t in svg.findall('.//{*}text[@text-anchor="middle"]')
+                          if t.text.endswith((' ns', ' ms'))]
+                self.assertTrue(all(int(t.get('font-size')) >= 10 for t in labels))
+                self.assertEqual(len(labels), len(bars) if arms == 21 else 2)
 
     def test_v3_does_not_accept_a_vulkan_retained_session(self):
         process = rows(self.files['processes.csv'])

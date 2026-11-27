@@ -26,10 +26,10 @@ MAX_COMPRESSED = 8 * 1024 * 1024
 MAX_EXPANDED = 16 * 1024 * 1024
 MAX_MEMBER = 2 * 1024 * 1024
 MAX_MEMBERS = 64
-MAX_PROPOSAL = 192 * 1024
+MAX_PROPOSAL = 512 * 1024
 MAX_ISSUE = 64 * 1024
 MAX_API = 2 * 1024 * 1024
-MAX_PROCESSES = 236
+MAX_PROCESSES = 512
 TRANSIENT_ATTACHMENT = frozenset(('ATTACHMENT_UNAVAILABLE', 'ATTACHMENT_TIMEOUT'))
 SUITES = ('compute', 'd4', 'k', 'kw')
 SHARE_V2 = 'ndx12-share.v2'
@@ -53,7 +53,13 @@ CHARTS = {
     'bounce': ('bounce-chart.svg', 'Test 5 — Neural Grid'),
 }
 LEGACY_DRIVERS = ('615.78.08', '620.70.06')
-V3_DRIVERS = LEGACY_DRIVERS + ('620.73.04',)
+# Share v3 releases take any NVIDIA driver version; the Issue and run.json must name the same one.
+DRIVER_VERSION = r'[0-9]{3}\.[0-9]{2,3}(?:\.[0-9]{2})?'
+RELEASE_VERSION = re.compile(r'v[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}')
+# A Share v3 package records VERIFIED when run from its archive and INSTALLED when run as the installed benchmark.
+INSTALL_STATES = ('VERIFIED', 'INSTALLED')
+# Case and arm names that a later release adds to a known suite.
+SCHEDULE_NAME = re.compile(r'[a-z0-9][a-z0-9_-]{0,47}')
 STATUSES = ('VERIFIED', 'FAIL', 'HELD', 'NOT_RUN', 'UNKNOWN')
 CLOCK_MODES = ('UNCHANGED', 'UNCHANGED_UNKNOWN', 'LOCKED', 'LOCK_REQUESTED', 'MANUAL', 'NOT_RECORDED')
 V2_FILES = frozenset(('run.json', 'summary.txt', 'processes.csv', 'samples.csv',
@@ -97,10 +103,12 @@ LEGACY = {2: ('NVIDIA/RTX_4060_Laptop_GPU', 'v0.1.4'),
           4: ('NVIDIA/RTX_3060', 'v0.1.4'), 5: ('NVIDIA/RTX_3090', 'v0.1.4')}
 CATALOG_PATH = Path(__file__).with_name('community_releases.json')
 # A numeric filename prefix is a bounded hint only, never GPU identity or a path.
+# The benchmark names its archive share-results-<card>-<release>.tar.gz (card e.g. 4090 or 3080ti,
+# release vX.Y.Z or release-unknown); older names put a numeric card prefix first.
 ATTACHMENT_URL_PATTERN = re.compile(
     r'https://github\.com/user-attachments/files/[1-9][0-9]{0,19}/'
-    r'(?:[1-9][0-9]{2,3}-)?share-results'
-    r'(?:-v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})?\.tar\.gz')
+    r'(?:[1-9][0-9]{2,3}-)?share-results(?:-[a-z0-9]{1,24})?'
+    r'(?:-v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|-release-unknown)?\.tar\.gz')
 
 
 class Refused(Exception):
@@ -181,9 +189,18 @@ def catalog():
     return load_json(CATALOG_PATH.read_bytes())
 
 
+def is_release(value):
+    """Return True for a plain release number vX.Y.Z."""
+    return type(value) is str and RELEASE_VERSION.fullmatch(value) is not None
+
+
 def release_schema(version):
-    """Select the parser using only the trusted release catalogue."""
-    return enum(catalog()[version].get('share_schema', SHARE_V2), (SHARE_V2, SHARE_V3), 'SCHEMA')
+    """Select the parser: a catalogued release keeps its recorded schema, every later release uses Share v3."""
+    entry = catalog().get(version)
+    if entry is None:
+        need(is_release(version), 'VERSION_UNKNOWN')
+        return SHARE_V3
+    return enum(entry.get('share_schema', SHARE_V2), (SHARE_V2, SHARE_V3), 'SCHEMA')
 
 
 def share_suites(schema):
@@ -527,7 +544,10 @@ WARNINGS = frozenset(('UNVERIFIED_SUBMISSION', 'NO_INDEPENDENT_GPU_RERUN',
     'RAW_READBACKS_NOT_INCLUDED', 'IDENTITY_SELF_REPORTED', 'BACKGROUND_NOT_ASSESSED',
     'REVIEW_ISSUE_CONTEXT', 'CLOCKS_NOT_PROVEN_PER_DISPATCH', 'SEPARATE_TIMING_UNITS',
     'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN',
-    'MEMORY_SIZE_NOT_VERIFIED'))
+    'MEMORY_SIZE_NOT_VERIFIED', 'PACKAGE_NOT_CATALOGUED'))
+# Warnings that depend on the submitted data; every other warning is always present.
+DATA_WARNINGS = frozenset(('KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN',
+                           'MEMORY_SIZE_NOT_VERIFIED', 'PACKAGE_NOT_CATALOGUED'))
 PROCESS_COLUMNS = ['suite', 'case', 'variant', 'path', 'repeat', 'submission',
                    'completion', 'correctness', 'timing', 'kernel_records', 'status']
 COMPUTE_COLUMNS = ['case', 'attempt', 'work_ticks', 'empty_ticks', 'clock_mode',
@@ -539,22 +559,26 @@ FRAME_COLUMNS = ['test', 'shape', 'arm', 'round', 'process_median_ticks', 'first
 def claims(issue):
     """Return recognized GPU, release, numeric driver and parsed Issue fields.
 
-    Ambiguous/unsupported identities become None; malformed form structure
-    raises Refused. Driver descriptions are bounded and never copied as prose.
+    Ambiguous/unsupported identities become None; a release field without any
+    release number gives ''; malformed form structure raises Refused. Driver
+    descriptions are bounded and never copied as prose.
     """
     fields = issue_fields(issue)
     gpu = gpu_category(first_line(fields.get('GPU model', '')))
     text = first_line(fields.get('Benchmark version', ''))
     # Capture the entire claimed release token: a stable prefix of a prerelease
     # or patch build must not be mistaken for an approved release.
-    versions = set(x.lower() for x in re.findall(
+    if re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+', text):
+        text = 'v' + text
+    # The installer file name names its release: NDX12-Benchmark-v0.1.7.run.
+    versions = set(x.lower().removesuffix('.run') for x in re.findall(
         r'\bv[0-9]+\.[0-9]+\.[0-9]+[^\s,;)]*', text, re.I))
-    version = versions.pop() if len(versions) == 1 else None
-    version = version if version and re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+', version) else None
-    version = version if version in catalog() else None
+    # No release in the field ("Other or unknown", empty): the archive's own release is used.
+    version = '' if not versions else versions.pop() if len(versions) == 1 else None
+    version = version if version == '' or is_release(version) else None
     driver = first_line(fields.get('GPU driver version', ''))
     stack = r'(?:NVIDIA )?(?:Open|proprietary)(?: kernel module)?'
-    match = re.fullmatch(r'([0-9]{3}\.[0-9]{2}\.[0-9]{2})(?:,? (?:'+stack+r'|\('+stack+r'\)))?', driver, re.I)
+    match = re.fullmatch('(' + DRIVER_VERSION + r')(?:,? (?:'+stack+r'|\('+stack+r'\)))?', driver, re.I)
     return gpu, version, match.group(1) if match else None, fields
 
 
@@ -572,21 +596,34 @@ def schedule(suite):
 
 
 def v3_schedule(suite, keys, vulkan):
-    """Allow complete desktop schedules, with optional Q8PL or a single Compute case."""
+    """Allow complete desktop schedules, with optional Q8PL or a single Compute case.
+
+    A case or arm that a later release adds (for example parallel-sort4096-1)
+    is accepted with all of its repeats; the known schedule stays required.
+    """
     base = schedule(suite) if suite in SUITES else set()
+    repeats = range(1, 4) if suite in NATIVE_ONLY else range(1, 8)
     if suite in V3_FRAME_SUITES:
         _, case, variants = V3_FRAME_SUITES[suite]
-        repeats = range(1, 4) if suite in NATIVE_ONLY else range(1, 8)
         base = {(suite, case, arm, 'native', repeat) for arm in variants for repeat in repeats}
         if suite not in NATIVE_ONLY:
             base |= {(suite, case, '', 'vulkan', repeat) for repeat in repeats}
     if suite == 'compute':
-        cases = {key[1] for key in keys}
+        cases = {key[1] for key in keys} & {key[1] for key in base}
         need(len(cases) in (1, 3), 'PROCESS_SCHEDULE')
         base = {key for key in base if key[1] in cases}
     if suite == 'd4' and any(key[2] == 'Q8PL' for key in keys):
         base |= {(s, case, 'Q8PL', path, repeat)
                  for s, case, arm, path, repeat in base if arm == 'D4'}
+    known = {key[1:4] for key in base}
+    native_arms = {arm for _, arm, path in known if path == 'native'}
+    for case, variant, path in {key[1:4] for key in keys} - known:
+        need(SCHEDULE_NAME.fullmatch(case) and path in ('native', 'vulkan'), 'PROCESS_SCHEDULE')
+        if path == 'native' and suite != 'compute':
+            need(variant in native_arms or SCHEDULE_NAME.fullmatch(variant), 'PROCESS_SCHEDULE')
+        else:
+            need(variant == '', 'PROCESS_SCHEDULE')
+        base |= {(suite, case, variant, path, repeat) for repeat in repeats}
     return base if vulkan else {key for key in base if key[3] == 'native'}
 
 
@@ -898,11 +935,10 @@ def base_proposal(issue):
         gpu, version = None, None
     return {'schema': 'ndx12.community-intake.v2', 'issue': integer(issue['number'], 1, 2**31-1),
             'source_revision': issue_fingerprint(issue), 'bundle_sha256': None,
-            'claimed_gpu': gpu, 'claimed_version': version, 'archive_gpu': None,
+            'claimed_gpu': gpu, 'claimed_version': version or None, 'archive_gpu': None,
             'archive_version': None, 'driver': None, 'pci': None, 'state': 'MANUAL_REVIEW',
             'reason': 'INPUT_FORMAT', 'run': None, 'processes': [], 'measurements': [],
-            'warnings': sorted(WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN',
-                                       'MEMORY_SIZE_NOT_VERIFIED'})}
+            'warnings': sorted(WARNINGS - DATA_WARNINGS)}
 
 
 def prepare(issue, compressed=None, fetch=download):
@@ -924,15 +960,19 @@ def prepare(issue, compressed=None, fetch=download):
         files = read_share_members(data)
         need('run.json' in files and 'processes.csv' in files, 'MISSING_DATA')
         run = load_json(files['run.json'], MAX_MEMBER)
+        need(type(run) is dict and type(run.get('identity')) is dict, 'SCHEMA')
+        actual_version = run['identity'].get('public_version')
+        result['archive_version'] = actual_version if is_release(actual_version) else None
+        version = version or result['archive_version']
+        need(version is not None, 'VERSION_UNKNOWN')
+        need(result['archive_version'] == version, 'VERSION_MISMATCH')
         schema = release_schema(version)
         modern = schema == SHARE_V3
-        need(type(run) is dict and run.get('schema') == schema, 'SCHEMA')
+        need(run.get('schema') == schema, 'SCHEMA')
         need(modern or set(files) <= V2_FILES, 'MEMBER_NOT_ALLOWLISTED')
         need(all(type(run.get(field)) is dict for field in ('gpu', 'identity', 'units', 'run')), 'SCHEMA')
         actual_gpu = gpu_category(run.get('gpu', {}).get('model'))
-        actual_version = run.get('identity', {}).get('public_version')
         result['archive_gpu'] = actual_gpu
-        result['archive_version'] = actual_version if actual_version in catalog() else None
         need(actual_gpu is not None, 'GPU_UNKNOWN')
         # nvidia-smi names a memory size only for some GPUs; claim and archive must name one model.
         need(size_category(gpu, actual_gpu, None) is not None, 'GPU_MISMATCH')
@@ -943,20 +983,22 @@ def prepare(issue, compressed=None, fetch=download):
         for model_text in (run['gpu']['model'], first_line(fields.get('GPU model', ''))):
             inline = re.search(r' \(PCI ([0-9a-f]{4}:[0-9a-f]{4})\)$', model_text, re.I)
             need(inline is None or inline.group(1).lower() == pci, 'GPU_PCI_MISMATCH')
-        need(actual_version == version, 'VERSION_MISMATCH')
         identity = run['identity']
-        need(identity.get('schema') == schema and identity.get('status') == 'VERIFIED', 'IDENTITY_MISMATCH')
-        for key, expected in catalog()[version].items():
-            if key == 'share_schema':
-                continue
-            need(type(identity.get(key)) is type(expected) and identity[key] == expected, 'IDENTITY_MISMATCH')
+        need(identity.get('schema') == schema and
+             identity.get('status') in (INSTALL_STATES if modern else ('VERIFIED',)), 'IDENTITY_MISMATCH')
+        pinned = {key: value for key, value in catalog().get(version, {}).items() if key != 'share_schema'}
+        catalogued = bool(pinned) and all(type(identity.get(key)) is type(value) and identity[key] == value
+                                          for key, value in pinned.items())
+        # The legacy Share v2 releases stay pinned to their catalogue entry. A Share v3 package of another
+        # build, or of a release without an entry, is recorded with PACKAGE_NOT_CATALOGUED.
+        need(modern or catalogued, 'IDENTITY_MISMATCH')
         version_text = first_line(fields.get('Benchmark version', ''))
         packages = re.findall(r'\bpackage\s+(v[0-9]+-r[0-9]+)\b', version_text, re.I)
         hashes = re.findall(r'\b[0-9a-fA-F]{64}\b', version_text)
-        need(all(x == identity['package_id'] for x in packages) and
-             all(x.lower() == identity['archive_sha256'] for x in hashes), 'IDENTITY_MISMATCH')
+        need(all(x == identity.get('package_id') for x in packages) and
+             all(x.lower() == identity.get('archive_sha256') for x in hashes), 'IDENTITY_MISMATCH')
         need(driver is not None and driver == run['gpu'].get('driver') and
-             driver in (V3_DRIVERS if modern else LEGACY_DRIVERS), 'DRIVER_MISMATCH')
+             (modern or driver in LEGACY_DRIVERS), 'DRIVER_MISMATCH')
         requested = run['run'].get('requested')
         allowed = share_suites(schema)
         need(type(requested) is list and requested and len(requested) <= len(allowed) and
@@ -982,16 +1024,19 @@ def prepare(issue, compressed=None, fetch=download):
             if modern:
                 need(set(SUITES + ('fwht',)) <= set(requested) and
                      ('bounce' not in requested or 'sponza' in requested) and
-                     len({row['case'] for row in processes if row['suite'] == 'compute'}) == 3,
+                     {key[1] for key in schedule('compute')} <=
+                     {row['case'] for row in processes if row['suite'] == 'compute'},
                      'RUN_CLAIM_MISMATCH')
             else:
                 need(set(requested) == set(SUITES), 'RUN_CLAIM_MISMATCH')
         values = measurements(files, processes, schema)
         # The resolved size enters the record only together with the data it was checked on.
-        result.update(claimed_gpu=gpu, driver=driver, pci=pci, state='DATA_READY', reason='OK', run=sanitized,
-                      processes=processes, measurements=values)
+        result.update(claimed_gpu=gpu, claimed_version=version, driver=driver, pci=pci, state='DATA_READY',
+                      reason='OK', run=sanitized, processes=processes, measurements=values)
         if modern:
             result['warnings'].remove('SEPARATE_TIMING_UNITS')
+        if not catalogued:
+            result['warnings'].append('PACKAGE_NOT_CATALOGUED')
         if any(p['kernel_records'] for p in processes):
             result['warnings'].append('KERNEL_RECORDS_REPORTED')
         if any(p['kernel_records'] is None for p in processes):
@@ -1055,8 +1100,9 @@ def _validate_proposal(value):
     for key in ('claimed_gpu', 'archive_gpu'):
         need(value[key] is None or value[key] in GPUS, 'PROPOSAL_SCHEMA')
     for key in ('claimed_version', 'archive_version'):
-        need(value[key] is None or value[key] in catalog(), 'PROPOSAL_SCHEMA')
-    need(value['driver'] in (None, *V3_DRIVERS), 'PROPOSAL_SCHEMA')
+        need(value[key] is None or is_release(value[key]), 'PROPOSAL_SCHEMA')
+    need(value['driver'] is None or (type(value['driver']) is str and
+                                     re.fullmatch(DRIVER_VERSION, value['driver'])), 'PROPOSAL_SCHEMA')
     enum(value['state'], ('DATA_READY', 'MANUAL_REVIEW'))
     enum(value['reason'], REASONS)
     need(type(value['warnings']) is list and len(value['warnings']) <= len(WARNINGS) and
@@ -1064,8 +1110,7 @@ def _validate_proposal(value):
          len(set(value['warnings'])) == len(value['warnings']), 'PROPOSAL_SCHEMA')
     need(type(value['processes']) is list and len(value['processes']) <= MAX_PROCESSES and
          type(value['measurements']) is list and len(value['measurements']) <= MAX_PROCESSES, 'PROPOSAL_SCHEMA')
-    expected_warnings = WARNINGS - {'KERNEL_RECORDS_REPORTED', 'KERNEL_RECORDS_NOT_AVAILABLE', 'NONCOMPLETE_RUN',
-                                       'MEMORY_SIZE_NOT_VERIFIED'}
+    expected_warnings = WARNINGS - DATA_WARNINGS
     if value['state'] == 'MANUAL_REVIEW':
         need(value['pci'] is None, 'PROPOSAL_SCHEMA')
         need(value['reason'] != 'OK' and value['reason'] not in TRANSIENT_ATTACHMENT and value['run'] is None and
@@ -1086,7 +1131,11 @@ def _validate_proposal(value):
         allowed = share_suites(schema)
         if modern:
             expected_warnings -= {'SEPARATE_TIMING_UNITS'}
-        need(value['driver'] in (V3_DRIVERS if modern else LEGACY_DRIVERS), 'PROPOSAL_SCHEMA')
+            # Only the archive identity shows whether a catalogued release matched; a release
+            # without a catalogue entry always carries the warning.
+            if value['archive_version'] not in catalog() or 'PACKAGE_NOT_CATALOGUED' in value['warnings']:
+                expected_warnings |= {'PACKAGE_NOT_CATALOGUED'}
+        need(modern or value['driver'] in LEGACY_DRIVERS, 'PROPOSAL_SCHEMA')
         run = value['run']
         exact_keys(run, ('overall', 'clocks', 'failure_reported', 'counts', 'steps'))
         need(type(run['failure_reported']) is bool, 'PROPOSAL_SCHEMA')

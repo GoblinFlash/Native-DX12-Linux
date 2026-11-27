@@ -16,7 +16,7 @@ SPEC.loader.exec_module(core)
 
 def render(version, proposals, existing_issues=()):
     """Render a single release; preserve existing measurements and omit Issue-only submissions."""
-    core.need(version in core.catalog() and type(proposals) is list and
+    core.need(core.is_release(version) and type(proposals) is list and
               0 < len(proposals) <= 32, 'VERSION_REPORT_INPUT')
     seen = set()
     for proposal in proposals:

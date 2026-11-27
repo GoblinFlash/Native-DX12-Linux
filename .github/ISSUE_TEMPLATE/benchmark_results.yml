@@ -15,16 +15,12 @@ body:
         **This issue and its attachments are public and linked to your GitHub account.**
         Inspect `share-results-<release>.tar.gz` (older releases: `share-results.tar.gz`) before attaching it. Remove anything you do not want public, such as usernames, hostnames, IP addresses, serial numbers or personal paths. Mention any redaction without repeating the removed values.
         Do not upload an unfiltered raw benchmark evidence directory. If you cannot safely share the bundle, describe the result instead.
-  - type: dropdown
+  - type: input
     id: version
     attributes:
       label: Benchmark version
-      description: Select the version shown in your benchmark results. Never guess from the driver or GPU model; select Other/unknown if unsure.
-      options:
-        - v0.1.6
-        - v0.1.5
-        - v0.1.4
-        - Other or unknown
+      description: The version shown in the launcher or in the installer name (NDX12-Benchmark-v0.1.7.run). Write unknown if unsure; the attached results name their own version.
+      placeholder: "v0.1.7"
     validations:
       required: true
   - type: input

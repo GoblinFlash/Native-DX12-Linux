@@ -189,12 +189,23 @@ class AggregateTests(unittest.TestCase):
         self.assertEqual(json.loads(files[core.ROOT + 'NVIDIA/RTX_3060_Ti/v0.1.6/issue-12/memory-backing.json'])['native_dx12']['backing'],
                          'UNKNOWN')
         root = files['Benchmark Results/README.md']
-        self.assertIn('## Community Benchmark Data — v0.1.6'.encode(), root)
+        self.assertEqual(root.count('## Community Benchmark Data — v0.1.6'.encode()), 1)
         self.assertIn('## Community Benchmark Data — v0.1.5'.encode(), root)
         self.assertIn(b'Individual runs', root)
         for name, oid in before.items():
             if name.startswith(core.ROOT) and '/README.md' not in name and name not in writer.INDEXES:
                 self.assertEqual(writer.git_blob(files[name]), oid, name)
+
+    def test_release_overview_joins_an_existing_unmarked_section(self):
+        """A manually archived run keeps its line; the generated block goes under the same heading."""
+        raw = ('# Benchmark Results\n\n## Community Benchmark Data — v0.1.6\n\n- [Archived run](a/README.md)\n\n'
+               '## Community Benchmark Data — v0.1.5\n').encode()
+        updated = aggregate.update_overview(raw, 'v0.1.6', [ready()], [], '', core)
+        self.assertEqual(updated.count('## Community Benchmark Data — v0.1.6'.encode()), 1)
+        start = updated.index(b'<!-- ndx12:overview:v0.1.6:start -->')
+        self.assertLess(updated.index('— v0.1.6\n'.encode()), start)
+        self.assertLess(start, updated.index(b'- [Archived run]'))
+        self.assertTrue(updated.endswith(b'- [Archived run](a/README.md)\n\n## Community Benchmark Data \xe2\x80\x94 v0.1.5\n'))
 
     def test_v14_additions_share_the_existing_version_and_preserve_old_runs(self):
         api = seeded()

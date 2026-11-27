@@ -196,9 +196,16 @@ def update_overview(raw, version, proposals, previous, prefix, core):
         return replace_region(raw, content, overview(version, previous, prefix, core), key, core)
     core.need(not previous, 'AGGREGATE_MARKERS')
     heading = '## Community Benchmark Data — ' + version
-    block = ('\n' + heading + '\n\n').encode() + wrap(content, key) + b'\n'
-    position = raw.find(b'\n## ')
-    position = len(raw) if position < 0 else position
+    line = ('\n' + heading + '\n').encode()
+    existing = raw.find(line)
+    if existing >= 0:
+        # The release already has a section (for example a manually archived run): the block goes under it.
+        position = existing + len(line)
+        block = b'\n' + wrap(content, key)
+    else:
+        block = ('\n' + heading + '\n\n').encode() + wrap(content, key) + b'\n'
+        position = raw.find(b'\n## ')
+        position = len(raw) if position < 0 else position
     updated = raw[:position] + block + raw[position:]
     core.need(len(updated) <= MAX_DOCUMENT, 'AGGREGATE_DOCUMENT_LIMIT')
     return updated
@@ -209,8 +216,7 @@ def derive(proposal, api, entries, files, core):
     version = proposal['claimed_version']
     if version is None:
         return set()
-    core.need(version in core.catalog() and re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+', version),
-              'AGGREGATE_VERSION')
+    core.need(core.is_release(version), 'AGGREGATE_VERSION')
     previous = records(api, entries, version, core)
     core.need(all(p['issue'] != proposal['issue'] for p in previous), 'AGGREGATE_DUPLICATE')
     core.need(len(previous) < MAX_RECORDS, 'AGGREGATE_RECORD_LIMIT')
@@ -299,11 +305,11 @@ def verify(root, core=None):
         rb'(v[0-9]+\.[0-9]+\.[0-9]+)):(?:start|end) -->')
     documents = list(community.glob('v*-data.md'))
     core.need(len(documents) <= 32, 'AGGREGATE_DOCUMENT_LIMIT')
-    for version in core.catalog():
-        for gpu in core.GPUS:
-            path = community / (gpu + '/' + version + '/README.md')
-            if path.exists() or path.is_symlink():
-                documents.append(path)
+    for gpu in core.GPUS:
+        folder = community / gpu
+        if folder.is_dir():
+            documents += [path for path in sorted(folder.glob('v*/README.md'))
+                          if core.is_release(path.parent.name)]
     for gpu in core.GPUS:
         path = community / (gpu + '/README.md')
         if path.exists() or path.is_symlink():
@@ -318,7 +324,7 @@ def verify(root, core=None):
             versions.add(version)
             discovered.setdefault(version, set()).add((name, key))
     for version in sorted(versions):
-        core.need(version in core.catalog(), 'AGGREGATE_VERSION')
+        core.need(core.is_release(version), 'AGGREGATE_VERSION')
         proposals = records(Local(), rows, version, core)
         core.need(proposals, 'AGGREGATE_SOURCE_MISSING')
         expected = document_set(version, proposals, core)

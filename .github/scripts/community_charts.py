@@ -2,10 +2,18 @@
 import html
 import json
 import math
+import re
+import textwrap
+from itertools import cycle
 
 WIDTH = 1400
 PAD = 64
 PANEL_GAP = 28
+LEGEND_GAP = 40
+MAX_PANELS_PER_ROW = 4
+PLOT_LEFT = 110
+PLOT_RIGHT = 24
+MIN_VALUE_FONT = 8  # Below this size in a full-width panel, use the bar's tooltip.
 PLOT_HEIGHT = 300
 INK = '#0f2440'          # primary text
 INK_2 = '#41536b'        # secondary text
@@ -74,6 +82,20 @@ def bar_path(x, y, w, h, r=4):
             % (x, y + h, y + r, x, y, x + r, y, x + w - r, x + w, y, x + w, y + r, y + h))
 
 
+def legend_rows(series):
+    """Keep each swatch and label together within the chart margins."""
+    row, width = [], 0
+    for item in series:
+        item_width = 28 + text_width(item['label'], 17)
+        if row and width + LEGEND_GAP + item_width > WIDTH - 2 * PAD:
+            yield row, width
+            row, width = [], 0
+        width += (LEGEND_GAP if row else 0) + item_width
+        row.append((item, item_width))
+    if row:
+        yield row, width
+
+
 def layout(spec, format_duration, backing):
     c = Canvas()
     series = {s['key']: s for s in spec['series']}
@@ -86,14 +108,15 @@ def layout(spec, format_duration, backing):
         c.text(PAD, y, line, 17, INK_3)
     y += 22
     c.raw('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="%s"/>' % (PAD, y, WIDTH - PAD, y, GRID))
-    # legend: every series, centred, swatch beside text (text keeps the text colour)
     y += 44
-    widths = [28 + text_width(s['label'], 17) for s in spec['series']]
-    x = (WIDTH - sum(widths) - 40 * (len(widths) - 1)) / 2
-    for s, w in zip(spec['series'], widths):
-        c.raw('<rect x="%.1f" y="%.1f" width="18" height="14" rx="3" fill="%s"/>' % (x, y - 12, s['color']))
-        c.text(x + 28, y, s['label'], 17)
-        x += w + 40
+    for index, (row, width) in enumerate(legend_rows(spec['series'])):
+        if index:
+            y += 28
+        x = (WIDTH - width) / 2
+        for item, item_width in row:
+            c.raw('<rect x="%.1f" y="%.1f" width="18" height="14" rx="3" fill="%s"/>' % (x, y - 12, item['color']))
+            c.text(x + 28, y, item['label'], 17)
+            x += item_width + LEGEND_GAP
     if spec.get('banner'):
         y += 30
         lines = wrap(spec['banner'], 17, WIDTH - 2 * PAD - 32, bold=True)
@@ -104,12 +127,12 @@ def layout(spec, format_duration, backing):
             c.text(PAD + 16, y, line, 17, bold=True)
         y += 18
     if spec.get('rows') is None:
-        panel_bottom = panel_row(c, series, spec['groups'], y + 30, format_duration)
+        panel_bottom = panel_rows(c, series, spec['groups'], y + 30, format_duration)
     else:
         for row in spec['rows']:
             y += 52
             c.text(PAD, y, row['heading'], 22, bold=True)
-            y = panel_row(c, series, row['groups'], y + 16, format_duration)
+            y = panel_rows(c, series, row['groups'], y + 16, format_duration)
         panel_bottom = y
     height = int(panel_bottom + 40)
     title = html.escape(spec['title'])
@@ -120,27 +143,72 @@ def layout(spec, format_duration, backing):
     return (head + ''.join(c.parts) + '</g>' + metadata + '</svg>\n').encode()
 
 
+def panel_width(count):
+    return (WIDTH - 2 * PAD - PANEL_GAP * (count - 1)) / count
+
+
+def heading_lines(label, width):
+    # In the chart's bold Arial-metric font, m and w are the only allowed
+    # case-name glyphs wider than two thirds of an em.
+    char_width = 22 if 'm' in label or 'w' in label else 22 * 2 / 3
+    return textwrap.wrap(label, width=max(1, int(width / char_width)))
+
+
+def value_label(bar, slot):
+    label = bar['value_text']
+    if text_width(label, 15) > slot - 8:
+        # Keep full precision in the tooltip when using a compact annotation.
+        ms = label.endswith(' ms')
+        value = bar['value'] / 1_000_000 if ms else bar['value']
+        label = f'≈{value:.3g} ' + ('ms' if ms else 'ns')
+    return label, min(15, (slot - 8) / text_width(label, 1))
+
+
+def panel_labels_fit(group, plot_width):
+    slot = plot_width / max(1, len(group['bars']))
+    return all(value_label(bar, slot)[1] >= MIN_VALUE_FONT
+               for bar in group['bars'] if bar['value'] is not None)
+
+
+def panel_rows(c, series, groups, top, format_duration):
+    bottom = top
+    start = 0
+    while start < len(groups):
+        row = groups[start:start + MAX_PANELS_PER_ROW]
+        while len(row) > 1:
+            plot_width = panel_width(len(row)) - PLOT_LEFT - PLOT_RIGHT
+            if all(panel_labels_fit(group, plot_width) for group in row):
+                break
+            row.pop()
+        bottom = panel_row(c, series, row, top, format_duration)
+        top = bottom + PANEL_GAP
+        start += len(row)
+    return bottom
+
+
 def panel_row(c, series, groups, top, format_duration):
     """One row of panels (one per group) from y = top; returns the bottom of its panels."""
-    n = max(1, len(groups))
-    panel_w = (WIDTH - 2 * PAD - PANEL_GAP * (n - 1)) / n
+    panel_w = panel_width(max(1, len(groups)))
+    headings = [heading_lines(g['label'], panel_w - 40) for g in groups]
     bar_label_lines = 1
     for g in groups:
-        slot = (panel_w - 134) / max(1, len(g['bars']))
+        slot = (panel_w - PLOT_LEFT - PLOT_RIGHT) / max(1, len(g['bars']))
         for b in g['bars']:
             bar_label_lines = max(bar_label_lines, len(wrap(series[b['series']]['short'], 14, slot - 8)))
-    plot_top = top + 110
+    extra_lines = max((len(lines) for lines in headings), default=1) - 1
+    plot_top = top + 110 + 26 * extra_lines
     plot_bottom = plot_top + PLOT_HEIGHT
     panel_bottom = plot_bottom + 22 + 18 * bar_label_lines + 18
     for index, g in enumerate(groups):
         x0 = PAD + index * (panel_w + PANEL_GAP)
         c.raw('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="12" fill="%s"/>'
               % (x0, top, panel_w, panel_bottom - top, CARD))
-        c.text(x0 + 20, top + 38, g['label'], 22, bold=True)
+        for line_index, line in enumerate(headings[index]):
+            c.text(x0 + 20, top + 38 + line_index * 26, line, 22, bold=True)
         drawn = [b for b in g['bars'] if b['value'] is not None]
         highest = max([max(b['value'], b.get('high') or b['value']) for b in drawn] + [0])
         maximum, step = nice_axis(highest)
-        left, right = x0 + 110, x0 + panel_w - 24
+        left, right = x0 + PLOT_LEFT, x0 + panel_w - PLOT_RIGHT
 
         def ypos(v):
             return plot_bottom - PLOT_HEIGHT * v / maximum
@@ -170,14 +238,9 @@ def panel_row(c, series, groups, top, format_duration):
                           'stroke-width="1.6" fill="none"/>' % (cx, lo, hi, cx - 7, hi, cx + 7, cx - 7, lo, cx + 7,
                                                                WHISKER))
                     label_y = min(label_y, hi)
-                label = b['value_text']
-                if text_width(label, 15) > slot - 8:
-                    # Use a compact annotation only when needed. The tooltip retains full precision.
-                    ms = label.endswith(' ms')
-                    value = b['value'] / 1_000_000 if ms else b['value']
-                    label = f'≈{value:.3g} ' + ('ms' if ms else 'ns')
-                size = min(15, (slot - 8) / text_width(label, 1))
-                c.text(cx, label_y - 10, label, size, anchor='middle')
+                label, size = value_label(b, slot)
+                if size >= MIN_VALUE_FONT:
+                    c.text(cx, label_y - 10, label, size, anchor='middle')
             for m, line in enumerate(wrap(s['short'], 14, slot - 8)):
                 c.text(cx, plot_bottom + 24 + 18 * m, line, 14, INK_2, anchor='middle')
     return panel_bottom
@@ -197,13 +260,18 @@ VARIANTS = {
 def render_suite(title, label, proposal, step, rows, schedule, format_duration, backing, run_context):
     """Render every scheduled arm once, with the measured range and process count."""
     lookup = {(r['case'], r['variant'], r['path']): r for r in rows}
-    variants = [v for v in VARIANTS if any(arm == v and path == 'native' for _, arm, path in schedule)]
-    series = [dict(key=('native', v), label=('Native DX12 · ' if v else '') + VARIANTS[v], short=VARIANTS[v], color=color)
-              for v, color in zip(variants, (NATIVE, VARIANT, '#8555ac'))]
+    # Cases and arms that a later release adds follow the known ones, under their own names.
+    arms = {arm for _, arm, path in schedule if path == 'native'}
+    variants = [v for v in VARIANTS if v in arms] + sorted(arms - set(VARIANTS))
+    cases = [c for c in CASES if any(case == c for case, _, _ in schedule)]
+    cases += sorted({case for case, _, _ in schedule} - set(CASES))
+    series = [dict(key=('native', v), label=('Native DX12 · ' if v else '') + VARIANTS.get(v, v),
+                   short=VARIANTS.get(v, v), color=color)
+              for v, color in zip(variants, cycle((NATIVE, VARIANT, '#8555ac', '#b8860b')))]
     if any(path == 'vulkan' for _, _, path in schedule):
         series.append(dict(key=('vulkan', ''), label='Vulkan NVIDIA', short='Vulkan NVIDIA', color=VULKAN))
     groups = []
-    for case in CASES:
+    for case in cases:
         bars = []
         for item in series:
             path, variant = item['key']
@@ -220,7 +288,8 @@ def render_suite(title, label, proposal, step, rows, schedule, format_duration, 
                                 f'{row["n"]} processes'))
             bars.append(bar)
         if bars:
-            groups.append(dict(label=case.replace('x', ' × '), bars=bars))
+            heading = case.replace('x', ' × ') if re.fullmatch(r'[0-9]+(?:x[0-9]+)+', case) else case
+            groups.append(dict(label=heading, bars=bars))
     envelope = step['reported_ns_per_tick_envelope']
     overall = proposal['run']['overall']
     shared = (overall == 'COMPLETE' and step['reported_clock_qualification'] == 'QUALIFIED'
