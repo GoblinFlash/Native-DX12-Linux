@@ -1,6 +1,7 @@
 # Native DX12 Linux
 
-**Native-DX12-Linux is an experimental Direct3D 12 runtime for Linux that executes directly on the GPU — completely bypassing Vulkan and VKD3D translation layers. Built around a direct shader pipeline (DXIL → NIR → NAK) and low-level NVIDIA RTX compute execution.**
+**Native-DX12-Linux is an experimental Direct3D 12 runtime for Linux that executes directly on the GPU completely bypassing Vulkan and VKD3D translation layers. 
+Built around a direct shader pipeline (DXIL → NIR → NAK) and low-level NVIDIA RTX compute execution.**
 
 **Help test and shape the next optimizations!**
 
