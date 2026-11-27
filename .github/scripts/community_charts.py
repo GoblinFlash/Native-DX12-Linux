@@ -3,6 +3,7 @@ import html
 import json
 import math
 import re
+import textwrap
 from itertools import cycle
 
 WIDTH = 1400
@@ -146,6 +147,13 @@ def panel_width(count):
     return (WIDTH - 2 * PAD - PANEL_GAP * (count - 1)) / count
 
 
+def heading_lines(label, width):
+    # In the chart's bold Arial-metric font, m and w are the only allowed
+    # case-name glyphs wider than two thirds of an em.
+    char_width = 22 if 'm' in label or 'w' in label else 22 * 2 / 3
+    return textwrap.wrap(label, width=max(1, int(width / char_width)))
+
+
 def value_label(bar, slot):
     label = bar['value_text']
     if text_width(label, 15) > slot - 8:
@@ -181,19 +189,22 @@ def panel_rows(c, series, groups, top, format_duration):
 def panel_row(c, series, groups, top, format_duration):
     """One row of panels (one per group) from y = top; returns the bottom of its panels."""
     panel_w = panel_width(max(1, len(groups)))
+    headings = [heading_lines(g['label'], panel_w - 40) for g in groups]
     bar_label_lines = 1
     for g in groups:
         slot = (panel_w - PLOT_LEFT - PLOT_RIGHT) / max(1, len(g['bars']))
         for b in g['bars']:
             bar_label_lines = max(bar_label_lines, len(wrap(series[b['series']]['short'], 14, slot - 8)))
-    plot_top = top + 110
+    extra_lines = max((len(lines) for lines in headings), default=1) - 1
+    plot_top = top + 110 + 26 * extra_lines
     plot_bottom = plot_top + PLOT_HEIGHT
     panel_bottom = plot_bottom + 22 + 18 * bar_label_lines + 18
     for index, g in enumerate(groups):
         x0 = PAD + index * (panel_w + PANEL_GAP)
         c.raw('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="12" fill="%s"/>'
               % (x0, top, panel_w, panel_bottom - top, CARD))
-        c.text(x0 + 20, top + 38, g['label'], 22, bold=True)
+        for line_index, line in enumerate(headings[index]):
+            c.text(x0 + 20, top + 38 + line_index * 26, line, 22, bold=True)
         drawn = [b for b in g['bars'] if b['value'] is not None]
         highest = max([max(b['value'], b.get('high') or b['value']) for b in drawn] + [0])
         maximum, step = nice_axis(highest)

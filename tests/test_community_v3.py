@@ -233,6 +233,35 @@ class ShareV3Tests(unittest.TestCase):
             with self.assertRaisesRegex(core.Refused, '^PROCESS_SCHEDULE$'):
                 parse(invalid)
 
+    def test_long_case_headings_fit_middle_and_last_panels(self):
+        charts = load('community_charts')
+        names = ['affine', 'parallel-scan-large-input-1024', '128 × 128', 'm' * 48]
+        groups = [dict(label=name, bars=[]) for name in names]
+        svg = ET.fromstring(charts.layout(dict(title='Compute', subtitle='', series=[], groups=groups),
+                                          core.format_gpu_duration, {}))
+        panels = svg.findall('.//{*}rect[@rx="12"]')
+        self.assertEqual(len(panels), 4)
+        self.assertEqual(len({p.get('y') for p in panels}), 1)
+        headings = svg.findall('.//{*}text[@font-size="22"]')
+        axis_titles = [t for t in svg.findall('.//{*}text') if t.text == 'GPU time']
+        for name, panel, axis in zip(names, panels, axis_titles, strict=True):
+            with self.subTest(name=name):
+                x = float(panel.get('x'))
+                lines = [t for t in headings if x <= float(t.get('x')) < x + float(panel.get('width'))]
+                self.assertEqual(''.join(t.text for t in lines), name)
+                # Upper bounds in pixels for these strings in 22 px Liberation Sans Bold.
+                glyph_width = 20 if name.startswith('m') else 14
+                for line in lines:
+                    self.assertLessEqual(float(line.get('x')) + glyph_width * len(line.text),
+                                         x + float(panel.get('width')) - 20)
+                if len(name) >= 30:
+                    self.assertGreater(len(lines), 1)
+                else:
+                    self.assertEqual(len(lines), 1)
+                baselines = [float(t.get('y')) for t in lines]
+                self.assertTrue(all(b - a >= 22 for a, b in zip(baselines, baselines[1:])))
+                self.assertGreater(float(axis.get('y')) - baselines[-1], 22)
+
     def test_d4_chart_draws_extra_arms_and_wraps_their_legend(self):
         proposal = self.prepared()
         extra_arms = ('alpha', 'beta', 'delta', 'gamma')
