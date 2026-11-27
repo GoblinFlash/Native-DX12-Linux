@@ -197,13 +197,18 @@ VARIANTS = {
 def render_suite(title, label, proposal, step, rows, schedule, format_duration, backing, run_context):
     """Render every scheduled arm once, with the measured range and process count."""
     lookup = {(r['case'], r['variant'], r['path']): r for r in rows}
-    variants = [v for v in VARIANTS if any(arm == v and path == 'native' for _, arm, path in schedule)]
-    series = [dict(key=('native', v), label=('Native DX12 · ' if v else '') + VARIANTS[v], short=VARIANTS[v], color=color)
-              for v, color in zip(variants, (NATIVE, VARIANT, '#8555ac'))]
+    # Cases and arms that a later release adds follow the known ones, under their own names.
+    arms = {arm for _, arm, path in schedule if path == 'native'}
+    variants = [v for v in VARIANTS if v in arms] + sorted(arms - set(VARIANTS))
+    cases = [c for c in CASES if any(case == c for case, _, _ in schedule)]
+    cases += sorted({case for case, _, _ in schedule} - set(CASES))
+    series = [dict(key=('native', v), label=('Native DX12 · ' if v else '') + VARIANTS.get(v, v),
+                   short=VARIANTS.get(v, v), color=color)
+              for v, color in zip(variants, (NATIVE, VARIANT, '#8555ac', '#b8860b'))]
     if any(path == 'vulkan' for _, _, path in schedule):
         series.append(dict(key=('vulkan', ''), label='Vulkan NVIDIA', short='Vulkan NVIDIA', color=VULKAN))
     groups = []
-    for case in CASES:
+    for case in cases:
         bars = []
         for item in series:
             path, variant = item['key']

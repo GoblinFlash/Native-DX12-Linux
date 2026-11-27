@@ -31,11 +31,15 @@ class IntakeUXTests(unittest.TestCase):
         self.assertEqual((proposal['state'], proposal['reason']), ('DATA_READY', 'OK'))
         self.assertIn('NVIDIA/RTX_4060/v0.1.5/issue-12', core.record_folder(proposal))
 
-    def test_shortened_version_stays_manual_review_and_never_claims_numbers(self):
-        proposal = core.prepare(issue(gpu='RTX 4060', version='v0.15'),
-                                bundle(raw_files(gpu='NVIDIA GeForce RTX 4060')))
-        self.assertEqual((proposal['state'], proposal['reason']),
-                         ('MANUAL_REVIEW', 'VERSION_UNKNOWN'))
+    def test_release_field_without_a_release_number_uses_the_archive_release(self):
+        archive = bundle(raw_files(gpu='NVIDIA GeForce RTX 4060'))
+        for text in ('v0.15', 'Other or unknown', '_No response_', '0.1.5', 'NDX12-Benchmark-v0.1.5.run'):
+            with self.subTest(text=text):
+                proposal = core.validate_proposal(core.prepare(issue(gpu='RTX 4060', version=text), archive))
+                self.assertEqual((proposal['state'], proposal['reason'], proposal['claimed_version']),
+                                 ('DATA_READY', 'OK', 'v0.1.5'))
+        proposal = core.prepare(issue(gpu='RTX 4060', version='v0.1.4'), archive)
+        self.assertEqual((proposal['state'], proposal['reason']), ('MANUAL_REVIEW', 'VERSION_MISMATCH'))
         self.assertFalse(proposal['measurements'])
 
     def test_category_workflow_resolves_supported_gpu_in_real_js(self):
@@ -306,11 +310,11 @@ class IntakeUXTests(unittest.TestCase):
                     self.assertIn(reason, summary.read_text())
                     self.assertIn('UNVERIFIED', summary.read_text())
 
-    def test_issue_form_prevents_benchmark_version_typo(self):
+    def test_issue_form_takes_any_release_number(self):
+        """A new release needs no form edit; the parser reads the typed number or the archive's."""
         form = (ROOT / '.github/ISSUE_TEMPLATE/benchmark_results.yml').read_text()
-        self.assertIn('  - type: dropdown\n    id: version', form)
-        self.assertIn('        - v0.1.5', form)
-        self.assertIn('        - v0.1.4', form)
+        self.assertIn('  - type: input\n    id: version', form)
+        self.assertNotIn('        - v0.1.', form)
 
 
 if __name__ == '__main__':

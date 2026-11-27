@@ -486,6 +486,21 @@ class IntakeTests(unittest.TestCase):
         x = issue();x['body'] += '\nhttps://github.com/user-attachments/files/456/3090-share-results-v0.1.5.tar.gz'
         with self.assertRaisesRegex(core.Refused, '^ATTACHMENT_AMBIGUOUS$'):core.attachment_url(x)
 
+    def test_benchmark_archive_names_with_card_and_release(self):
+        """Select the names the benchmark writes; refuse other card spellings and suffixes."""
+        for name in ('share-results-4090-v0.1.6.tar.gz', 'share-results-3080ti-v0.1.7.tar.gz',
+                     'share-results-4060tilaptop-release-unknown.tar.gz', 'share-results-release-unknown.tar.gz'):
+            x = issue();x['body'] = x['body'].replace('share-results-v0.1.5.tar.gz', name)
+            with self.subTest(name=name):
+                self.assertEqual(core.attachment_url(x), 'https://github.com/user-attachments/files/123/'+name)
+        for name in ('share-results-RTX4090-v0.1.6.tar.gz', 'share-results-4090-v0.1.6.tar.gz.py',
+                     'share-results-4090-ti-v0.1.6.tar.gz', 'share-results-'+'a'*25+'.tar.gz'):
+            opener = mock.Mock()
+            with self.subTest(name=name):
+                with self.assertRaisesRegex(core.Refused, '^ATTACHMENT_URL$'):
+                    core.download('https://github.com/user-attachments/files/123/'+name, opener)
+                opener.open.assert_not_called()
+
     def test_archive_filename_prefix_never_identifies_hardware(self):
         """Prove filename hints never override Issue/archive hardware identity."""
         for claimed, expected in [('RTX 3060', 'OK'), ('RTX 3090', 'GPU_MISMATCH')]:
