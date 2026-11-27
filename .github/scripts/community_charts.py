@@ -7,6 +7,7 @@ from itertools import cycle
 WIDTH = 1400
 PAD = 64
 PANEL_GAP = 28
+LEGEND_GAP = 40
 MAX_PANELS_PER_ROW = 4
 PLOT_HEIGHT = 300
 INK = '#0f2440'          # primary text
@@ -76,6 +77,20 @@ def bar_path(x, y, w, h, r=4):
             % (x, y + h, y + r, x, y, x + r, y, x + w - r, x + w, y, x + w, y + r, y + h))
 
 
+def legend_rows(series):
+    """Keep each swatch and label together within the chart margins."""
+    row, width = [], 0
+    for item in series:
+        item_width = 28 + text_width(item['label'], 17)
+        if row and width + LEGEND_GAP + item_width > WIDTH - 2 * PAD:
+            yield row, width
+            row, width = [], 0
+        width += (LEGEND_GAP if row else 0) + item_width
+        row.append((item, item_width))
+    if row:
+        yield row, width
+
+
 def layout(spec, format_duration, backing):
     c = Canvas()
     series = {s['key']: s for s in spec['series']}
@@ -88,14 +103,15 @@ def layout(spec, format_duration, backing):
         c.text(PAD, y, line, 17, INK_3)
     y += 22
     c.raw('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="%s"/>' % (PAD, y, WIDTH - PAD, y, GRID))
-    # legend: every series, centred, swatch beside text (text keeps the text colour)
     y += 44
-    widths = [28 + text_width(s['label'], 17) for s in spec['series']]
-    x = (WIDTH - sum(widths) - 40 * (len(widths) - 1)) / 2
-    for s, w in zip(spec['series'], widths):
-        c.raw('<rect x="%.1f" y="%.1f" width="18" height="14" rx="3" fill="%s"/>' % (x, y - 12, s['color']))
-        c.text(x + 28, y, s['label'], 17)
-        x += w + 40
+    for index, (row, width) in enumerate(legend_rows(spec['series'])):
+        if index:
+            y += 28
+        x = (WIDTH - width) / 2
+        for item, item_width in row:
+            c.raw('<rect x="%.1f" y="%.1f" width="18" height="14" rx="3" fill="%s"/>' % (x, y - 12, item['color']))
+            c.text(x + 28, y, item['label'], 17)
+            x += item_width + LEGEND_GAP
     if spec.get('banner'):
         y += 30
         lines = wrap(spec['banner'], 17, WIDTH - 2 * PAD - 32, bold=True)

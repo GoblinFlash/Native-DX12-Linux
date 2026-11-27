@@ -230,24 +230,47 @@ class ShareV3Tests(unittest.TestCase):
             with self.assertRaisesRegex(core.Refused, '^PROCESS_SCHEDULE$'):
                 parse(invalid)
 
-    def test_d4_chart_draws_fifth_measured_native_arm(self):
+    def test_d4_chart_draws_extra_arms_and_wraps_their_legend(self):
         proposal = self.prepared()
+        extra_arms = ('alpha', 'beta', 'delta', 'gamma')
         for key in ('processes', 'measurements'):
             source = [r for r in proposal[key] if r['case'] == '128x128' and r['variant'] == 'B']
-            proposal[key].extend(dict(r, variant=arm) for arm in ('alpha', 'beta') for r in source)
+            proposal[key].extend(dict(r, variant=arm) for arm in extra_arms for r in source)
         proposal['processes'].sort(key=core.process_key)
         step = next(s for s in proposal['run']['steps'] if s['suite'] == 'd4')
         for counts in (proposal['run']['counts'], step['counts']):
             for key in ('expected', 'completed', 'verified'):
-                counts[key] += 14
+                counts[key] += 7 * len(extra_arms)
         svg = ET.fromstring(core.render(proposal)[core.record_folder(proposal) + '/d4-chart.svg'])
-        for arm in ('alpha', 'beta'):
+        for arm in extra_arms:
             label = 'Native DX12 · ' + arm
             self.assertIn(label, [t.text for t in svg.findall('.//{*}text')])
             bars = [g.find('{*}path') for g in svg.findall('.//{*}g[{*}title]')
                     if g.find('{*}title').text.startswith(label + ', 128x128:')]
             self.assertEqual(len(bars), 1)
             self.assertRegex(bars[0].get('fill'), '^#[0-9a-fA-F]{6}$')
+
+        charts = load('community_charts')
+        swatches = svg.findall('.//{*}rect[@rx="3"]')
+        texts = svg.findall('.//{*}text')
+        by_row = {}
+        for swatch in swatches:
+            x, y = float(swatch.get('x')), float(swatch.get('y')) + 12
+            label = next(t.text for t in texts if float(t.get('y')) == y and
+                         abs(float(t.get('x')) - (x + 28)) < 0.11)
+            right = x + 28 + charts.text_width(label, 17)
+            by_row.setdefault(y, []).append((x, right, label))
+        self.assertEqual([label for row in by_row.values() for _, _, label in row],
+                         ['Native DX12 · ' + arm for arm in ('Original', 'D4', 'Q8PL', *extra_arms)] +
+                         ['Vulkan NVIDIA'])
+        self.assertGreater(len(by_row), 1)
+        for row in by_row.values():
+            left, right = row[0][0], row[-1][1]
+            self.assertGreaterEqual(left, charts.PAD)
+            self.assertLessEqual(right, charts.WIDTH - charts.PAD)
+            self.assertAlmostEqual(left, charts.WIDTH - right, delta=0.11)
+        first_panel = svg.find('.//{*}rect[@rx="12"]')
+        self.assertGreater(float(first_panel.get('y')), max(by_row))
 
     def test_v3_refuses_missing_repeat_and_contradictory_not_run(self):
         process = rows(self.files['processes.csv'])
