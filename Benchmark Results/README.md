@@ -4,6 +4,7 @@
 
 <!-- ndx12:overview:v0.1.8:start -->
 - [NVIDIA GeForce RTX 3060 · v0.1.8](NVIDIA/RTX_3060/v0.1.8/)
+- [NVIDIA GeForce RTX 4090 · v0.1.8](NVIDIA/RTX_4090/v0.1.8/)
 
 [All v0.1.8 charts](v0.1.8-submitted-data.md)
 <!-- ndx12:overview:v0.1.8:end -->
@@ -46,6 +47,7 @@
 <summary>Individual runs</summary>
 
 <!-- ndx12-community-intake:start -->
+- [NVIDIA GeForce RTX 4090 · v0.1.8 · Run 62](NVIDIA/RTX_4090/v0.1.8/issue-62/README.md)
 - [NVIDIA GeForce RTX 3060 · v0.1.8 · Run 61](NVIDIA/RTX_3060/v0.1.8/issue-61/README.md)
 - [NVIDIA GeForce RTX 4090 · v0.1.6 · Run 55](NVIDIA/RTX_4090/v0.1.6/issue-55/README.md)
 - [NVIDIA GeForce RTX 3060 · v0.1.5 · Run 10](NVIDIA/RTX_3060/v0.1.5/issue-10/README.md)
