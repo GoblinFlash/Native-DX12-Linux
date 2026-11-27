@@ -2,10 +2,12 @@
 import html
 import json
 import math
+from itertools import cycle
 
 WIDTH = 1400
 PAD = 64
 PANEL_GAP = 28
+MAX_PANELS_PER_ROW = 4
 PLOT_HEIGHT = 300
 INK = '#0f2440'          # primary text
 INK_2 = '#41536b'        # secondary text
@@ -104,12 +106,12 @@ def layout(spec, format_duration, backing):
             c.text(PAD + 16, y, line, 17, bold=True)
         y += 18
     if spec.get('rows') is None:
-        panel_bottom = panel_row(c, series, spec['groups'], y + 30, format_duration)
+        panel_bottom = panel_rows(c, series, spec['groups'], y + 30, format_duration)
     else:
         for row in spec['rows']:
             y += 52
             c.text(PAD, y, row['heading'], 22, bold=True)
-            y = panel_row(c, series, row['groups'], y + 16, format_duration)
+            y = panel_rows(c, series, row['groups'], y + 16, format_duration)
         panel_bottom = y
     height = int(panel_bottom + 40)
     title = html.escape(spec['title'])
@@ -118,6 +120,15 @@ def layout(spec, format_duration, backing):
             '<g font-family="%s">' % (WIDTH, height, WIDTH, height, title, title, html.escape(FONT)))
     metadata = '<metadata>' + html.escape(json.dumps(backing, sort_keys=True)) + '</metadata>'
     return (head + ''.join(c.parts) + '</g>' + metadata + '</svg>\n').encode()
+
+
+def panel_rows(c, series, groups, top, format_duration):
+    bottom = top
+    for start in range(0, len(groups), MAX_PANELS_PER_ROW):
+        row = groups[start:start + MAX_PANELS_PER_ROW]
+        bottom = panel_row(c, series, row, top, format_duration)
+        top = bottom + PANEL_GAP
+    return bottom
 
 
 def panel_row(c, series, groups, top, format_duration):
@@ -204,7 +215,7 @@ def render_suite(title, label, proposal, step, rows, schedule, format_duration, 
     cases += sorted({case for case, _, _ in schedule} - set(CASES))
     series = [dict(key=('native', v), label=('Native DX12 · ' if v else '') + VARIANTS.get(v, v),
                    short=VARIANTS.get(v, v), color=color)
-              for v, color in zip(variants, (NATIVE, VARIANT, '#8555ac', '#b8860b'))]
+              for v, color in zip(variants, cycle((NATIVE, VARIANT, '#8555ac', '#b8860b')))]
     if any(path == 'vulkan' for _, _, path in schedule):
         series.append(dict(key=('vulkan', ''), label='Vulkan NVIDIA', short='Vulkan NVIDIA', color=VULKAN))
     groups = []

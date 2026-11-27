@@ -3,6 +3,7 @@ import csv
 import io
 import json
 import unittest
+from collections import Counter
 from unittest.mock import patch
 from xml.etree import ElementTree as ET
 
@@ -134,6 +135,10 @@ class ShareV3Tests(unittest.TestCase):
                 core.validate_proposal(forged)
             self.assertIn('/' + VERSION + '/issue-1200', core.record_folder(proposal))
         source = issue(gpu='RTX 5060 Ti', version='v0.1.5')
+        self.assertEqual(core.prepare(source, bundle(self.files))['reason'], 'VERSION_MISMATCH')
+        run = json.loads(self.files['run.json'])
+        run['identity']['public_version'] = 'v0.1.5'
+        self.files['run.json'] = core.json_bytes(run)
         self.assertEqual(core.prepare(source, bundle(self.files))['reason'], 'SCHEMA')
 
     def test_v3_refuses_legacy_units_and_marks_another_build_or_installation(self):
@@ -186,14 +191,63 @@ class ShareV3Tests(unittest.TestCase):
         self.assertEqual(proposal['run']['counts']['verified'], 243)
         self.assertEqual(core.validate_proposal(core.load_json(core.json_bytes(proposal))), proposal)
         chart = core.render(proposal)[core.record_folder(proposal) + '/chart.svg']
-        ET.fromstring(chart)
+        panels = ET.fromstring(chart).findall('.//{*}rect[@rx="12"]')
+        self.assertEqual(len(panels), 4)
+        self.assertEqual(len({p.get('y') for p in panels}), 1)
         self.assertIn(b'parallel-sort4096-24', chart)
+        for index in range(5):
+            self.files = add_case(f'sort-{index}', range(1, 8))
+        proposal = self.prepared()
+        compute = next(step for step in proposal['run']['steps'] if step['suite'] == 'compute')
+        for clock, row_sizes in (('QUALIFIED', [4, 4, 1]), ('NOT_QUALIFIED', [4, 4, 1, 3])):
+            with self.subTest(clock=clock):
+                compute['reported_clock_qualification'] = clock
+                svg = ET.fromstring(core.render(proposal)[core.record_folder(proposal) + '/chart.svg'])
+                panels = svg.findall('.//{*}rect[@rx="12"]')
+                rows_by_y = Counter(float(p.get('y')) for p in panels)
+                self.assertEqual([rows_by_y[y] for y in sorted(rows_by_y)], row_sizes)
+                self.assertTrue(all(float(p.get('width')) > 134 for p in panels))
+                self.assertLess(max(float(p.get('y')) + float(p.get('height')) for p in panels),
+                                float(svg.get('height')))
         for name, repeats in (('parallel-sort4096-24', range(1, 7)), ('Sort 24', range(1, 8)),
                               ('../sort', range(1, 8))):
             self.files = source
             self.files = add_case(name, repeats)
             with self.subTest(name=name, repeats=len(repeats)):
                 self.assertEqual(self.prepared()['reason'], 'PROCESS_SCHEDULE')
+
+    def test_new_d4_case_accepts_existing_native_arms_with_all_repeats(self):
+        processes = [r for r in rows(self.files['processes.csv']) if r['suite'] == 'd4']
+        extra = [dict(r, case='256x256') for r in processes if r['case'] == '128x128' and r['path'] == 'native']
+
+        def parse(added):
+            return core.process_rows(core.csv_text(processes + added, core.PROCESS_COLUMNS), ['d4'], core.SHARE_V3)
+
+        parsed = parse(extra)
+        self.assertEqual({r['variant'] for r in parsed if r['case'] == '256x256'}, {'B', 'D4', 'Q8PL'})
+        for invalid in (extra[:-1], [dict(r, case='BadCase') for r in extra],
+                        [dict(r, variant='NEW') for r in extra if r['variant'] == 'B']):
+            with self.assertRaisesRegex(core.Refused, '^PROCESS_SCHEDULE$'):
+                parse(invalid)
+
+    def test_d4_chart_draws_fifth_measured_native_arm(self):
+        proposal = self.prepared()
+        for key in ('processes', 'measurements'):
+            source = [r for r in proposal[key] if r['case'] == '128x128' and r['variant'] == 'B']
+            proposal[key].extend(dict(r, variant=arm) for arm in ('alpha', 'beta') for r in source)
+        proposal['processes'].sort(key=core.process_key)
+        step = next(s for s in proposal['run']['steps'] if s['suite'] == 'd4')
+        for counts in (proposal['run']['counts'], step['counts']):
+            for key in ('expected', 'completed', 'verified'):
+                counts[key] += 14
+        svg = ET.fromstring(core.render(proposal)[core.record_folder(proposal) + '/d4-chart.svg'])
+        for arm in ('alpha', 'beta'):
+            label = 'Native DX12 · ' + arm
+            self.assertIn(label, [t.text for t in svg.findall('.//{*}text')])
+            bars = [g.find('{*}path') for g in svg.findall('.//{*}g[{*}title]')
+                    if g.find('{*}title').text.startswith(label + ', 128x128:')]
+            self.assertEqual(len(bars), 1)
+            self.assertRegex(bars[0].get('fill'), '^#[0-9a-fA-F]{6}$')
 
     def test_v3_refuses_missing_repeat_and_contradictory_not_run(self):
         process = rows(self.files['processes.csv'])

@@ -616,10 +616,13 @@ def v3_schedule(suite, keys, vulkan):
         base |= {(s, case, 'Q8PL', path, repeat)
                  for s, case, arm, path, repeat in base if arm == 'D4'}
     known = {key[1:4] for key in base}
+    native_arms = {arm for _, arm, path in known if path == 'native'}
     for case, variant, path in {key[1:4] for key in keys} - known:
-        need(SCHEDULE_NAME.fullmatch(case) and path in ('native', 'vulkan') and
-             (SCHEDULE_NAME.fullmatch(variant) if path == 'native' and suite != 'compute' else variant == ''),
-             'PROCESS_SCHEDULE')
+        need(SCHEDULE_NAME.fullmatch(case) and path in ('native', 'vulkan'), 'PROCESS_SCHEDULE')
+        if path == 'native' and suite != 'compute':
+            need(variant in native_arms or SCHEDULE_NAME.fullmatch(variant), 'PROCESS_SCHEDULE')
+        else:
+            need(variant == '', 'PROCESS_SCHEDULE')
         base |= {(suite, case, variant, path, repeat) for repeat in repeats}
     return base if vulkan else {key for key in base if key[3] == 'native'}
 
@@ -962,6 +965,7 @@ def prepare(issue, compressed=None, fetch=download):
         result['archive_version'] = actual_version if is_release(actual_version) else None
         version = version or result['archive_version']
         need(version is not None, 'VERSION_UNKNOWN')
+        need(result['archive_version'] == version, 'VERSION_MISMATCH')
         schema = release_schema(version)
         modern = schema == SHARE_V3
         need(run.get('schema') == schema, 'SCHEMA')
@@ -979,7 +983,6 @@ def prepare(issue, compressed=None, fetch=download):
         for model_text in (run['gpu']['model'], first_line(fields.get('GPU model', ''))):
             inline = re.search(r' \(PCI ([0-9a-f]{4}:[0-9a-f]{4})\)$', model_text, re.I)
             need(inline is None or inline.group(1).lower() == pci, 'GPU_PCI_MISMATCH')
-        need(actual_version == version, 'VERSION_MISMATCH')
         identity = run['identity']
         need(identity.get('schema') == schema and
              identity.get('status') in (INSTALL_STATES if modern else ('VERIFIED',)), 'IDENTITY_MISMATCH')
