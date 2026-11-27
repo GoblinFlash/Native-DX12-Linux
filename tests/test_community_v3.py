@@ -280,6 +280,30 @@ class ShareV3Tests(unittest.TestCase):
         self.files['processes.csv'] = core.csv_text(process, core.PROCESS_COLUMNS)
         self.assertEqual(self.prepared()['reason'], 'PROCESS_CONTRADICTION')
 
+    def test_dense_sponza_panels_keep_bars_and_readable_value_labels(self):
+        for cases, arms in ((4, 21), (1, 84)):
+            with self.subTest(cases=cases, arms=arms):
+                proposal = self.prepared()
+                for key in ('processes', 'measurements'):
+                    template = [r for r in proposal[key] if r['suite'] == 'sponza' and r['variant'] == 'scalar']
+                    proposal[key].extend(dict(r, case=f'new-{i}', variant=f'arm-{j}')
+                                         for i in range(cases) for j in range(arms) for r in template)
+                proposal['processes'].sort(key=core.process_key)
+                step = next(s for s in proposal['run']['steps'] if s['suite'] == 'sponza')
+                for counts in (step['counts'], proposal['run']['counts']):
+                    for key in ('expected', 'completed', 'verified'):
+                        counts[key] += cases * arms * 3
+                chart = core.render(proposal)[core.record_folder(proposal) + '/sponza-chart.svg']
+                svg = ET.fromstring(chart)
+                bars = svg.findall('.//{*}g[{*}title]')
+                self.assertEqual(len(bars), 2 + cases * arms)
+                self.assertTrue(all('median ' in g.find('{*}title').text and g.find('{*}path') is not None
+                                    for g in bars))
+                labels = [t for t in svg.findall('.//{*}text[@text-anchor="middle"]')
+                          if t.text.endswith((' ns', ' ms'))]
+                self.assertTrue(all(int(t.get('font-size')) >= 10 for t in labels))
+                self.assertEqual(len(labels), len(bars) if arms == 21 else 2)
+
     def test_v3_does_not_accept_a_vulkan_retained_session(self):
         process = rows(self.files['processes.csv'])
         next(row for row in process if row['path'] == 'vulkan')['submission'] = 'RETAINED_SESSION'

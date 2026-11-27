@@ -9,6 +9,9 @@ PAD = 64
 PANEL_GAP = 28
 LEGEND_GAP = 40
 MAX_PANELS_PER_ROW = 4
+PLOT_LEFT = 110
+PLOT_RIGHT = 24
+MIN_VALUE_FONT = 8  # Below this size in a full-width panel, use the bar's tooltip.
 PLOT_HEIGHT = 300
 INK = '#0f2440'          # primary text
 INK_2 = '#41536b'        # secondary text
@@ -138,22 +141,48 @@ def layout(spec, format_duration, backing):
     return (head + ''.join(c.parts) + '</g>' + metadata + '</svg>\n').encode()
 
 
+def panel_width(count):
+    return (WIDTH - 2 * PAD - PANEL_GAP * (count - 1)) / count
+
+
+def value_label(bar, slot):
+    label = bar['value_text']
+    if text_width(label, 15) > slot - 8:
+        # Keep full precision in the tooltip when using a compact annotation.
+        ms = label.endswith(' ms')
+        value = bar['value'] / 1_000_000 if ms else bar['value']
+        label = f'≈{value:.3g} ' + ('ms' if ms else 'ns')
+    return label, min(15, (slot - 8) / text_width(label, 1))
+
+
+def panel_labels_fit(group, plot_width):
+    slot = plot_width / max(1, len(group['bars']))
+    return all(value_label(bar, slot)[1] >= MIN_VALUE_FONT
+               for bar in group['bars'] if bar['value'] is not None)
+
+
 def panel_rows(c, series, groups, top, format_duration):
     bottom = top
-    for start in range(0, len(groups), MAX_PANELS_PER_ROW):
+    start = 0
+    while start < len(groups):
         row = groups[start:start + MAX_PANELS_PER_ROW]
+        while len(row) > 1:
+            plot_width = panel_width(len(row)) - PLOT_LEFT - PLOT_RIGHT
+            if all(panel_labels_fit(group, plot_width) for group in row):
+                break
+            row.pop()
         bottom = panel_row(c, series, row, top, format_duration)
         top = bottom + PANEL_GAP
+        start += len(row)
     return bottom
 
 
 def panel_row(c, series, groups, top, format_duration):
     """One row of panels (one per group) from y = top; returns the bottom of its panels."""
-    n = max(1, len(groups))
-    panel_w = (WIDTH - 2 * PAD - PANEL_GAP * (n - 1)) / n
+    panel_w = panel_width(max(1, len(groups)))
     bar_label_lines = 1
     for g in groups:
-        slot = (panel_w - 134) / max(1, len(g['bars']))
+        slot = (panel_w - PLOT_LEFT - PLOT_RIGHT) / max(1, len(g['bars']))
         for b in g['bars']:
             bar_label_lines = max(bar_label_lines, len(wrap(series[b['series']]['short'], 14, slot - 8)))
     plot_top = top + 110
@@ -167,7 +196,7 @@ def panel_row(c, series, groups, top, format_duration):
         drawn = [b for b in g['bars'] if b['value'] is not None]
         highest = max([max(b['value'], b.get('high') or b['value']) for b in drawn] + [0])
         maximum, step = nice_axis(highest)
-        left, right = x0 + 110, x0 + panel_w - 24
+        left, right = x0 + PLOT_LEFT, x0 + panel_w - PLOT_RIGHT
 
         def ypos(v):
             return plot_bottom - PLOT_HEIGHT * v / maximum
@@ -197,14 +226,9 @@ def panel_row(c, series, groups, top, format_duration):
                           'stroke-width="1.6" fill="none"/>' % (cx, lo, hi, cx - 7, hi, cx + 7, cx - 7, lo, cx + 7,
                                                                WHISKER))
                     label_y = min(label_y, hi)
-                label = b['value_text']
-                if text_width(label, 15) > slot - 8:
-                    # Use a compact annotation only when needed. The tooltip retains full precision.
-                    ms = label.endswith(' ms')
-                    value = b['value'] / 1_000_000 if ms else b['value']
-                    label = f'≈{value:.3g} ' + ('ms' if ms else 'ns')
-                size = min(15, (slot - 8) / text_width(label, 1))
-                c.text(cx, label_y - 10, label, size, anchor='middle')
+                label, size = value_label(b, slot)
+                if size >= MIN_VALUE_FONT:
+                    c.text(cx, label_y - 10, label, size, anchor='middle')
             for m, line in enumerate(wrap(s['short'], 14, slot - 8)):
                 c.text(cx, plot_bottom + 24 + 18 * m, line, 14, INK_2, anchor='middle')
     return panel_bottom
