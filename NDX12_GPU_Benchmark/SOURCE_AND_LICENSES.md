@@ -1,6 +1,14 @@
-# Source and licenses — v0.1.5
+# Source and licenses
 
 Project-owned material is licensed under **GPL-3.0-or-later**, with attribution **Andrew Kapica — GoblinFlash**. Third-party originals and adapted portions retain their incoming licenses and notices. The project license does not relicense those portions.
+
+## Current package — v0.1.9
+
+The [v0.1.9 release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.9) distributes the self-contained `NDX12-Benchmark-v0.1.9.run` installer. Its embedded benchmark archive contains the project `LICENSE` and `NOTICE`, the desktop application and runtime components. The bundled Python and Qt/PySide6/Shiboken components retain their own licenses and notices; Qt-related license texts are included in `desktop/vendor/LICENSES/`.
+
+See the repository [LICENSE](../LICENSE) and [NOTICE](../NOTICE) and the notices in the installed package. The source-build instructions for the experimental project are in [container/README.md](../container/README.md). The historical source companion described below belongs to v0.1.5; it must not be presented as a complete corresponding source snapshot for v0.1.9. The current release page does not list a separate v0.1.9 source-companion asset.
+
+## Historical source companion — v0.1.5
 
 Download the [source companion](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12-benchmark-v0.1.5-source.tar.gz) alongside the [runnable release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5). Both are available from the same release page without a separate request.
 

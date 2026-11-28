@@ -1,143 +1,89 @@
 # How to run
 
-## Download v0.1.5
+## Download v0.1.9
 
-**[Open release v0.1.5](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.5)**
+**[Open release v0.1.9](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.9)**
 
-Download these **three files into the same new folder**:
+Download the single-file installer:
 
-1. **[Installer — ndx12-install.py](https://raw.githubusercontent.com/GoblinFlash/Native-DX12-Linux/v0.1.5/NDX12_GPU_Benchmark/ndx12-install.py)** — save the linked file if your browser displays its contents.
-2. **[Benchmark archive — .tar.gz](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz)**
-3. **[Starter — ndx12_start.py](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12_start.py)**
+**[NDX12-Benchmark-v0.1.9.run](https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.9/NDX12-Benchmark-v0.1.9.run)**
 
-The source archives are for developers; you do not need them to run the benchmark. Follow the installation steps below.
-
-These links require the matching tag and release assets. If they are not available, use [v0.1.4 and its tagged instructions](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.4/NDX12_GPU_Benchmark/HOW_TO_RUN.md). Do not mix files from different releases.
+No separate benchmark archive, Python installer or starter is required. Running `git clone` downloads the source repository; it does not install the benchmark.
 
 ## Install and run
 
-These instructions are for release v0.1.5 of the benchmark. Its package keeps its internal name, `ndx12-native-benchmark-v21-615.78.08-620.70.06`. Running `git clone` downloads the source repository; it does not install the benchmark.
+1. **Prepare the machine.** Save your work and close games and other GPU-heavy programs before benchmarking. A driver fault can freeze the display. Use an admitted NVIDIA GPU and driver; see [Hardware and requirements](README.md#hardware-and-requirements). The installer requires Linux x86-64, glibc 2.34 or newer, system Python 3.9 or newer, Bash and Polkit. The application includes its own Python and Qt.
 
-1. **Prepare the machine.** Save your work and close games and other GPU-heavy programs; a driver fault may freeze the display. Do not change your driver just for this test. `/usr/bin/python3` must be standard CPython 3.13 or newer with the GIL enabled; the installer checks it. To start the benchmark from your normal account, `/usr/bin/sudo` must be available.
-
-2. **Download three files into new folder.**
-   - `ndx12-install.py`: the installer, from the `NDX12_GPU_Benchmark` folder of this repository at tag `v0.1.5`.
-   - `ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz`: the benchmark archive, from release v0.1.5.
-   - `ndx12_start.py`: the starter, from release v0.1.5.
-
-   You can use your browser. If you have `curl`, this downloads all three files into a new folder:
+2. **Download the installer.** Save the .run file from the release above. Optionally compare its SHA-256 with the value on the release page before running it:
 
    ```sh
-   mkdir ndx12-v0.1.5 && cd ndx12-v0.1.5 &&
-   curl -fLO https://raw.githubusercontent.com/GoblinFlash/Native-DX12-Linux/v0.1.5/NDX12_GPU_Benchmark/ndx12-install.py &&
-   curl -fLO https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12-native-benchmark-v21-615.78.08-620.70.06.tar.gz &&
-   curl -fLO https://github.com/GoblinFlash/Native-DX12-Linux/releases/download/v0.1.5/ndx12_start.py
+   sha256sum NDX12-Benchmark-v0.1.9.run
    ```
 
-   You do not need to copy any checksum. See [Where the trust comes from](#where-the-trust-comes-from).
+   Expected SHA-256: `48c62aa693bcc1e146148976cd6917d3bc1acd8e4abf533d9bbb3cb8a3822c21`.
 
-3. **Install.** In that folder, run:
+3. **Install.** Open a terminal in the download folder, from your normal desktop account, and run:
 
    ```sh
-   sudo /usr/bin/python3 -I ndx12-install.py
+   sudo bash NDX12-Benchmark-v0.1.9.run
    ```
 
-   Type it as shown: the installer refuses to run without `-I` or with a Python other than `/usr/bin/python3`.
+   The installer checks its embedded files, installs the application and configures the desktop entry and authorization for the account invoking sudo. It does not start GPU work. Use the same command with a newer installer to update. The installer retains the replaced package and configuration and restores the previous active installation if activation fails.
 
-   It checks:
-   - that both downloaded files are the ones it was made for;
-   - that the system folders it writes to belong to root and only root can change them;
-   - that nothing it would replace is a symbolic link.
-
-   It then installs:
-   - the package into `/opt/ndx12`;
-   - the starter as `/usr/local/libexec/ndx12_start.py`;
-   - the trusted manifest value as `/etc/ndx12/v21.manifest.sha256`;
-   - the command `/usr/local/bin/ndx12-benchmark`;
-   - the install receipt `/etc/ndx12/ndx12-native-benchmark-v21-615.78.08-620.70.06.install.json`. It records the release name and the values the installer checked. The benchmark reads it to name the release in your share file.
-
-   It has the starter verify the package, and finishes with **READY**.
-
-   If it prints **NOT INSTALLED**, it says what blocks the installation and what to change. A refusal before replacement leaves an installed copy as it was. If replacement and restoration both fail, it reports an incomplete installation and the exact folder where the previous package remains. Keep that folder; a later successful installation does not delete it. Resolve the reported file-operation error before retrying.
-
-   You can run the installer again at any time:
-   - An installed package that still verifies is kept, together with its saved settings.
-   - A copy that no longer verifies is moved aside to `/opt/ndx12/ndx12-native-benchmark-v21-615.78.08-620.70.06.replaced-<time>`. You can remove it once you no longer need it.
-   - Releases v0.1.0 to v0.1.4 use the same package folder. Their packages do not verify against this release's manifest value, so they are moved aside in the same way.
-
-   The installer never starts the benchmark or any GPU work.
-
-4. **Start the benchmark**, now and on every later run:
+4. **Start the benchmark.** Open **Native DX12 Benchmark** from the desktop icon or application menu. Alternatively, run the following as your normal desktop user:
 
    ```sh
    ndx12-benchmark
    ```
 
-   The benchmark runs as root, so `sudo` asks for your password. Keep the terminal open for the whole run. Do not suspend or log out.
+   `ndx12-benchmark --check` performs a CPU-only integrity check. It does not run the benchmark.
 
-   - `ndx12-benchmark --check` checks the installation only and starts nothing.
-   - `ndx12-benchmark -- ARGS` passes `ARGS` to the package's `run_benchmark.sh`. These are the expert options in the package README.
+5. **Choose the tests.** On the Benchmark page, choose **Full Benchmark** or select individual workloads. Enable the separate Vulkan reference if you want the comparison for supported workloads. The launcher checks the GPU and driver before starting work.
 
-5. **Pass the checks.** Before anything from the package runs, the starter checks:
-   - the package against the trusted manifest value;
-   - every file in the package;
-   - the ownership and permissions of the package and the folders above it.
+6. **Choose the clocks.** Keep your current clock settings for a first run. Reference profiles and manual frequencies are optional and depend on the GPU and driver.
 
-   It prints **PACKAGE VERIFIED** on success. The launcher then checks the GPU, the driver and the other requirements. If it prints **CANNOT RUN ON THIS COMPUTER**, it lists the reasons and starts no benchmark work. Otherwise, read the warning and type `run`.
+7. **Start the run.** Click **Run Full Benchmark (recommended)** or run the selected workloads. Do not suspend or log out while a run is active.
 
-6. **Choose the tests.** Press Enter for the **Full test**, or select one of these separately:
-   - the compute suite;
-   - Test 1 (D4);
-   - Test 2 (K);
-   - Test 3 (K WaveForm).
+8. **Open the results.** Review the integrated charts and Run log. **Result files** opens the exported results folder.
 
-7. **Choose the clocks.** For a first run, choose **1: keep your current clock settings**. Clock locking is optional. The built-in presets apply only to the GPU models they are named for: RTX 4090 and RTX 3090.
+9. **Share your results.** Click **Share Results** next to **Run log** to open the public GitHub form, or [submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml) manually and attach the exported `share-results-*.tar.gz` file. Include the benchmark version, GPU, driver, Linux distribution and run outcome.
 
-8. **Open the results.** When the run finishes, open the `charts.html` path printed under **CHARTS**.
+   Chrome or Chromium uses a separate sharing profile and can upload the archive when opening the form. In other browsers, attach the archive from **Result files** manually. Review the form and choose **Create issue** to publish it. Check the archive for private information first. Issues and attachments are public.
 
-9. **Share your results.** [Submit benchmark results](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml) using the short form. Include your benchmark version, GPU model, NVIDIA driver version and whether the run completed. The launcher also prepares `share-results-v0.1.5.tar.gz`, which holds the results intended for sharing. Its name says which release made it (`share-results-release-unknown.tar.gz` when the install receipt could not be checked). **SEND THIS FILE** is the terminal label identifying that archive; nothing is sent automatically. Inspect the bundle before attaching it and remove private information. Issues and attachments are public and linked to your GitHub account.
+## Graphics demos
 
-   When at least one chart is in the file, it also holds `charts.html`, the charts page made from those chart images; open it in a browser. A file without a chart has no `charts.html`. The header of every chart names the release, the OS, the GPU model and the driver. The `summary.txt` in the bundle names the release, the GPU model and driver, and the result of every process, and reports the host/GPU clock check for your run. It contains no computer name, user name, IP address, GPU serial number or GPU UUID. Look inside before you post it.
+Open **Demos**, select Earth 4K, nBody 128, nBody 10K or nBody 4K, then click **Launch Demo**. The native demo uses the admitted GPU/driver profile and its available desktop presentation path. Do not start a second demo or another benchmark while GPU work from this application is active.
 
-When you start `ndx12-benchmark` from your normal account, a copy of the charts page and share bundle is also placed in `~/ndx12-results/<run folder>/`.
+## Troubleshooting
 
-The full raw evidence stays in `/var/tmp/ndx12-results/`. **It contains machine identifiers, so keep it private.**
+Start the launcher from your normal desktop account (without sudo):
 
-**If something goes wrong:** if the launcher reports **HELD** or an unknown GPU-worker state, do not start another run. Keep the message shown on screen and follow the troubleshooting section of the package README. The benchmark never resets the GPU or retries on its own.
+```sh
+ndx12-benchmark --debug
+```
+
+The terminal displays live Run log messages, process output, launch commands and exit codes. Diagnostics, Bug Report, Live Output and Saved Reports are also available under GPU Monitoring. Inspect diagnostic reports and attachments for private information before sharing.
+
+If the launcher reports **HELD** or an unknown GPU-worker state, do not start another run. Preserve the error message and report it through Issues. v0.1.9 cleans up certain allocation refusals before GPU work starts; other faults can still leave resources held deliberately. Follow the [current release limits](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.9#validation-and-current-limits).
+
+Share only the intended results archive. Full raw evidence in `/var/tmp/ndx12-results/` may contain machine identifiers; keep it private.
 
 ## Where the trust comes from
 
-**The installer is what you trust.** It is a file in this repository, `NDX12_GPU_Benchmark/ndx12-install.py`, with a public change history. It contains three values for this release:
-- the SHA-256 and size of the archive;
-- the SHA-256 and size of the starter;
-- the SHA-256 of the archive's `MANIFEST.sha256`.
+The release page records the installer size and SHA-256. The self-extracting installer checks the embedded installer, starter and benchmark archive against its internal size and SHA-256 values. The installed package is checked against its trusted manifest.
 
-**The archive and the starter are only checked.** They come from the release, and the installer refuses them unless they match those values exactly. A replaced or damaged file is refused, wherever it was downloaded from; a copy from another place is accepted only if its bytes are identical. The starter then checks the installed package against the manifest value before every start, so a later change inside the package is also refused.
-
-**What this does not protect against.** Someone who can change this repository, for example through a compromised maintainer account, can change the installer and its values together. There is no signature. To check the installer yourself:
-- read it (it is one short Python file);
-- compare it with its history in the repository.
-
-A checksum file downloaded next to the archive, or a checksum you calculate from your own download, is not an independent check. The installer does not use either.
-
-**One installer per release.** This installer installs only release v0.1.5, which is the package `ndx12-native-benchmark-v21-615.78.08-620.70.06` (revision v21-r16). A new release comes with a new installer.
-
-## Without the installer
-
-The manual steps in the **Run** section of the package README still work and install the same files. In that case:
-- take the three values from the `ARCHIVE_SHA256`, `STARTER_SHA256` and `MANIFEST_SHA256` lines of `ndx12-install.py`;
-- start the benchmark with the long `ndx12_start.py` command from that section, since `ndx12-benchmark` is installed only by the installer.
-
-Without the install receipt, your share file says `Release: unknown - NO_INSTALL_RECEIPT`.
-
-If you installed this package earlier with those steps, run the installer once. It keeps your installed package if it verifies, and adds the `ndx12-benchmark` command and the install receipt.
+These checks identify the expected bytes; they do not protect against a compromised release publisher. Obtain the installer from the official release. Do not mix files from different versions.
 
 ## Removing it
 
+Open **Uninstall Native DX12 Benchmark** from the application menu, or run:
+
 ```sh
-sudo rm -r /opt/ndx12/ndx12-native-benchmark-v21-615.78.08-620.70.06 /usr/local/libexec/ndx12_start.py \
-  /etc/ndx12/v21.manifest.sha256 /usr/local/bin/ndx12-benchmark \
-  /etc/ndx12/ndx12-native-benchmark-v21-615.78.08-620.70.06.install.json
+sudo ndx12-uninstall
 ```
 
-This keeps your results in `/var/tmp/ndx12-results/` and `~/ndx12-results/`.
+The uninstaller preserves the result folders and launcher settings. It refuses while a benchmark is running or an installation is pending.
+
+## Previous releases
+
+The old three-file instructions and standalone `ndx12-install.py` apply to v0.1.5, not v0.1.9. For the older release, use its [tagged instructions](https://github.com/GoblinFlash/Native-DX12-Linux/blob/v0.1.5/NDX12_GPU_Benchmark/HOW_TO_RUN.md) and matching assets.
