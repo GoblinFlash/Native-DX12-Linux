@@ -6,15 +6,15 @@
 
 **Help test and shape the next optimizations!**
 
-**Benchmark v0.1.8 is available.** Successful runs, partial results and failures are welcome through the [benchmark results form](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml).
+**Benchmark v0.1.9 is available.** Successful runs, partial results and failures are welcome through the [benchmark results form](https://github.com/GoblinFlash/Native-DX12-Linux/issues/new?template=benchmark_results.yml).
 
 **Andrew Kapica — GoblinFlash**
 
 **AI-assisted development:** This project uses AI tools to assist with research, implementation, testing, code review, and documentation. AI-assisted contributions are subject to the same technical review, testing, and licensing requirements as other contributions. See the [contribution guidelines](AGENTS.md).
 
 <p>
-  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.8"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.8" height="54"></a>
-  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.8#install"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
+  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.9"><img src=".github/readme-assets/button-download.svg" alt="Download benchmark v0.1.9" height="54"></a>
+  <a href="https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.9#install"><img src=".github/readme-assets/button-run.svg" alt="How to run" height="54"></a>
   <a href="Benchmark%20Results/README.md"><img src=".github/readme-assets/button-results.svg" alt="Results" height="54"></a>
   <a href="Experiments/README.md"><img src=".github/readme-assets/button-experiments.svg" alt="Experiments" height="54"></a>
 </p>
@@ -32,7 +32,7 @@ Both are mature, game-oriented projects. A translation layer introduces an API b
 
 **Native-DX12-Linux does not use Vulkan or VKD3D in its experimental NVIDIA compute path.** Shaders are compiled through **DXIL → NIR → NAK**, and compute work is submitted through native NVIDIA Linux driver interfaces. The project is an experimental, compute-focused subset of Direct3D 12, **not** a drop-in replacement for commercial games or a complete D3D12 implementation.
 
-## Native DirectX 12 Benchmark for Linux — v0.1.8
+## Native DirectX 12 Benchmark for Linux — v0.1.9
 
 A major update featuring an improved native GPU execution path, expanded benchmark workloads, interactive native graphics demos and a redesigned desktop application.
 
@@ -42,10 +42,10 @@ A major update featuring an improved native GPU execution path, expanded benchma
 - **GPU Control:** Selected `nvidia-smi` functionality and additional GPU management features, including power limits, fan control, clock locking and Persistence Mode.
 - **Installation:** One download, one command. Includes a desktop launcher, integrated charts and result sharing.
 
-Download the installer from the [v0.1.8 release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.8), then run:
+Download the installer from the [v0.1.9 release](https://github.com/GoblinFlash/Native-DX12-Linux/releases/tag/v0.1.9), then run:
 
 ```bash
-sudo bash NDX12-Benchmark-v0.1.8.run
+sudo bash NDX12-Benchmark-v0.1.9.run
 ```
 
 Once installed, launch Native DX12 Benchmark from your desktop or application menu.
@@ -94,7 +94,7 @@ UI test showing unavailable controls when nvidia-smi is missing, with illustrati
 
 <picture>
   <source media="(max-width: 650px)" srcset=".github/readme-assets/progress-mobile.svg">
-  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.8 available; community submissions underway" width="950">
+  <img src=".github/readme-assets/progress-desktop.svg" alt="Native GPU execution demonstrated; benchmark v0.1.9 available; community submissions underway" width="950">
 </picture>
 
 ## Current Work
